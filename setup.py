@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# encoding: uf-8
+# encoding: utf-8
 
 from setuptools import setup
 
