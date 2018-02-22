@@ -14,7 +14,7 @@ pip install git+https://github.com/DXsmiley/dismock.git
 
 ## Usage
 
-Command line arguments.
+### Command line arguments
 
 ```
 Usage:
@@ -25,13 +25,14 @@ token             - The token used to run the dismock bot
 test_cases_module - Filename of a python module containing some tests collected with a TestCollector
 ```
 
-Example test file.
+### Example test file
 
-```
+```python
 import dismock
 
 testcollector = dismock.TestCollector()
 
+@testcollector()
 async def test_ping(interface):
 	await interface.assert_reply_equals('ping?', 'pong!')
 ```
