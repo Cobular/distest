@@ -32,7 +32,7 @@ import dismock
 
 testcollector = dismock.TestCollector()
 
-@testcollector
+@testcollector()
 async def test_ping(interface):
 	await interface.assert_reply_equals('ping?', 'pong!')
 ```
