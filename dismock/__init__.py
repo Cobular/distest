@@ -51,6 +51,9 @@ class TestRequirementFailure(Exception):
 class NoResponseError(TestRequirementFailure):
 	''' Raised when the target bot fails to respond to a message '''
 
+class NoReactionError(TestRequirementFailure):
+	''' Raised when the target bot failed to react to a message '''
+
 class UnexpectedResponseError(TestRequirementFailure):
 	''' Raised when the target bot failed to stay silent '''
 
@@ -66,8 +69,11 @@ class HumanResponseTimeout(TestRequirementFailure):
 class HumanResponseFailure(TestRequirementFailure):
 	''' Raised when a human fails a test '''
 
-class ResponseDidntMatch(TestRequirementFailure):
+class ResponseDidNotMatchError(TestRequirementFailure):
 	''' Raised when the target bot responds with a message that doesn't meet criteria '''
+
+class ReactionDidNotMatchError(TestRequirementFailure):
+	''' Raised when the target bot reacts with the wrong emoji '''
 
 
 class TestResult(enum.Enum):
@@ -98,9 +104,9 @@ class Interface:
 	'''
 
 	def __init__(self,
-				 client: discord.Client,
-				 channel: discord.Channel,
-				 target: (discord.Member, discord.User)) -> None:
+	             client: discord.Client,
+	             channel: discord.Channel,
+	             target: discord.User) -> None:
 		self.client = client # The discord.py client object
 		self.channel = channel # The channel the test is running in
 		self.target = target # The bot which we are testing
@@ -113,10 +119,22 @@ class Interface:
 		''' Modified a message. Doesn't actually care what this message is. '''
 		return await self.client.edit_message(message, new_content)
 
+	async def wait_for_reaction(self, message):
+		def check(reaction, user):
+			return (
+				reaction.message.id == message.id
+				and user == self.target
+				and reaction.message.channel == self.channel)
+		result = await self.client.wait_for_reaction(timeout=TIMEOUT, check=check)
+		if result is None:
+			raise NoReactionError
+		return result
+
 	async def wait_for_message(self):
 		''' Waits for the bot the send a message.
-			If the bot takes longer than 20 seconds, the test fails.
-		'''
+			If the bot takes longer than {} seconds, the test fails.
+		'''.format(TIMEOUT)
+
 		result = await self.client.wait_for_message(
 			timeout=TIMEOUT,
 			channel=self.channel,
@@ -136,7 +154,7 @@ class Interface:
 		'''
 		response = await self.wait_for_message()
 		if response.content != matches:
-			raise ResponseDidntMatch
+			raise ResponseDidNotMatchError
 		return response
 
 	async def assert_message_contains(self, substring):
@@ -145,7 +163,7 @@ class Interface:
 		'''
 		response = await self.wait_for_message()
 		if substring not in response.content:
-			raise ResponseDidntMatch
+			raise ResponseDidNotMatchError
 		return response
 
 	async def assert_message_matches(self, regex):
@@ -154,7 +172,7 @@ class Interface:
 		'''
 		response = await self.wait_for_message()
 		if not re.match(regex, response.content):
-			raise ResponseDidntMatch
+			raise ResponseDidNotMatchError
 		return response
 
 	async def assert_reply_equals(self, contents, matches):
@@ -167,7 +185,7 @@ class Interface:
 		response = await self.wait_for_message()
 		# print('Got response')
 		if response.content != matches:
-			raise ResponseDidntMatch
+			raise ResponseDidNotMatchError
 		return response
 
 	async def assert_reply_contains(self, contents, substring):
@@ -177,7 +195,7 @@ class Interface:
 		await self.send_message(contents)
 		response = await self.wait_for_message()
 		if substring not in response.content:
-			raise ResponseDidntMatch
+			raise ResponseDidNotMatchError
 		return response
 
 	async def assert_reply_matches(self, contents, regex):
@@ -187,8 +205,14 @@ class Interface:
 		await self.send_message(contents)
 		response = await self.wait_for_message()
 		if not re.match(regex, response.content):
-			raise ResponseDidntMatch
+			raise ResponseDidNotMatchError
 		return response
+
+	async def assert_reaction_equals(self, contents, emoji):
+		reaction = await self.wait_for_reaction(await self.send_message(contents))
+		if str(reaction.emoji) != emoji:
+			raise ReactionDidNotMatchError
+		return reaction
 
 	async def ensure_silence(self):
 		''' Ensures that the bot does not post any messages for some number of seconds. '''
@@ -363,7 +387,7 @@ class DiscordUI(DiscordBot):
 				name = message.content[6:]
 				print('Running test:', name)
 				if name == 'all':
-					await self._run_by_predicate(message.chanel, lambda t: True)
+					await self._run_by_predicate(message.channel, lambda t: True)
 				elif name == 'unrun':
 					pred = lambda t: t.result is TestResult.UNRUN
 					await self._run_by_predicate(message.channel, pred)
