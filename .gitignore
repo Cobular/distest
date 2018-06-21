@@ -1,11 +1,18 @@
 # Compiled python modules.
-*.pyc
+*.py[cod]
+
+# virtualenv
+/venv/
 
 # Setuptools distribution folder.
 /dist/
+/build/
 
 # Python egg metadata, regenerated from source files by setuptools.
 /*.egg-info
 
 # Sublime stuff
 *.sublime-*
+
+# nano swap files
+*.swp
