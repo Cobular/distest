@@ -39,6 +39,7 @@ HELP_TEXT = '''\
 **::run** all - Run all tests
 **::run** unrun - Run all tests that have not been run
 **::run** *name* - Run a specific test
+**::list** - List all the tests and their status
 '''
 
 
@@ -363,7 +364,7 @@ class DiscordUI(DiscordBot):
 				name = message.content[6:]
 				print('Running test:', name)
 				if name == 'all':
-					await self._run_by_predicate(message.chanel, lambda t: True)
+					await self._run_by_predicate(message.channel, lambda t: True)
 				elif name == 'unrun':
 					pred = lambda t: t.result is TestResult.UNRUN
 					await self._run_by_predicate(message.channel, pred)
@@ -381,7 +382,12 @@ class DiscordUI(DiscordBot):
 					await self.run_test(self._tests.find_by_name(name), message.channel)
 					await self._display_stats(message.channel)
 			# Status display command
-			elif message.content == '::stats':
+			elif message.content in ['::stats', '::list']:
 				await self._display_stats(message.channel)
 			elif message.content == '::help':
 				await self.send_message(message.channel, HELP_TEXT)
+
+
+def run_interactive_bot(target_name, token, test_collector):
+	bot = DiscordUI(target_name, test_collector)
+	bot.run(token)

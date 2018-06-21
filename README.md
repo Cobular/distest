@@ -6,32 +6,20 @@ Currently in version `0.0.0`, since I'm still getting things set up in here.
 
 ## Installation
 
-The project is not yet on PyPi, so you'll have to install from github.
-
-```
-pip install git+https://github.com/DXsmiley/dismock.git
-```
+Best way to get this running is to `git clone` it.
 
 ## Usage
 
-Command line arguments.
+In order to use this package, you'll have to create *two* bot accounts. The first, referred to as the *target*, is the bot that you wish to test. If you're already here you probably have a token for this bot already. The second one, called the *tester* is responsible for running the tests.
 
+First, you need to run the bot that you wish to test. You can run the example bot supplied with this repo as follows:
 ```
-Usage:
-	python -m dismock target_name token test_cases_module
-
-target_name       - The username of the bot which you want to test
-token             - The token used to run the dismock bot
-test_cases_module - Filename of a python module containing some tests collected with a TestCollector
+python example_bot.py TARGET_TOKEN
 ```
 
-Example test file.
-
+Then, you have to run the tester bot:
 ```
-import dismock
-
-testcollector = dismock.TestCollector()
-
-async def test_ping(interface):
-	await interface.assert_reply_equals('ping?', 'pong!')
+python example_tester.py TARGET_USERNAME TESTER_TOKEN
 ```
+
+Once both bots are running, go to any discord channel that both bots have access to and type `::run all` to run all the tests. Use `::help` to get more information on the commands that the tester bot takes.
