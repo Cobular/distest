@@ -371,7 +371,6 @@ class DiscordUI(DiscordBot):
 			elif test.result is TestResult.FAILED:
 				response += '❌ Failed\n'
 		response += '```\n'
-		print(response)
 		await self.send_message(channel, response)
 
 	async def on_ready(self) -> None:
