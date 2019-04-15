@@ -2,7 +2,9 @@
 
 A small library used to write automated test for Discord bots.
 
-Currently in version `0.0.0`, since I'm still getting things set up in here.
+Bulk was written by [DXsmiley](https://github.com/DXsmiley), updated to the rewrite and modified a bit by [me](https://github.com/JacobCover)
+
+Currently in pre-alpha, since I'm figuring out how this works. In addition to the example here, my [main bot](https://github.com/JacobCover/ReplyBot) will be implementing this soon.
 
 ## Installation
 
@@ -22,4 +24,49 @@ Then, you have to run the tester bot:
 python example_tester.py TARGET_USERNAME TESTER_TOKEN
 ```
 
+Make sure to use the username of the bot **without** the discriminator (#1111) or the bot won't understand what the user is
+
 Once both bots are running, go to any discord channel that both bots have access to and type `::run all` to run all the tests. Use `::help` to get more information on the commands that the tester bot takes.
+
+## Options
+Commands you can run in discord once the bot is up. 
+
+    ::stats
+        Gives details about which tests have been
+        run and what the results were
+
+    ::run test_name
+        Run a particular test
+
+    ::run all
+        Run all tests
+
+    ::run unrun
+        Run all tests that have not yet been run
+
+    ::run failed
+        Run all tests that failed on the most recent run
+
+
+## New Tests
+I'm still figuring this part out, but it seems that you write tests in the testing bot and decorate them with an instance of `dismock.TestCollector()`. Then, you can run the bot and use the run commands to run the tests.
+
+
+## TODO
+-[ ] Update the Bot to the newly re-written discord.py 1.0
+-[ ] Test each test
+    -[ ] send_message
+    -[ ] edit_message
+    -[ ] wait_for_reaction
+    -[ ] wait_for_message
+    -[ ] wait_for_reply
+    -[ ] assert_message_equals
+    -[x] assert_message_contains
+    -[ ] assert_message_matches
+    -[ ] assert_reply_equals
+    -[ ] assert_reply_contains
+    -[ ] assert_reply_matches
+    -[ ] assert_reaction_equals
+    -[ ] ensure_silence
+    -[ ] ask_human
+-[ ] Allow running tests from the command line
