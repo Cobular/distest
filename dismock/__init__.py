@@ -133,7 +133,7 @@ class Interface:
 
         try:
             result = await self.client.wait_for('reaction_add', timeout=TIMEOUT, check=check)
-        except Time:
+        except _base.TimeoutError:
             raise NoReactionError
         else:
             return result
@@ -252,7 +252,7 @@ class Interface:
         await asyncio.sleep(0.5)
 
         def check(human_reaction, user):
-            return human_reaction.message == message
+            return human_reaction.message
 
         try:
             reaction: discord.Reaction = await self.client.wait_for("reaction_add", timeout=TIMEOUT,
@@ -406,19 +406,23 @@ class DiscordUI(DiscordBot):
 
     async def on_message(self, message: discord.Message) -> None:
         """ Handle an incoming message """
+        if message.author == self.user:
+            return
         if not isinstance(message.channel, (discord.DMChannel, discord.GroupChannel)):
             if message.content.startswith('::run '):
                 name = message.content[6:]
                 print('Running test:', name)
                 if name == 'all':
                     await self._run_by_predicate(message.channel, lambda t: True)
+                    await self._display_stats(message.channel)
                 elif name == 'unrun':
                     def pred(t): return t.result is TestResult.UNRUN
                     await self._run_by_predicate(message.channel, pred)
+                    await self._display_stats(message.channel)
                 elif name == 'failed':
                     def pred(t): return t.result is TestResult.FAILED
                     await self._run_by_predicate(message.channel, pred)
-
+                    await self._display_stats(message.channel)
                 # TODO: Fix this, but what was it supposed to be?
                 # elif '*' in name:
                 #    regex = re.compile(name.replace('*', '.*'))
@@ -427,7 +431,7 @@ class DiscordUI(DiscordBot):
                     text = ':x: There is no test called `{}`'
                     await message.channel.send(message.channel, text.format(name))
                 else:
-                    await message.channel('Running test `{}`'.format(name))
+                    await message.channel.send('Running test `{}`'.format(name))
                     await self.run_test(self._tests.find_by_name(name), message.channel)
                     await self._display_stats(message.channel)
             # Status display command
