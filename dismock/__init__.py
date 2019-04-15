@@ -25,10 +25,11 @@
 import asyncio
 import enum
 import re
+from concurrent.futures import _base
 
 import discord
 
-TIMEOUT = 20
+TIMEOUT = 10
 
 HELP_TEXT = """\
 **::help** - Show this help
@@ -130,10 +131,12 @@ class Interface:
                     and reaction.message.channel == self
             )
 
-        result = await self.client.wait_for('reaction_add', timeout=TIMEOUT, check=check)
-        if result is None:
+        try:
+            result = await self.client.wait_for('reaction_add', timeout=TIMEOUT, check=check)
+        except Time:
             raise NoReactionError
-        return result
+        else:
+            return result
 
     async def wait_for_message(self):
         """ Waits for the bot the send a message.
@@ -146,10 +149,12 @@ class Interface:
                     and message.author == self.target
             )
 
-        result = await self.client.wait_for("message", timeout=TIMEOUT, check=check)
-        if result is None:
+        try:
+            result = await self.client.wait_for("message", timeout=TIMEOUT, check=check)
+        except _base.TimeoutError:
             raise NoResponseError
-        return result
+        else:
+            return result
 
     async def wait_for_reply(self, content):
         """ Sends a message and returns the next message that the targeted bot sends. """
@@ -230,9 +235,11 @@ class Interface:
                     message.channel == self.channel
                     and message.author == self.target
             )
-
-        result = await self.client.wait_for("message", timeout=TIMEOUT, check=check)
-        if result is not None:
+        try:
+            result = await self.client.wait_for("message", timeout=TIMEOUT, check=check)
+        except _base.TimeoutError:
+            pass
+        else:
             raise UnexpectedResponseError
 
     async def ask_human(self, query):
@@ -247,13 +254,15 @@ class Interface:
         def check(human_reaction, user):
             return human_reaction.message == message
 
-        reaction: discord.Reaction = await self.client.wait_for("reaction_add", timeout=TIMEOUT,
-                                                                check=check)  # TODO: Confirm this BS works in place of a check function
-        if reaction is None:
+        try:
+            reaction: discord.Reaction = await self.client.wait_for("reaction_add", timeout=TIMEOUT,
+                                                                    check=check)  # TODO: Confirm this BS works in place of a check function
+        except _base.TimeoutError:
             raise HumanResponseTimeout
-        reaction, _ = reaction
-        if reaction.emoji == u'\u274C':
-            raise HumanResponseFailure
+        else:
+            reaction, _ = reaction
+            if reaction.emoji == u'\u274C':
+                raise HumanResponseFailure
 
 
 class ExpectCalls:
