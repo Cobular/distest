@@ -119,7 +119,8 @@ class Interface:
         """ Send a message to the testing channel. """
         return await self.channel.send(content)
 
-    async def edit_message(self, message: discord.Message, new_content):
+    @staticmethod
+    async def edit_message(message: discord.Message, new_content):
         """ Modified a message. Doesn't actually care what this message is. """
         return await message.edit(content=new_content)
 
@@ -236,7 +237,7 @@ class Interface:
                     and message.author == self.target
             )
         try:
-            result = await self.client.wait_for("message", timeout=TIMEOUT, check=check)
+            await self.client.wait_for("message", timeout=TIMEOUT, check=check)
         except _base.TimeoutError:
             pass
         else:
@@ -256,7 +257,8 @@ class Interface:
 
         try:
             reaction: discord.Reaction = await self.client.wait_for("reaction_add", timeout=TIMEOUT,
-                                                                    check=check)  # TODO: Confirm this BS works in place of a check function
+                                                                    check=check)
+            # TODO: Confirm this BS works in place of a check function
         except _base.TimeoutError:
             raise HumanResponseTimeout
         else:
@@ -332,7 +334,7 @@ class DiscordBot(discord.Client):
         super().__init__()
         self._target_name = target_name.lower()
 
-    # self._setup_done = False
+    # s self._setup_done = False
 
     def _find_target(self, server: discord.Guild) -> discord.Member:
         for i in server.members:
