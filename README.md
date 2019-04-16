@@ -53,7 +53,7 @@ I'm still figuring this part out, but it seems that you write tests in the testi
 
 
 ## TODO
-- [ ] Update the Bot to the newly re-written discord.py 1.0
+- [x] Update the Bot to the newly re-written discord.py 1.0
 - [ ] Test each test
     - [ ] send_message
     - [ ] edit_message
@@ -63,10 +63,10 @@ I'm still figuring this part out, but it seems that you write tests in the testi
     - [ ] assert_message_equals
     - [x] assert_message_contains
     - [ ] assert_message_matches
-    - [ ] assert_reply_equals
-    - [ ] assert_reply_contains
-    - [ ] assert_reply_matches
-    - [ ] assert_reaction_equals
-    - [ ] ensure_silence
-    - [ ] ask_human
+    - [x] assert_reply_equals
+    - [x] assert_reply_contains
+    - [x] assert_reply_matches
+    - [x] assert_reaction_equals
+    - [x] ensure_silence
+    - [x] ask_human
 - [ ] Allow running tests from the command line

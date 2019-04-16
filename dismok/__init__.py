@@ -29,7 +29,7 @@ from concurrent.futures import _base
 
 import discord
 
-TIMEOUT = 10
+TIMEOUT = 5
 
 HELP_TEXT = """\
 **::help** - Show this help
@@ -124,12 +124,17 @@ class Interface:
         """ Modified a message. Doesn't actually care what this message is. """
         return await message.edit(content=new_content)
 
-    async def wait_for_reaction(self, message):
+    async def wait_for_reaction(self, message: discord.Message):
+        """ Tests to make sure a message is reacted to.
+
+        Requires a discord.py Message as input to run,
+        so this is not meant to be run by the user dirrectly in most cases.
+        """
         def check(reaction, user):
             return (
                     reaction.message.id == message.id
                     and user == self.target
-                    and reaction.message.channel == self
+                    and reaction.message.channel == self.channel
             )
 
         try:
@@ -189,7 +194,7 @@ class Interface:
             raise ResponseDidNotMatchError
         return response
 
-    async def assert_reply_equals(self, contents, matches):
+    async def assert_reply_equals(self, contents: str, matches: str):
         """ Send a message and wait for a response.
             If the response does not match a string exactly, fail the test.
         """
@@ -202,7 +207,7 @@ class Interface:
             raise ResponseDidNotMatchError
         return response
 
-    async def assert_reply_contains(self, contents, substring):
+    async def assert_reply_contains(self, contents: str, substring: str):
         """ Send a message and wait for a response.
             If the response does not contain the given substring, fail the test.
         """
@@ -212,9 +217,10 @@ class Interface:
             raise ResponseDidNotMatchError
         return response
 
-    async def assert_reply_matches(self, contents, regex):
-        """ Send a message and wait for a response.
-            If the response does not match a regex, fail the test.
+    async def assert_reply_matches(self, contents: str, regex):
+        """ Send a message and wait for a response. If the response does not match a regex, fail the test.
+
+            Requires a properly formatted Python regex ready to be used in the re functions.
         """
         await self.send_message(contents)
         response = await self.wait_for_message()
@@ -224,7 +230,7 @@ class Interface:
 
     async def assert_reaction_equals(self, contents, emoji):
         reaction = await self.wait_for_reaction(await self.send_message(contents))
-        if str(reaction.emoji) != emoji:
+        if str(reaction[0].emoji) != emoji:
             raise ReactionDidNotMatchError
         return reaction
 
