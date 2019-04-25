@@ -25,9 +25,13 @@
 import asyncio
 import enum
 import re
+import sys
 from concurrent.futures import _base
 
 import discord
+import typing
+import argparse
+
 
 TIMEOUT = 5
 
@@ -370,7 +374,7 @@ class DiscordBot(discord.Client):
         return test.result
 
 
-class DiscordUI(DiscordBot):
+class DiscordInteractiveInterface(DiscordBot):
     """ A variant of the discord bot which supports additional commands
         to allow a human to also interact with it.
     """
@@ -449,6 +453,126 @@ class DiscordUI(DiscordBot):
                 await message.channel(HELP_TEXT)
 
 
+class DiscordCliInterface(DiscordBot):
+    """ A variant of the discord bot which is designed to be run off command line arguments.
+    """
+
+    def __init__(self, target_name: str, tests: TestCollector, test: str, channel: typing.Optional[discord.TextChannel],
+                 stats: bool) -> None:
+        super().__init__(target_name[0])
+        self._tests = tests
+        self._test_to_run = test
+        self._channel = channel[0]
+        self._stats = stats
+
+    async def _run_by_predicate(self, channel, predicate):
+        for test in self._tests:
+            if predicate(test):
+                await channel.send('**Running test {}**'.format(test.name))
+                await self.run_test(test, channel, stop_error=True)
+
+    async def _display_stats(self, channel: discord.TextChannel) -> None:
+        """ Display the status of the various tests. """
+        # NOTE: An emoji is the width of two spaces
+        response = '```\n'
+        longest_name = max(map(lambda t: len(t.name), self._tests))
+        for test in self._tests:
+            response += test.name.rjust(longest_name) + ' '
+            if test.needs_human:
+                response += '✋ '
+            else:
+                response += '   '
+            if test.result is TestResult.UNRUN:
+                response += '⚫ Not run\n'
+            elif test.result is TestResult.SUCCESS:
+                response += '✔️ Passed\n'
+            elif test.result is TestResult.FAILED:
+                response += '❌ Failed\n'
+        response += '```\n'
+        await channel.send(response)
+
+    async def on_ready(self) -> None:
+        """ Report when the bot is ready for use """
+        print('Started dismock bot.')
+        print(f'Running test {self._test_to_run}')
+        if self._test_to_run is not None:
+            if self._test_to_run == 'all':
+                await self._run_by_predicate(self._channel, lambda t: True)
+                await self._display_stats(self._channel)
+            elif self._test_to_run == 'unrun':
+                def pred(t):
+                    return t.result is TestResult.UNRUN
+                await self._run_by_predicate(self._channel, pred)
+                await self._display_stats(self._channel)
+            elif self._test_to_run == 'failed':
+                def pred(t):
+                    return t.result is TestResult.FAILED
+                await self._run_by_predicate(self._channel, pred)
+                await self._display_stats(self._channel)
+            # TODO: Fix this, but what was it supposed to be?
+            # elif '*' in self._test_to_run:
+            #    regex = re.compile(self._test_to_run.replace('*', '.*'))
+            #    await self.run_many(message, lambda t: regex.fullmatch(t.name))
+            elif self._tests.find_by_name(self._test_to_run) is None:
+                text = ':x: There is no test called `{}`'
+                await self._channel.send(text.format(self._test_to_run))
+            else:
+                await self._channel.send('Running test `{}`'.format(self._test_to_run))
+                await self.run_test(self._tests.find_by_name(self._test_to_run), self._channel)
+                await self._display_stats(self._channel)
+        elif self._stats:
+            # Status display command
+            await self._display_stats(self._channel)
+
+
+def run_bot(sysargs, test_collector: TestCollector):
+    all_run_options = ["all", "unrun", "failed"]
+    for i in test_collector._tests:
+        all_run_options.append(i.name)
+
+    parser = argparse.ArgumentParser(
+        description="A small library used to write automated unit tests for Discord bots. "
+                    "Has 2 modes, Interactive and CLI. "
+                    "If you include -c, the bot will expect to be used in CLI mode. "
+                    "See the github wiki for more info")
+    parser.add_argument('Bot_Target', metavar="main_bot_user", type=str, nargs=1,
+                        help="The username of the target bot (not this bot). "
+                             "Remove the discriminant (#1234) so it is just the account's name.")
+    parser.add_argument('Bot_Token', metavar="test_bot_token", type=str, nargs=1,
+                        help="The bot token for the testing bot (this bot).")
+    parser.add_argument('-c', '--channel', metavar='channel', type=int, nargs=1,
+                        help='The channel ID that the tests should be occurring in. '
+                             'Required to use the bot in CLI mode. '
+                             'If using the bot in interactive mode, do not specify!', dest='Channel')
+    run_stats_group = parser.add_mutually_exclusive_group()
+    run_stats_group.add_argument('-r', '--run', type=str, choices=all_run_options,
+                                 help='Runs the bot in run mode, equivalent to ::run <option>. '
+                                      'Allowed tests are listed, they are the tests declared in the bot '
+                                      'and the three default options.')
+    run_stats_group.add_argument('-s', '--stats', action='store_true',
+                                 help='Runs the bot in stats mode, outputting the last runs stats. '
+                                      'Equivalent to ::stats')
+    sysargs.pop(0)
+    clean_args = vars(parser.parse_args(sysargs))
+
+    # Controls whether or not the bot is run in CLI mode based on the parameters present
+    if clean_args['Channel'] is not None:
+        # If <Channel> is present, the bot should be in CLI mode
+        print("In CLI mode")
+        run_command_line_bot(clean_args, test_collector)
+    else:
+        print("Not in CLI mode")
+        target_name, token = sys.argv
+        run_interactive_bot(target_name, token, test_collector)
+
+
 def run_interactive_bot(target_name, token, test_collector):
-    bot = DiscordUI(target_name, test_collector)
+    bot = DiscordInteractiveInterface(target_name, test_collector)
     bot.run(token)
+
+
+def run_command_line_bot(clean_args, test_collector):
+
+    bot = DiscordCliInterface(clean_args['Bot_Target'], test_collector, clean_args['run'], clean_args['Channel'],
+                              clean_args['stats'])
+    bot.run(clean_args['Bot_Token'])
