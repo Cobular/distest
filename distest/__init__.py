@@ -1,4 +1,4 @@
-""" Dismock is a small library designed to help with the
+""" Distest is a small library designed to help with the
     creation of bots to test other bots. This is currently
     part of the MathBot project but if it gains enough
     traction I might fork it into its own repository
@@ -411,7 +411,7 @@ class DiscordInteractiveInterface(DiscordBot):
 
     async def on_ready(self) -> None:
         """ Report when the bot is ready for use """
-        print('Started dismock bot.')
+        print('Started distest bot.')
         print('Available tests are:')
         for i in self._tests:
             print('   {}'.format(i.name))
@@ -493,7 +493,7 @@ class DiscordCliInterface(DiscordBot):
 
     async def on_ready(self) -> None:
         """ Report when the bot is ready for use """
-        print('Started dismock bot.')
+        print('Started distest bot.')
         print(f'Running test {self._test_to_run}')
         if self._test_to_run is not None:
             if self._test_to_run == 'all':

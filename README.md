@@ -1,4 +1,4 @@
-# Dismock
+# Distest
 
 A small library used to write automated test for Discord bots.
 
@@ -49,7 +49,7 @@ Commands you can run in discord once the bot is up.
 
 
 ## New Tests
-I'm still figuring this part out, but it seems that you write tests in the testing bot and decorate them with an instance of `dismock.TestCollector()`. Then, you can run the bot and use the run commands to run the tests.
+I'm still figuring this part out, but it seems that you write tests in the testing bot and decorate them with an instance of `distest.TestCollector()`. Then, you can run the bot and use the run commands to run the tests.
 
 
 ## TODO

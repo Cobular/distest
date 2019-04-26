@@ -5,8 +5,8 @@
 """
 
 import sys
-from dismok import TestCollector
-from dismok import run_interactive_bot
+from distest import TestCollector
+from distest import run_interactive_bot
 # The tests themselves
 
 test_collector = TestCollector()

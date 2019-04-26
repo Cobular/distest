@@ -4,13 +4,13 @@
 from setuptools import setup
 
 
-setup(name='dismock',
-      version='0.0.0',
+setup(name='distest',
+      version='0.1.0',
       description='Automate the testing of discord bots',
-      url='http://github.com/DXsmiley/dismock',
+      url='http://github.com/JacobCover/distest',
       author='DXsmiley',
       license='MIT',
-      packages=['dismock'],
+      packages=['distest'],
       install_requires=['discord.py'],
       zip_safe=False
 )
