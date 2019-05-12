@@ -48,8 +48,10 @@ Commands you can run in discord once the bot is up.
         Run all tests that failed on the most recent run
 
 
-## New Tests
-I'm still figuring this part out, but it seems that you write tests in the testing bot and decorate them with an instance of `distest.TestCollector()`. Then, you can run the bot and use the run commands to run the tests.
+## Contributing
+Not much of note here, just that I use Black for formatting consistency, so please use that if you are contributing. If you don't, I will apply it during the PR but please just do that yourself. 
+
+If you are adding new test types, please make sure you test them well to make sure they work as intended, and please add a demo of them in use to the `example_tests()` for others to see.
 
 
 ## TODO

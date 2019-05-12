@@ -1,16 +1,17 @@
 """
+A functional demo of all possible test cases. This is the format you will want to use with your testing bot.
+
     Run with:
         python example_tests.py TARGET_NAME TESTER_TOKEN
-    Exists as a functional demo of all possible test cases
 """
 
 import sys
 from distest import TestCollector
 from distest import run_interactive_bot
+
 # The tests themselves
 
 test_collector = TestCollector()
-
 
 # @test_collector()
 # async def test_ping(interface):
@@ -44,11 +45,14 @@ test_collector = TestCollector()
 
 @test_collector()
 async def test_reply_matches(interface):
-    await interface.assert_reply_matches("Say something matching the regex `[0-9]{1,3}`", r"[0-9]{1,3}")
+    await interface.assert_reply_matches(
+        "Say something matching the regex `[0-9]{1,3}`", r"[0-9]{1,3}"
+    )
 
 
-# Make it easy to run the tests
+# Actually run the bot
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+
     _, target_name, token = sys.argv
     run_interactive_bot(target_name, token, test_collector)
