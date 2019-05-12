@@ -22,16 +22,15 @@
 
 """
 
+import argparse
 import asyncio
 import enum
 import re
 import sys
+import typing
 from concurrent.futures import _base
 
 import discord
-import typing
-import argparse
-
 
 TIMEOUT = 5
 
@@ -381,8 +380,8 @@ class DiscordBot(discord.Client):
 
 
 class DiscordInteractiveInterface(DiscordBot):
-    """ A variant of the discord bot which supports additional commands
-        to allow a human to also interact with it.
+    """ A variant of the discord bot which supports additional commands in discord
+        to allow a human to run the tests manually. Does NOT support CLI commands
     """
 
     def __init__(self, target_name: str, tests: TestCollector) -> None:
@@ -462,7 +461,7 @@ class DiscordInteractiveInterface(DiscordBot):
             elif message.content in ["::stats", "::list"]:
                 await self._display_stats(message.channel)
             elif message.content == "::help":
-                await message.channel(HELP_TEXT)
+                await message.channel.send(HELP_TEXT)
 
 
 class DiscordCliInterface(DiscordBot):
@@ -549,7 +548,9 @@ class DiscordCliInterface(DiscordBot):
             await self._display_stats(self._channel)
 
 
-def run_bot(sysargs, test_collector: TestCollector):
+def run_dtest_bot(sysargs, test_collector: TestCollector):
+    from distest.validate_discord_token import token_arg
+
     all_run_options = ["all", "unrun", "failed"]
     for i in test_collector._tests:
         all_run_options.append(i.name)
@@ -560,18 +561,19 @@ def run_bot(sysargs, test_collector: TestCollector):
         "If you include -c, the bot will expect to be used in CLI mode. "
         "See the github wiki for more info"
     )
-    parser.add_argument(
-        "Bot_Target",
+    required = parser.add_argument_group("Required Arguments")
+    required.add_argument(
+        "bot_target",
         metavar="main_bot_user",
         type=str,
         nargs=1,
         help="The username of the target bot (not this bot). "
         "Remove the discriminant (#1234) so it is just the account's name.",
     )
-    parser.add_argument(
-        "Bot_Token",
+    required.add_argument(
+        "bot_token",
         metavar="test_bot_token",
-        type=str,
+        type=token_arg,
         nargs=1,
         help="The bot token for the testing bot (this bot).",
     )
@@ -581,10 +583,9 @@ def run_bot(sysargs, test_collector: TestCollector):
         metavar="channel",
         type=int,
         nargs=1,
-        help="The channel ID that the tests should be occurring in. "
-        "Required to use the bot in CLI mode. "
-        "If using the bot in interactive mode, do not specify!",
-        dest="Channel",
+        help="The channel ID that the tests should be occurring in (CLI) "
+        "or the ID to send the awake message to (Interactive)",
+        dest="channel",
     )
     run_stats_group = parser.add_mutually_exclusive_group()
     run_stats_group.add_argument(
@@ -593,8 +594,8 @@ def run_bot(sysargs, test_collector: TestCollector):
         type=str,
         choices=all_run_options,
         help="Runs the bot in run mode, equivalent to ::run <option>. "
-        "Allowed tests are listed, they are the tests declared in the bot "
-        "and the three default options.",
+        "Options are listed, they are the tests declared in the bot and the three default options."
+        "Required for the bot to be run in CLI mode, if using in Interactive mode, don't specify this",
     )
     run_stats_group.add_argument(
         "-s",
@@ -607,23 +608,27 @@ def run_bot(sysargs, test_collector: TestCollector):
     clean_args = vars(parser.parse_args(sysargs))
 
     # Controls whether or not the bot is run in CLI mode based on the parameters present
-    if clean_args["Channel"] is not None:
+    if clean_args["run"] is not None:
         # If <Channel> is present, the bot should be in CLI mode
         print("In CLI mode")
         run_command_line_bot(clean_args, test_collector)
     else:
         print("Not in CLI mode")
-        target_name, token = sys.argv
-        run_interactive_bot(target_name, token, test_collector)
+        run_interactive_bot(
+            clean_args.get("bot_target")[0],
+            clean_args.get("bot_token")[0],
+            test_collector,
+        )
 
 
 def run_interactive_bot(target_name, token, test_collector):
-    bot = DiscordInteractiveInterface(target_name, test_collector)
-    bot.run(token)
+    bot: DiscordInteractiveInterface = DiscordInteractiveInterface(
+        target_name, test_collector
+    )
+    bot.run(token)  # Starts the bot
 
 
 def run_command_line_bot(clean_args, test_collector):
-
     bot = DiscordCliInterface(
         clean_args["Bot_Target"],
         test_collector,
