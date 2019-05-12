@@ -1,6 +1,10 @@
 """
+This bot is a sample bot that is used to demonstrate the testing functionality.
+
+It does not run the tests, just exists to have tests run on it.
+
     Run with:
-        python example_bot.py TARGET_TOKEN
+        python example_target.py TARGET_TOKEN
 """
 
 import sys

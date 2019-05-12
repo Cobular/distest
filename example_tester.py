@@ -7,7 +7,7 @@ A functional demo of all possible test cases. This is the format you will want t
 
 import sys
 from distest import TestCollector
-from distest import run_interactive_bot
+from distest import run_interactive_bot, run_dtest_bot
 
 # The tests themselves
 
@@ -55,4 +55,4 @@ async def test_reply_matches(interface):
 if __name__ == "__main__":
 
     _, target_name, token = sys.argv
-    run_interactive_bot(target_name, token, test_collector)
+    run_dtest_bot(sys.argv, test_collector)
