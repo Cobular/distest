@@ -2,7 +2,7 @@
 
 A small library used to write automated test for Discord bots.
 
-Bulk was written by [DXsmiley](https://github.com/DXsmiley), updated to the rewrite and modified a bit by [me](https://github.com/JacobCover)
+Test framework originally written by [DXsmiley](https://github.com/DXsmiley), update to the rewrite and re-worked UI done by [me](https://github.com/JacobCover)
 
 Just need to get command line stuff working reliably and this will be ready for a 0.1 pre-release. Until I get everything to a 1.0 though, expect the command line arguments and everything else to be volatile. In addition to the example here, my [main bot](https://github.com/JacobCover/ReplyBot) will be implementing this soon.
 
@@ -35,7 +35,34 @@ Once both bots are running, go to any discord channel that both bots have access
 Start by writing functions to do the tests, examples can be seen in the example tester. Decorate the functions you want to be run as tests with `@distest.TestCollector()` and they will be available to be run. Instead of calling `run_bot()` like you would normally do to start a bot with discord.py, use `distest.run_dtest_bot()` and feed in the requested parameters. Based on the sysargs that are used to run the bot file, it will automatically run the bot in interactive or CLI mode. Basically, if you feed the bot the `-c` parameter to specify the channel that the tests should be run in, the bot will run those automatically. Otherwise, it will wait for the commands in discord as described below. 
 
 ### CLI Mode
-TODO
+CLI mode is designed to be used to run the tests in a normal way, such as on git hooks or a CI/CD pipeline. The following text is the usage snippet from the help command followed by some more general information from me. It isn't the same as the help message, as I tried to make it more in-depth. 
+
+    usage: example_tester.py [-h] [-c channel]
+                         [--run {all,test_reply_matches} | --stats]
+                         target_bot_user tester_bot_token
+                         
+
+**Always Required**
+
+- `target_bot_user`: The username (no discriminator) of the target bot. Same as described above in the general section.
+
+- `tester_bot_token`: The token that will be used to run the tester bot. Also the same as described above in general.
+
+**CLI Mode**
+
+- `run`: Specifies if you will run all tests or a subset of them
+
+- `stats`: Runs the bot in stats mode. Mutually exclusive with `run`. (Not very useful, may be removed. If you use it in some way, open an issue and let me know!)
+
+- `channel`: The channel ID that the tests will be conducted in. Just need the int ID
+
+**Other**
+
+- `-h`: Just shows the help command. This is only the usage message, there is other information in the help.
+
+**Sample Command**
+
+The command I used to test this bot is available in run_tester.sh
 
 
 ### Interactive Mode Commands
@@ -62,7 +89,7 @@ Commands you can run in discord once the bot is running in interactive mode.
 ## Contributing
 Not much of note here, just that I use Black for formatting consistency, so please use that if you are contributing. If you don't, I will apply it during the PR but please just do that yourself. 
 
-If you are adding new test types, please make sure you test them well to make sure they work as intended, and please add a demo of them in use to the `example_tests()` for others to see.
+If you are adding new test types, please make sure you test them well to make sure they work as intended, and please add a demo of them in use to the `example_tests()` for others to see. And when you are done, please open a PR and I'll add it in!
 
 
 ## TODO
@@ -82,7 +109,8 @@ If you are adding new test types, please make sure you test them well to make su
     - [x] assert_reaction_equals
     - [x] ensure_silence
     - [x] ask_human
-- [ ] Allow running tests from the command line
-    - [ ] Add CLI mode section to the readme
-    - [ ] Have the bot return exit codes depending on test status
+- [x] Allow running tests from the command line
+    - [x] Add CLI mode section to the readme
+    - [x] Have the bot return exit codes depending on test status
 - [ ] More test types
+- [ ] Prep for pip, get it packaged

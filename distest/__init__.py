@@ -26,13 +26,15 @@ import argparse
 import asyncio
 import enum
 import re
-import sys
-import typing
+from sys import exit
 from concurrent.futures import _base
 
 import discord
 
 TIMEOUT = 5
+# The exit code will be stored here when the program exits, this can be handled in the tester bot
+# after run() finished
+EXIT_CODE = 0
 
 HELP_TEXT = """\
 **::help** - Show this help
@@ -378,10 +380,23 @@ class DiscordBot(discord.Client):
             test.result = TestResult.SUCCESS
         return test.result
 
+    async def fail_close(self, failure):
+        global EXIT_CODE
+        if failure:
+            EXIT_CODE = 1
+        else:
+            EXIT_CODE = 0
+        await super().close()
+
 
 class DiscordInteractiveInterface(DiscordBot):
-    """ A variant of the discord bot which supports additional commands in discord
-        to allow a human to run the tests manually. Does NOT support CLI commands
+    """
+    A variant of the discord bot which supports additional commands in discord
+    to allow a human to run the tests manually. Does NOT support CLI commands
+
+
+    :param target_name: The name of the bot to target (Username, no discriminator)
+    :param tests: The instance of Test Collector that contains the tests to run
     """
 
     def __init__(self, target_name: str, tests: TestCollector) -> None:
@@ -466,6 +481,12 @@ class DiscordInteractiveInterface(DiscordBot):
 
 class DiscordCliInterface(DiscordBot):
     """ A variant of the discord bot which is designed to be run off command line arguments.
+
+    :param target_name: The name of the bot to target (Username, no discriminator)
+    :param tests: The instance of Test Collector that contains the tests to run
+    :param test: The name of the test option (all, specific test, etc)
+    :param channel_id: The ID of the channel to run the bot in
+    :param stats: If true, run in stats mode. TODO: See if this is actually useful
     """
 
     def __init__(
@@ -473,14 +494,15 @@ class DiscordCliInterface(DiscordBot):
         target_name: str,
         tests: TestCollector,
         test: str,
-        channel: typing.Optional[discord.TextChannel],
+        channel_id: int,
         stats: bool,
     ) -> None:
-        super().__init__(target_name[0])
+        super().__init__(target_name)
         self._tests = tests
         self._test_to_run = test
-        self._channel = channel[0]
+        self._channel_id = channel_id
         self._stats = stats
+        self._channel = None
 
     async def _run_by_predicate(self, channel, predicate):
         for test in self._tests:
@@ -489,7 +511,14 @@ class DiscordCliInterface(DiscordBot):
                 await self.run_test(test, channel, stop_error=True)
 
     async def _display_stats(self, channel: discord.TextChannel) -> None:
-        """ Display the status of the various tests. """
+        """
+        Display the status of the various tests.
+
+        Sets failure to true if any of the tests fail, then uses this to decide in the exit code.
+        If no_exit is set to true, this will be ignored and it will not exit.
+        Unrun will not result in a failure
+        """
+        failure = False
         # NOTE: An emoji is the width of two spaces
         response = "```\n"
         longest_name = max(map(lambda t: len(t.name), self._tests))
@@ -505,11 +534,16 @@ class DiscordCliInterface(DiscordBot):
                 response += "✔️ Passed\n"
             elif test.result is TestResult.FAILED:
                 response += "❌ Failed\n"
+                failure = True  # A test failed, so the program should exit 1
         response += "```\n"
         await channel.send(response)
 
+        # Controls the exit logic
+        await self.fail_close(failure)
+
     async def on_ready(self) -> None:
         """ Report when the bot is ready for use """
+        self._channel = self.get_channel(self._channel_id)
         print("Started distest bot.")
         print(f"Running test {self._test_to_run}")
         if self._test_to_run is not None:
@@ -551,7 +585,7 @@ class DiscordCliInterface(DiscordBot):
 def run_dtest_bot(sysargs, test_collector: TestCollector):
     from distest.validate_discord_token import token_arg
 
-    all_run_options = ["all", "unrun", "failed"]
+    all_run_options = ["all"]
     for i in test_collector._tests:
         all_run_options.append(i.name)
 
@@ -561,10 +595,10 @@ def run_dtest_bot(sysargs, test_collector: TestCollector):
         "If you include -c, the bot will expect to be used in CLI mode. "
         "See the github wiki for more info"
     )
-    required = parser.add_argument_group("Required Arguments")
+    required = parser.add_argument_group("Always Required Arguments")
     required.add_argument(
         "bot_target",
-        metavar="main_bot_user",
+        metavar="target_bot_user",
         type=str,
         nargs=1,
         help="The username of the target bot (not this bot). "
@@ -572,14 +606,15 @@ def run_dtest_bot(sysargs, test_collector: TestCollector):
     )
     required.add_argument(
         "bot_token",
-        metavar="test_bot_token",
+        metavar="tester_bot_token",
         type=token_arg,
         nargs=1,
         help="The bot token for the testing bot (this bot).",
     )
-    parser.add_argument(
-        "-c",
+    cli_only = parser.add_argument_group("CLI Only")
+    cli_only.add_argument(
         "--channel",
+        "-c",
         metavar="channel",
         type=int,
         nargs=1,
@@ -587,10 +622,10 @@ def run_dtest_bot(sysargs, test_collector: TestCollector):
         "or the ID to send the awake message to (Interactive)",
         dest="channel",
     )
-    run_stats_group = parser.add_mutually_exclusive_group()
+    run_stats_group = cli_only.add_mutually_exclusive_group()
     run_stats_group.add_argument(
-        "-r",
         "--run",
+        "-r",
         type=str,
         choices=all_run_options,
         help="Runs the bot in run mode, equivalent to ::run <option>. "
@@ -598,20 +633,41 @@ def run_dtest_bot(sysargs, test_collector: TestCollector):
         "Required for the bot to be run in CLI mode, if using in Interactive mode, don't specify this",
     )
     run_stats_group.add_argument(
-        "-s",
         "--stats",
+        "-s",
         action="store_true",
         help="Runs the bot in stats mode, outputting the last runs stats. "
         "Equivalent to ::stats",
     )
-    sysargs.pop(0)
+    parser.add_argument(
+        "--timeout",
+        "-t",
+        type=int,
+        nargs=1,
+        help="Changes the timeout (in seconds) on tests before they are assumed to have failed. "
+        "Default is 5 sec.",
+    )
+
+    sysargs.pop(0)  # Pops off the first arg (the filename that is being run)
     clean_args = vars(parser.parse_args(sysargs))
+
+    # Makes the changing of the timeout optional
+    if clean_args.get("timeout") is not None:
+        global TIMEOUT
+        TIMEOUT = clean_args.get("timeout")
 
     # Controls whether or not the bot is run in CLI mode based on the parameters present
     if clean_args["run"] is not None:
-        # If <Channel> is present, the bot should be in CLI mode
+        # If --run is present, the bot should be in CLI mode
         print("In CLI mode")
-        run_command_line_bot(clean_args, test_collector)
+        run_command_line_bot(
+            clean_args.get("bot_target")[0],
+            clean_args.get("bot_token")[0],
+            clean_args.get("run"),
+            clean_args.get("channel")[0],
+            clean_args.get("stats"),
+            test_collector,
+        )
     else:
         print("Not in CLI mode")
         run_interactive_bot(
@@ -628,12 +684,7 @@ def run_interactive_bot(target_name, token, test_collector):
     bot.run(token)  # Starts the bot
 
 
-def run_command_line_bot(clean_args, test_collector):
-    bot = DiscordCliInterface(
-        clean_args["Bot_Target"],
-        test_collector,
-        clean_args["run"],
-        clean_args["Channel"],
-        clean_args["stats"],
-    )
-    bot.run(clean_args["Bot_Token"])
+def run_command_line_bot(target_name, token, run, channel_id, stats, test_collector):
+    bot = DiscordCliInterface(target_name, test_collector, run, channel_id, stats)
+    bot.run(token)
+    exit(EXIT_CODE)

@@ -10,7 +10,7 @@ with open("README.md", "r") as fh:
 setup(
     name="distest",
     version="0.1.0dev",
-    description="Automate the testing of discord bots",
+    description="Automate the testing of discord bots... With discord bots!",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="http://github.com/JacobCover/distest",

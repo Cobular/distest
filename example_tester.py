@@ -53,6 +53,4 @@ async def test_reply_matches(interface):
 # Actually run the bot
 
 if __name__ == "__main__":
-
-    _, target_name, token = sys.argv
     run_dtest_bot(sys.argv, test_collector)
