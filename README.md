@@ -4,9 +4,15 @@ A small library used to write automated test for Discord bots.
 
 Test framework originally written by [DXsmiley](https://github.com/DXsmiley), update to the rewrite and re-worked UI done by [me](https://github.com/JacobCover)
 
-Just need to get command line stuff working reliably and this will be ready for a 0.1 pre-release. Until I get everything to a 1.0 though, expect the command line arguments and everything else to be volatile. In addition to the example here, my [main bot](https://github.com/JacobCover/ReplyBot) will be implementing this soon.
+Command line stuff works now! We are at 0.2.0, but we will be at 1.0.0 in the not-so-far future once I check more items off the todo list below. Feel free to contribute, more hands is more better! Until we get there though, expect the command line arguments and everything else to be volatile. In addition to the example here, my [main bot](https://github.com/JacobCover/ReplyBot) will be implementing this soon(tm). (this has gone private for reasons, will be back in July-August)
 
 ## Installation
+
+To use Distest with **your** bot, just install it:
+
+`pip install distest`
+
+This only includes the code to make your own tester, which is how this is meant to be used anyway. See `example_tester.py` for an example tester bot, and my other bto linked above soon(tm) for another more in depth example. 
 
 Best way to get this running is to `git clone` it. The example bot's usage can be seen below.
 
@@ -112,5 +118,9 @@ If you are adding new test types, please make sure you test them well to make su
 - [x] Allow running tests from the command line
     - [x] Add CLI mode section to the readme
     - [x] Have the bot return exit codes depending on test status
-- [ ] More test types
-- [ ] Prep for pip, get it packaged
+- [ ] More test types (Needs details)
+    - [ ] Image test? (In works by [ALobsterDog](https://github.com/ALobsterDog/distest))
+- [x] Prep for pip, get it packaged (Yay!)
+- [ ] Unit tests? (May just make the bot test itself??? Unclear where this will go.)
+- [ ] Setup/teardown methods
+- [ ] Actual github project so we aren't using the readme as the to-do list
