@@ -50,6 +50,11 @@ async def test_reply_matches(interface):
     )
 
 
+@test_collector()
+async def test_reply_has_image(interface):
+    await interface.assert_reply_has_image("Post something with an image!")
+
+
 # Actually run the bot
 
 if __name__ == "__main__":
