@@ -252,15 +252,9 @@ class Interface:
         """Send a message consisting of ``contents`` and wait for a reply. Check that the reply contains
         an attachment. If not, fail the test.
         """
-<<<<<<< HEAD
         await self.channel.send(content)
         message = await self.wait_for_message()
-        if msg.attachments == []:
-=======
-        await self.channel.send(contents)
-        message = await self.wait_for_message()
         if message.attachments is None:
->>>>>>> imagetest
             raise ResponseDidNotMatchError
         return message
 
