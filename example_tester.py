@@ -19,17 +19,6 @@ async def test_ping(interface):
     await interface.assert_reply_contains("ping?", "pong!")
 
 
-# @test_collector()
-# async def test_reaction(interface):
-#     await interface.ask_human("Click check")
-
-
-@test_collector()
-async def test_silence(interface):
-    await interface.send_message("Shhhhh...")
-    await interface.ensure_silence()
-
-
 @test_collector()
 async def test_reaction(interface):
     await interface.assert_reaction_equals("React with \u2714 please!", u"\u2714")
@@ -38,6 +27,12 @@ async def test_reaction(interface):
 @test_collector()
 async def test_reply_equals(interface):
     await interface.assert_reply_equals("Please say 'epic!'", "epic!")
+
+
+@test_collector()
+async def test_silence(interface):
+    await interface.send_message("Shhhhh...")
+    await interface.ensure_silence()
 
 
 @test_collector()
@@ -52,6 +47,11 @@ async def test_reply_matches(interface):
     await interface.assert_reply_matches(
         "Say something matching the regex `[0-9]{1,3}`", r"[0-9]{1,3}"
     )
+
+
+@test_collector()
+async def test_ask_human(interface):
+    await interface.ask_human("Click the Check!")
 
 
 @test_collector()

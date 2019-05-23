@@ -35,7 +35,7 @@ async def on_message(message):
     if message.content.startswith("React with"):
         sent = await message.add_reaction("\u2714")
 
-    if sent:
+    if sent is not None:
         print("Message sent: {}".format(sent.clean_content))
 
 
