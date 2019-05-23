@@ -251,11 +251,8 @@ class Interface:
         """Send a message consisting of ``contents`` and wait for a reply. Check that the reply contains
         an attachment. If not, fail the test.
         """
-        await self.channel.send(content)
-        message = await self.wait_for_message()
-        if message.attachments is None:
-            raise ResponseDidNotMatchError
-        return message
+        message = await wait_for_reply(contents)
+        return await assert_message_has_image(message)
 
     async def ensure_silence(self):
         """ Ensures that the bot does not post any messages for some number of seconds. """
