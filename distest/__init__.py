@@ -231,9 +231,9 @@ class Interface:
         return response
 
     async def assert_reply_matches(self, contents: str, regex):
-        """ Send a message and wait for a response. If the response does not match a regex, fail the test.
-
-            Requires a properly formatted Python regex ready to be used in the re functions.
+        """ Send a message and wait for a response. If the response does not
+            match a regex, fail the test. Requires a properly formatted Python regex
+            ready to be used in the ``re`` functions.
         """
         await self.send_message(contents)
         response = await self.wait_for_message()
@@ -248,8 +248,8 @@ class Interface:
         return reaction
 
     async def assert_reply_has_image(self, contents: str) -> discord.Message:
-        """Send a message consisting of ``contents`` and wait for a reply. Check that the reply contains
-        an attachment. If not, fail the test.
+        """Send a message consisting of ``contents`` and wait for a reply.
+           Check that the reply contains an attachment. If not, fail the test.
         """
         message = await wait_for_reply(contents)
         return await assert_message_has_image(message)
