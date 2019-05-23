@@ -13,9 +13,10 @@ from distest import run_interactive_bot, run_dtest_bot
 
 test_collector = TestCollector()
 
-# @test_collector()
-# async def test_ping(interface):
-#     await interface.assert_message_contains('ping?')
+
+@test_collector()
+async def test_ping(interface):
+    await interface.assert_reply_contains("ping?", "pong!")
 
 
 # @test_collector()
@@ -23,24 +24,27 @@ test_collector = TestCollector()
 #     await interface.ask_human("Click check")
 
 
-# @test_collector()
-# async def test_silence(interface):
-#     await interface.ensure_silence("Shhhhh...")
+@test_collector()
+async def test_silence(interface):
+    await interface.send_message("Shhhhh...")
+    await interface.ensure_silence()
 
 
-# @test_collector()
-# async def test_reaction(interface):
-#     await interface.assert_reaction_equals("React with \u2714 please!", u'\u2714')
+@test_collector()
+async def test_reaction(interface):
+    await interface.assert_reaction_equals("React with \u2714 please!", u"\u2714")
 
 
-# @test_collector()
-# async def test_reply_equals(interface):
-#     await interface.assert_reply_equals("Please say 'epic!'", "epic!")
+@test_collector()
+async def test_reply_equals(interface):
+    await interface.assert_reply_equals("Please say 'epic!'", "epic!")
 
 
-# @test_collector()
-# async def test_reply_contains(interface):
-#     await interface.assert_reply_contains("Say something containing 'gamer' please!", "gamer")
+@test_collector()
+async def test_reply_contains(interface):
+    await interface.assert_reply_contains(
+        "Say something containing 'gamer' please!", "gamer"
+    )
 
 
 @test_collector()
