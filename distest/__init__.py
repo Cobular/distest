@@ -204,9 +204,8 @@ class Interface:
             raise ResponseDidNotMatchError
         return response
 
-    async def assert_message_has_image(
-        self, message: discord.Message
-    ) -> discord.Message:
+    async def assert_message_has_image(self, message: discord.Message):
+        """ Assert ``message`` has an attachment. If not, fail the test."""
         if message.attachments is None:
             raise ResponseDidNotMatchError
         return message
