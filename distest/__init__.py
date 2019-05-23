@@ -204,15 +204,19 @@ class Interface:
             raise ResponseDidNotMatchError
         return response
 
+    async def assert_message_has_image(
+        self, message: discord.Message
+    ) -> discord.Message:
+        if message.attachments is None:
+            raise ResponseDidNotMatchError
+        return message
+
     async def assert_reply_equals(self, contents: str, matches: str):
         """ Send a message and wait for a response.
             If the response does not match a string exactly, fail the test.
         """
-        # print('Sending...')
         await self.send_message(contents)
-        # print('About to wait...')
         response = await self.wait_for_message()
-        # print('Got response')
         if response.content != matches:
             raise ResponseDidNotMatchError
         return response
@@ -248,9 +252,15 @@ class Interface:
         """Send a message consisting of ``contents`` and wait for a reply. Check that the reply contains
         an attachment. If not, fail the test.
         """
+<<<<<<< HEAD
         await self.channel.send(content)
         message = await self.wait_for_message()
         if msg.attachments == []:
+=======
+        await self.channel.send(contents)
+        message = await self.wait_for_message()
+        if message.attachments is None:
+>>>>>>> imagetest
             raise ResponseDidNotMatchError
         return message
 
