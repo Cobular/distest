@@ -166,7 +166,7 @@ class DiscordInteractiveInterface(DiscordBot):
                 await message.channel.send(HELP_TEXT)
 
 
-class DiscordCliInterface(DiscordBot):
+class DiscordCliInterface(DiscordInteractiveInterface):
     """ A variant of the discord bot which is designed to be run off command line arguments.
 
     :param target_name: The name of the bot to target (Username, no discriminator)
@@ -184,18 +184,11 @@ class DiscordCliInterface(DiscordBot):
         channel_id: int,
         stats: bool,
     ) -> None:
-        super().__init__(target_name)
-        self._tests = tests
+        super().__init__(target_name, tests)
         self._test_to_run = test
         self._channel_id = channel_id
         self._stats = stats
         self._channel = None
-
-    async def _run_by_predicate(self, channel, predicate):
-        for test in self._tests:
-            if predicate(test):
-                await channel.send("**Running test {}**".format(test.name))
-                await self.run_test(test, channel, stop_error=True)
 
     async def _display_stats(self, channel: discord.TextChannel) -> None:
         """
