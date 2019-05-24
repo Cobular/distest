@@ -204,15 +204,18 @@ class Interface:
             raise ResponseDidNotMatchError
         return response
 
+    async def assert_message_has_image(self, message: discord.Message):
+        """ Assert ``message`` has an attachment. If not, fail the test."""
+        if any(attachment.height is None for attachment in message.attachments):
+            raise ResponseDidNotMatchError
+        return message
+
     async def assert_reply_equals(self, contents: str, matches: str):
         """ Send a message and wait for a response.
             If the response does not match a string exactly, fail the test.
         """
-        # print('Sending...')
         await self.send_message(contents)
-        # print('About to wait...')
         response = await self.wait_for_message()
-        # print('Got response')
         if response.content != matches:
             raise ResponseDidNotMatchError
         return response
@@ -228,9 +231,9 @@ class Interface:
         return response
 
     async def assert_reply_matches(self, contents: str, regex):
-        """ Send a message and wait for a response. If the response does not match a regex, fail the test.
-
-            Requires a properly formatted Python regex ready to be used in the re functions.
+        """ Send a message and wait for a response. If the response does not
+            match a regex, fail the test. Requires a properly formatted Python regex
+            ready to be used in the ``re`` functions.
         """
         await self.send_message(contents)
         response = await self.wait_for_message()
@@ -245,14 +248,11 @@ class Interface:
         return reaction
 
     async def assert_reply_has_image(self, contents: str) -> discord.Message:
-        """Send a message consisting of ``contents`` and wait for a reply. Check that the reply contains
-        an attachment. If not, fail the test.
+        """Send a message consisting of ``contents`` and wait for a reply.
+           Check that the reply contains an attachment. If not, fail the test.
         """
-        await self.channel.send(content)
-        message = await self.wait_for_message()
-        if msg.attachments == []:
-            raise ResponseDidNotMatchError
-        return message
+        message = await self.wait_for_reply(contents)
+        return await self.assert_message_has_image(message)
 
     async def ensure_silence(self):
         """ Ensures that the bot does not post any messages for some number of seconds. """
