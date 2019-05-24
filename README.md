@@ -1,5 +1,7 @@
 # Distest
 
+[![CodeFactor](https://www.codefactor.io/repository/github/jakecover/distest/badge/feature/refactor_modules?style=flat-square)](https://www.codefactor.io/repository/github/jakecover/distest/overview/feature/refactor_modules?style=flat-square)
+
 A small library used to write automated test for Discord bots.
 
 Test framework originally written by [DXsmiley](https://github.com/DXsmiley), update to the rewrite and re-worked UI done by [me](https://github.com/JacobCover)

@@ -33,6 +33,12 @@ from .exceptions import TestRequirementFailure
 from .collector import ExpectCalls, TestCollector
 
 
+TIMEOUT = 5
+# The exit code will be stored here when the program exits, this can be handled in the tester bot
+# after run() finished
+EXIT_CODE = 0  # Only referenced here, this is fine
+
+
 class DiscordBot(discord.Client):
     """ Discord bot used to run tests.
         This class by itself does not provide any useful methods for human interaction.

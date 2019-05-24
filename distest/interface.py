@@ -17,11 +17,6 @@ from .exceptions import (
     ReactionDidNotMatchError,
 )
 
-TIMEOUT = 5
-# The exit code will be stored here when the program exits, this can be handled in the tester bot
-# after run() finished
-EXIT_CODE = 0
-
 HELP_TEXT = """\
 **::help** - Show this help
 **::run** all - Run all tests
@@ -87,6 +82,8 @@ class Interface:
         so this is not meant to be run by the user dirrectly in most cases.
         """
 
+        from distest import TIMEOUT
+
         def check(reaction, user):
             return (
                 reaction.message.id == message.id
@@ -107,6 +104,8 @@ class Interface:
         """ Waits for the bot the send a message.
             If the bot takes longer than 20 seconds (Default, configurable with , TIMEOUT) the test fails.
         """
+
+        from distest import TIMEOUT
 
         def check(message: discord.Message):
             return message.channel == self.channel and message.author == self.target
@@ -203,6 +202,8 @@ class Interface:
     async def ensure_silence(self):
         """ Ensures that the bot does not post any messages for some number of seconds. """
 
+        from distest import TIMEOUT
+
         def check(message: discord.Message):
             return message.channel == self.channel and message.author == self.target
 
@@ -217,6 +218,9 @@ class Interface:
         """ Asks a human for an opinion on a question. Currently, only yes-no questions
             are supported. If the human answers 'no', the test will be failed.
         """
+
+        from distest import TIMEOUT
+
         message = await self.channel.send(query)
         await message.add_reaction(
             "\u2714"
