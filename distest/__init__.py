@@ -664,7 +664,7 @@ def run_dtest_bot(sysargs, test_collector: TestCollector):
     # Makes the changing of the timeout optional
     if clean_args.get("timeout") is not None:
         global TIMEOUT
-        TIMEOUT = clean_args.get("timeout")
+        TIMEOUT = clean_args.get("timeout")[0]
 
     # Controls whether or not the bot is run in CLI mode based on the parameters present
     if clean_args["run"] is not None:
