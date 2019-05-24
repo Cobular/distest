@@ -37,6 +37,13 @@ TIMEOUT = 5
 # The exit code will be stored here when the program exits, this can be handled in the tester bot
 # after run() finished
 EXIT_CODE = 0  # Only referenced here, this is fine
+HELP_TEXT = """\
+**::help** - Show this help
+**::run** all - Run all tests
+**::run** unrun - Run all tests that have not been run
+**::run** *name* - Run a specific test
+**::list** - List all the tests and their status
+"""
 
 
 class DiscordBot(discord.Client):

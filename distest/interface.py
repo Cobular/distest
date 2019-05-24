@@ -17,14 +17,6 @@ from .exceptions import (
     ReactionDidNotMatchError,
 )
 
-HELP_TEXT = """\
-**::help** - Show this help
-**::run** all - Run all tests
-**::run** unrun - Run all tests that have not been run
-**::run** *name* - Run a specific test
-**::list** - List all the tests and their status
-"""
-
 SPECIAL_TEST_NAMES = {"all", "unrun", "failed"}
 
 
