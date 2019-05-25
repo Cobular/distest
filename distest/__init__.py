@@ -1,42 +1,23 @@
-""" Distest is a small library designed to help with the
-    creation of bots to test other bots. This is currently
-    part of the MathBot project but if it gains enough
-    traction I might fork it into its own repository
-    Interfacing with the bot through discord:
+""" Distest is a small library designed to allow you to make discord bots to test other bots.
 
-    ::stats
-        Gives details about which tests have been
-        run and what the results were
-
-    ::run test_name
-        Run a particular test
-
-    ::run all
-        Run all tests
-
-    ::run unrun
-        Run all tests that have not yet been run
-
-    ::run failed
-        Run all tests that failed on the most recent run
-
+    This is the main file, and contains the code that is directly involved in running the bot
+    and interacting with the command line, including the classes for bot types and the two interfaces.
 """
 
 import argparse
-import asyncio
 from sys import exit
 
 import discord
 
-from .interface import TestResult, Test, Interface
+from .interface import TestResult, Test, TestInterface
 from .exceptions import TestRequirementFailure
 from .collector import ExpectCalls, TestCollector
 
-
+# Globals, should all be here
 TIMEOUT = 5
 # The exit code will be stored here when the program exits, this can be handled in the tester bot
 # after run() finished
-EXIT_CODE = 0  # Only referenced here, this is fine
+EXIT_CODE = 0
 HELP_TEXT = """\
 **::help** - Show this help
 **::run** all - Run all tests
@@ -69,9 +50,9 @@ class DiscordBot(discord.Client):
         """ Run a single test in a given channel.
             Updates the test with the result, and also returns it.
         """
-        interface = Interface(self, channel, self._find_target(channel.guild))
+        test_interface = TestInterface(self, channel, self._find_target(channel.guild))
         try:
-            await test.func(interface)
+            await test.func(test_interface)
         except TestRequirementFailure:
             test.result = TestResult.FAILED
             if not stop_error:

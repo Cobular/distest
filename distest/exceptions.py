@@ -1,3 +1,10 @@
+"""
+Stores all the Exceptions that can be called during testing.
+
+Allows for a more through understanding of what went wrong.
+"""
+
+
 class TestRequirementFailure(Exception):
     """ Base class for the errors that are raised when an expectation is not met """
 

@@ -1,3 +1,8 @@
+""" This file contains the tests the bot can run, as well as some supporting fluff.
+
+Tests are within TestInterface(), please add more tests there.
+"""
+
 import enum
 import asyncio
 from concurrent.futures import _base
@@ -43,9 +48,11 @@ class Test:
         self.needs_human = needs_human  # Whether the test requires human interation
 
 
-class Interface:
-    """ The interface that the test functions should use to interface with discord.
-        Test functions should not access the discord.py client directly.
+class TestInterface:
+    """ All the tests, and some supporting functions.
+
+        Tests are designed to be run by the tester bot and mixed together
+        or with `send_message()` in order to actually test the bot.
     """
 
     def __init__(

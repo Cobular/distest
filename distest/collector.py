@@ -1,3 +1,10 @@
+"""
+The TestCollector Class and some supporting code.
+
+Each test function in the tester bot should be decorated with an instance of TestCollector(),
+and must have a unique name. The TestCollector() is then passed onto the bot, which runs the tests.
+"""
+
 from .interface import Test
 
 
