@@ -406,7 +406,6 @@ class DiscordInteractiveInterface(DiscordBot):
     async def _run_by_predicate(self, channel, predicate):
         for test in self._tests:
             if predicate(test):
-                await channel.send("**Running test {}**".format(test.name))
                 await self.run_test(test, channel, stop_error=True)
 
     async def _display_stats(self, channel: discord.TextChannel) -> None:
@@ -469,7 +468,6 @@ class DiscordInteractiveInterface(DiscordBot):
                     text = ":x: There is no test called `{}`"
                     await message.channel.send(message.channel, text.format(name))
                 else:
-                    await message.channel.send("Running test `{}`".format(name))
                     await self.run_test(self._tests.find_by_name(name), message.channel)
                     await self._display_stats(message.channel)
             # Status display command
@@ -507,7 +505,6 @@ class DiscordCliInterface(DiscordBot):
     async def _run_by_predicate(self, channel, predicate):
         for test in self._tests:
             if predicate(test):
-                await channel.send("**Running test {}**".format(test.name))
                 await self.run_test(test, channel, stop_error=True)
 
     async def _display_stats(self, channel: discord.TextChannel) -> None:
@@ -572,7 +569,6 @@ class DiscordCliInterface(DiscordBot):
                 text = ":x: There is no test called `{}`"
                 await self._channel.send(text.format(self._test_to_run))
             else:
-                await self._channel.send("Running test `{}`".format(self._test_to_run))
                 await self.run_test(
                     self._tests.find_by_name(self._test_to_run), self._channel
                 )
