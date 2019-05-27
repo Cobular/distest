@@ -64,6 +64,11 @@ class DiscordInteractiveInterface(DiscordBot):
         self.failure = False
 
     async def _run_by_predicate(self, channel, predicate=lambda test: True):
+        """ Iterate through ``_tests`` and run any test for which ``predicate`` returns True
+
+            :param discord.TextChannel channel: The channel to run the test in.
+            :param function predicate: The check a test must pass to be run.
+        """
         for test in self._tests:
             if predicate(test):
                 await self.run_test(test, channel, stop_error=True)
