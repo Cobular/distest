@@ -13,11 +13,7 @@ from .interface import TestResult, Test, TestInterface
 from .exceptions import TestRequirementFailure
 from .collector import ExpectCalls, TestCollector
 
-# Globals, should all be here
 TIMEOUT = 5
-# The exit code will be stored here when the program exits, this can be handled in the tester bot
-# after run() finished
-EXIT_CODE = 0
 HELP_TEXT = """\
 **::help** - Show this help
 **::run** all - Run all tests
@@ -35,8 +31,6 @@ class DiscordBot(discord.Client):
     def __init__(self, target_name: str) -> None:
         super().__init__()
         self._target_name = target_name.lower()
-
-    # s self._setup_done = False
 
     def _find_target(self, server: discord.Guild) -> discord.Member:
         for i in server.members:
@@ -60,14 +54,6 @@ class DiscordBot(discord.Client):
         else:
             test.result = TestResult.SUCCESS
         return test.result
-
-    async def fail_close(self, failure):
-        global EXIT_CODE
-        if failure:
-            EXIT_CODE = 1
-        else:
-            EXIT_CODE = 0
-        await super().close()
 
 
 class DiscordInteractiveInterface(DiscordBot):
@@ -183,6 +169,11 @@ class DiscordCliInterface(DiscordInteractiveInterface):
         self._channel_id = channel_id
         self._stats = stats
         self._channel = None
+        self.failure = False
+
+    def run(self, token):
+        super().run(token)
+        return self.failure
 
     async def _display_stats(self, channel: discord.TextChannel) -> None:
         """
@@ -254,6 +245,10 @@ class DiscordCliInterface(DiscordInteractiveInterface):
         elif self._stats:
             # Status display command
             await self._display_stats(self._channel)
+
+    async def fail_close(self, failure):
+        self.failure = failure
+        await super().close()
 
 
 def run_dtest_bot(sysargs, test_collector: TestCollector):
@@ -360,5 +355,5 @@ def run_interactive_bot(target_name, token, test_collector):
 
 def run_command_line_bot(target_name, token, run, channel_id, stats, test_collector):
     bot = DiscordCliInterface(target_name, test_collector, run, channel_id, stats)
-    bot.run(token)
-    exit(EXIT_CODE)
+    failed = bot.run(token)
+    exit(1 if failed else 0)
