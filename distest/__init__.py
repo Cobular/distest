@@ -27,18 +27,18 @@ class DiscordBot(discord.Client):
         This class by itself does not provide any useful methods for human interaction.
     """
 
-    def __init__(self, target_name: str) -> None:
+    def __init__(self, target_name):
         super().__init__()
         self._target_name = target_name.lower()
 
     def _find_target(self, server: discord.Guild) -> discord.Member:
-        for i in server.members:
-            if self._target_name in i.name.lower():
-                return i
+        for member in server.members:
+            if self._target_name in member.name.lower():
+                return member
         raise KeyError("Could not find memory with name {}".format(self._target_name))
 
     async def run_test(
-        self, test: Test, channel: discord.TextChannel, stop_error: bool = False
+        self, test: Test, channel: discord.TextChannel, stop_error=False
     ) -> TestResult:
         """ Run a single test in a given channel.
             Updates the test with the result, and also returns it.
@@ -65,7 +65,7 @@ class DiscordInteractiveInterface(DiscordBot):
     :param TestCollector collector: The instance of Test Collector that contains the tests to run
     """
 
-    def __init__(self, target_name: str, collector: TestCollector, timeout=5) -> None:
+    def __init__(self, target_name, collector: TestCollector, timeout=5):
         super().__init__(target_name)
         self._tests = collector
         self.timeout = timeout
@@ -76,7 +76,7 @@ class DiscordInteractiveInterface(DiscordBot):
                 await channel.send("**Running test {}**".format(test.name))
                 await self.run_test(test, channel, stop_error=True)
 
-    async def _display_stats(self, channel: discord.TextChannel) -> None:
+    async def _display_stats(self, channel: discord.TextChannel):
         """ Display the status of the various tests. """
         # NOTE: An emoji is the width of two spaces
         response = "```\n"
@@ -96,14 +96,14 @@ class DiscordInteractiveInterface(DiscordBot):
         response += "```\n"
         await channel.send(response)
 
-    async def on_ready(self) -> None:
+    async def on_ready(self):
         """ Report when the bot is ready for use """
         print("Started distest bot.")
         print("Available tests are:")
         for i in self._tests:
             print("   {}".format(i.name))
 
-    async def on_message(self, message: discord.Message) -> None:
+    async def on_message(self, message: discord.Message):
         """ Handle an incoming message """
         if message.author == self.user:
             return
@@ -146,15 +146,15 @@ class DiscordCliInterface(DiscordInteractiveInterface):
     """ A variant of the discord bot which is designed to be run off command line arguments.
 
     :param str target_name: The name of the bot to target (Username, no discriminator)
-    :param collector: The instance of Test Collector that contains the tests to run
-    :param test: The name of the test option (all, specific test, etc)
-    :param channel_id: The ID of the channel to run the bot in
-    :param stats: If true, run in stats mode. TODO: See if this is actually useful
+    :param TestCollector collector: The instance of Test Collector that contains the tests to run
+    :param str test: The name of the test option (all, specific test, etc)
+    :param int channel_id: The ID of the channel to run the bot in
+    :param bool stats: If true, run in stats mode. TODO: See if this is actually useful
     """
 
     def __init__(
         self,
-        target_name: str,
+        target_name,
         collector: TestCollector,
         test: str,
         channel_id: int,
@@ -173,7 +173,7 @@ class DiscordCliInterface(DiscordInteractiveInterface):
         super().run(token)
         return self.failure
 
-    async def _display_stats(self, channel: discord.TextChannel) -> None:
+    async def _display_stats(self, channel: discord.TextChannel):
         """
         Display the status of the various tests.
 
@@ -204,7 +204,7 @@ class DiscordCliInterface(DiscordInteractiveInterface):
         # Controls the exit logic
         await self.fail_close(failure)
 
-    async def on_ready(self) -> None:
+    async def on_ready(self):
         """ Report when the bot is ready for use """
         self._channel = self.get_channel(self._channel_id)
         print("Started distest bot.")
