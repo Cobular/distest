@@ -69,6 +69,7 @@ class DiscordInteractiveInterface(DiscordBot):
         super().__init__(target_name)
         self._tests = collector
         self.timeout = timeout
+        self.failure = False
 
     async def _run_by_predicate(self, channel, predicate):
         for test in self._tests:
@@ -76,12 +77,10 @@ class DiscordInteractiveInterface(DiscordBot):
                 await channel.send("**Running test {}**".format(test.name))
                 await self.run_test(test, channel, stop_error=True)
 
-    async def _display_stats(self, channel: discord.TextChannel):
-        """ Display the status of the various tests. """
-        # NOTE: An emoji is the width of two spaces
+    async def _build_stats(self, tests) -> str:
         response = "```\n"
-        longest_name = max(map(lambda t: len(t.name), self._tests))
-        for test in self._tests:
+        longest_name = max(map(lambda t: len(t.name), tests))
+        for test in tests:
             response += test.name.rjust(longest_name) + " "
             if test.needs_human:
                 response += "✋ "
@@ -93,8 +92,19 @@ class DiscordInteractiveInterface(DiscordBot):
                 response += "✔️ Passed\n"
             elif test.result is TestResult.FAILED:
                 response += "❌ Failed\n"
+                self.failure = True
         response += "```\n"
-        await channel.send(response)
+        return response
+
+    async def _display_stats(self, channel: discord.TextChannel):
+        """
+        Display the status of the various tests.
+
+        Sets failure to true if any of the tests fail, then uses this to decide in the exit code.
+        If no_exit is set to true, this will be ignored and it will not exit.
+        Unrun will not result in a failure
+        """
+        await channel.send(await self._build_stats(self._tests))
 
     async def on_ready(self):
         """ Report when the bot is ready for use """
@@ -166,7 +176,6 @@ class DiscordCliInterface(DiscordInteractiveInterface):
         self._channel_id = channel_id
         self._stats = stats
         self._channel = None
-        self.failure = False
 
     # override of the default run() that returns failure state after completion.
     def run(self, token):
@@ -174,35 +183,10 @@ class DiscordCliInterface(DiscordInteractiveInterface):
         return self.failure
 
     async def _display_stats(self, channel: discord.TextChannel):
-        """
-        Display the status of the various tests.
-
-        Sets failure to true if any of the tests fail, then uses this to decide in the exit code.
-        If no_exit is set to true, this will be ignored and it will not exit.
-        Unrun will not result in a failure
-        """
-        failure = False
-        # NOTE: An emoji is the width of two spaces
-        response = "```\n"
-        longest_name = max(map(lambda t: len(t.name), self._tests))
-        for test in self._tests:
-            response += test.name.rjust(longest_name) + " "
-            if test.needs_human:
-                response += "✋ "
-            else:
-                response += "   "
-            if test.result is TestResult.UNRUN:
-                response += "⚫ Not run\n"
-            elif test.result is TestResult.SUCCESS:
-                response += "✔️ Passed\n"
-            elif test.result is TestResult.FAILED:
-                response += "❌ Failed\n"
-                failure = True  # A test failed, so the program should exit 1
-        response += "```\n"
-        await channel.send(response)
-
-        # Controls the exit logic
-        await self.fail_close(failure)
+        """Override of ``DiscordInteractiveInterface._display_stats`` that closes the client
+           after displaying stats"""
+        await super()._display_stats(channel)
+        await super().close()
 
     async def on_ready(self):
         """ Report when the bot is ready for use """
@@ -239,10 +223,6 @@ class DiscordCliInterface(DiscordInteractiveInterface):
         elif self._stats:
             # Status display command
             await self._display_stats(self._channel)
-
-    async def fail_close(self, failure):
-        self.failure = failure
-        await super().close()
 
 
 def run_dtest_bot(sysargs, test_collector: TestCollector, timeout=5):
