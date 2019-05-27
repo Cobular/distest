@@ -5,7 +5,7 @@
 """
 
 import argparse
-from sys import exit
+import sys
 
 import discord
 
@@ -13,11 +13,6 @@ from .interface import TestResult, Test, TestInterface
 from .exceptions import TestRequirementFailure
 from .collector import ExpectCalls, TestCollector
 
-# Globals, should all be here
-TIMEOUT = 5
-# The exit code will be stored here when the program exits, this can be handled in the tester bot
-# after run() finished
-EXIT_CODE = 0
 HELP_TEXT = """\
 **::help** - Show this help
 **::run** all - Run all tests
@@ -35,8 +30,6 @@ class DiscordBot(discord.Client):
     def __init__(self, target_name: str) -> None:
         super().__init__()
         self._target_name = target_name.lower()
-
-    # s self._setup_done = False
 
     def _find_target(self, server: discord.Guild) -> discord.Member:
         for i in server.members:
@@ -61,14 +54,6 @@ class DiscordBot(discord.Client):
             test.result = TestResult.SUCCESS
         return test.result
 
-    async def fail_close(self, failure):
-        global EXIT_CODE
-        if failure:
-            EXIT_CODE = 1
-        else:
-            EXIT_CODE = 0
-        await super().close()
-
 
 class DiscordInteractiveInterface(DiscordBot):
     """
@@ -76,13 +61,14 @@ class DiscordInteractiveInterface(DiscordBot):
     to allow a human to run the tests manually. Does NOT support CLI commands
 
 
-    :param target_name: The name of the bot to target (Username, no discriminator)
-    :param tests: The instance of Test Collector that contains the tests to run
+    :param str target_name: The name of the bot to target (Username, no discriminator)
+    :param TestCollector collector: The instance of Test Collector that contains the tests to run
     """
 
-    def __init__(self, target_name: str, tests: TestCollector) -> None:
+    def __init__(self, target_name: str, collector: TestCollector, timeout=5) -> None:
         super().__init__(target_name)
-        self._tests = tests
+        self._tests = collector
+        self.timeout = timeout
 
     async def _run_by_predicate(self, channel, predicate):
         for test in self._tests:
@@ -142,10 +128,6 @@ class DiscordInteractiveInterface(DiscordBot):
 
                     await self._run_by_predicate(message.channel, pred)
                     await self._display_stats(message.channel)
-                # TODO: Fix this, but what was it supposed to be?
-                # elif '*' in name:
-                #    regex = re.compile(name.replace('*', '.*'))
-                #    await self.run_many(message, lambda t: regex.fullmatch(t.name))
                 elif self._tests.find_by_name(name) is None:
                     text = ":x: There is no test called `{}`"
                     await message.channel.send(message.channel, text.format(name))
@@ -163,8 +145,8 @@ class DiscordInteractiveInterface(DiscordBot):
 class DiscordCliInterface(DiscordInteractiveInterface):
     """ A variant of the discord bot which is designed to be run off command line arguments.
 
-    :param target_name: The name of the bot to target (Username, no discriminator)
-    :param tests: The instance of Test Collector that contains the tests to run
+    :param str target_name: The name of the bot to target (Username, no discriminator)
+    :param collector: The instance of Test Collector that contains the tests to run
     :param test: The name of the test option (all, specific test, etc)
     :param channel_id: The ID of the channel to run the bot in
     :param stats: If true, run in stats mode. TODO: See if this is actually useful
@@ -173,16 +155,23 @@ class DiscordCliInterface(DiscordInteractiveInterface):
     def __init__(
         self,
         target_name: str,
-        tests: TestCollector,
+        collector: TestCollector,
         test: str,
         channel_id: int,
         stats: bool,
+        timeout: int,
     ) -> None:
-        super().__init__(target_name, tests)
+        super().__init__(target_name, collector, timeout)
         self._test_to_run = test
         self._channel_id = channel_id
         self._stats = stats
         self._channel = None
+        self.failure = False
+
+    # override of the default run() that returns failure state after completion.
+    def run(self, token):
+        super().run(token)
+        return self.failure
 
     async def _display_stats(self, channel: discord.TextChannel) -> None:
         """
@@ -238,10 +227,6 @@ class DiscordCliInterface(DiscordInteractiveInterface):
 
                 await self._run_by_predicate(self._channel, pred)
                 await self._display_stats(self._channel)
-            # TODO: Fix this, but what was it supposed to be?
-            # elif '*' in self._test_to_run:
-            #    regex = re.compile(self._test_to_run.replace('*', '.*'))
-            #    await self.run_many(message, lambda t: regex.fullmatch(t.name))
             elif self._tests.find_by_name(self._test_to_run) is None:
                 text = ":x: There is no test called `{}`"
                 await self._channel.send(text.format(self._test_to_run))
@@ -255,8 +240,12 @@ class DiscordCliInterface(DiscordInteractiveInterface):
             # Status display command
             await self._display_stats(self._channel)
 
+    async def fail_close(self, failure):
+        self.failure = failure
+        await super().close()
 
-def run_dtest_bot(sysargs, test_collector: TestCollector):
+
+def run_dtest_bot(sysargs, test_collector: TestCollector, timeout=5):
     from distest.validate_discord_token import token_arg
 
     all_run_options = ["all"]
@@ -327,8 +316,7 @@ def run_dtest_bot(sysargs, test_collector: TestCollector):
 
     # Makes the changing of the timeout optional
     if clean_args.get("timeout") is not None:
-        global TIMEOUT
-        TIMEOUT = clean_args.get("timeout")[0]
+        timeout = clean_args.get("timeout")[0]
 
     # Controls whether or not the bot is run in CLI mode based on the parameters present
     if clean_args["run"] is not None:
@@ -341,6 +329,7 @@ def run_dtest_bot(sysargs, test_collector: TestCollector):
             clean_args.get("channel")[0],
             clean_args.get("stats"),
             test_collector,
+            timeout,
         )
     else:
         print("Not in CLI mode")
@@ -348,17 +337,29 @@ def run_dtest_bot(sysargs, test_collector: TestCollector):
             clean_args.get("bot_target")[0],
             clean_args.get("bot_token")[0],
             test_collector,
+            timeout,
         )
 
 
-def run_interactive_bot(target_name, token, test_collector):
+def run_interactive_bot(target_name, token, test_collector, timeout=5):
     bot: DiscordInteractiveInterface = DiscordInteractiveInterface(
         target_name, test_collector
     )
     bot.run(token)  # Starts the bot
 
 
-def run_command_line_bot(target_name, token, run, channel_id, stats, test_collector):
-    bot = DiscordCliInterface(target_name, test_collector, run, channel_id, stats)
-    bot.run(token)
-    exit(EXIT_CODE)
+def run_command_line_bot(target, token, tests, channel_id, stats, collector, timeout):
+    """ Start the bot in command-line mode. The program will exit 1 if any of the tests failed.
+
+        :param str target: The display name of the bot we are testing.
+        :param str token: The tester's token, used to log in.
+        :param str tests: List of tests to run.
+        :param int channel_id: The ID of the channel in which to run the tests.
+        :param bool stats: Determines whether or not to display stats after run.
+        :param TestCollector collector: The ``TestCollector`` that gathered our tests.
+        :param int timeout: The amount of time to wait for responses before failing tests.
+        :rtype: None
+    """
+    bot = DiscordCliInterface(target, collector, tests, channel_id, stats, timeout)
+    failed = bot.run(token)  # returns True if a test failed
+    sys.exit(1 if failed else 0)

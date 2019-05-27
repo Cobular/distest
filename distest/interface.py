@@ -60,7 +60,7 @@ class TestInterface:
         client: discord.Client,
         channel: discord.TextChannel,
         target: discord.Member,
-    ) -> None:
+    ):
         self.client = client  # The discord.py client object
         self.channel = channel  # The channel the test is running in
         self.target = target  # The bot which we are testing
@@ -81,8 +81,6 @@ class TestInterface:
         so this is not meant to be run by the user dirrectly in most cases.
         """
 
-        from distest import TIMEOUT
-
         def check(reaction, user):
             return (
                 reaction.message.id == message.id
@@ -92,7 +90,7 @@ class TestInterface:
 
         try:
             result = await self.client.wait_for(
-                "reaction_add", timeout=TIMEOUT, check=check
+                "reaction_add", timeout=self.client.timeout, check=check
             )
         except _base.TimeoutError:
             raise NoReactionError
@@ -101,16 +99,16 @@ class TestInterface:
 
     async def wait_for_message(self):
         """ Waits for the bot the send a message.
-            If the bot takes longer than 20 seconds (Default, configurable with , TIMEOUT) the test fails.
+            If the bot takes longer than 5 seconds (default) the test fails.
         """
-
-        from distest import TIMEOUT
 
         def check(message: discord.Message):
             return message.channel == self.channel and message.author == self.target
 
         try:
-            result = await self.client.wait_for("message", timeout=TIMEOUT, check=check)
+            result = await self.client.wait_for(
+                "message", timeout=self.client.timeout, check=check
+            )
         except _base.TimeoutError:
             raise NoResponseError
         else:
@@ -201,13 +199,13 @@ class TestInterface:
     async def ensure_silence(self):
         """ Ensures that the bot does not post any messages for some number of seconds. """
 
-        from distest import TIMEOUT
-
         def check(message: discord.Message):
             return message.channel == self.channel and message.author == self.target
 
         try:
-            await self.client.wait_for("message", timeout=TIMEOUT, check=check)
+            await self.client.wait_for(
+                "message", timeout=self.client.timeout, check=check
+            )
         except _base.TimeoutError:
             pass
         else:
@@ -217,13 +215,8 @@ class TestInterface:
         """ Asks a human for an opinion on a question. Currently, only yes-no questions
             are supported. If the human answers 'no', the test will be failed.
         """
-
-        from distest import TIMEOUT
-
         message = await self.channel.send(query)
-        await message.add_reaction(
-            "\u2714"
-        )  # TODO: Check to make sure the emoji work right in this form
+        await message.add_reaction("\u2714")
         await message.add_reaction("\u274C")
         await asyncio.sleep(0.5)
 
@@ -232,9 +225,8 @@ class TestInterface:
 
         try:
             reaction: discord.Reaction = await self.client.wait_for(
-                "reaction_add", timeout=TIMEOUT, check=check
+                "reaction_add", timeout=self.client.timeout, check=check
             )
-            # TODO: Confirm this BS works in place of a check function
         except _base.TimeoutError:
             raise HumanResponseTimeout
         else:
