@@ -13,11 +13,11 @@ setup(
     description="Automate the testing of discord bots... With discord bots!",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="http://github.com/JacobCover/distest",
+    url="http://github.com/JakeCover/distest",
     author="Jake Cover",
     author_email="python@jakecover.me",
     license="MIT",
     packages=["distest"],
-    install_requires=["discord.py"],
+    install_requires=["discord.py>=1.0.0"],
     zip_safe=False,
 )
