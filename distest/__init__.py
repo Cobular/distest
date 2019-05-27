@@ -97,21 +97,15 @@ class DiscordInteractiveInterface(DiscordBot):
         return response
 
     async def _display_stats(self, channel: discord.TextChannel):
-        """
-        Display the status of the various tests.
-
-        Sets failure to true if any of the tests fail, then uses this to decide in the exit code.
-        If no_exit is set to true, this will be ignored and it will not exit.
-        Unrun will not result in a failure
-        """
+        """Display the status of the various tests."""
         await channel.send(await self._build_stats(self._tests))
 
     async def on_ready(self):
         """ Report when the bot is ready for use """
         print("Started distest bot.")
         print("Available tests are:")
-        for i in self._tests:
-            print("   {}".format(i.name))
+        for test in self._tests:
+            print("   {}".format(test.name))
 
     async def on_message(self, message: discord.Message):
         """ Handle an incoming message """
@@ -120,36 +114,40 @@ class DiscordInteractiveInterface(DiscordBot):
         if not isinstance(message.channel, (discord.DMChannel, discord.GroupChannel)):
             if message.content.startswith("::run "):
                 name = message.content[6:]
-                print("Running test:", name)
-                if name == "all":
-                    await self._run_by_predicate(message.channel, lambda t: True)
-                    await self._display_stats(message.channel)
-                elif name == "unrun":
-
-                    def pred(t):
-                        return t.result is TestResult.UNRUN
-
-                    await self._run_by_predicate(message.channel, pred)
-                    await self._display_stats(message.channel)
-                elif name == "failed":
-
-                    def pred(t):
-                        return t.result is TestResult.FAILED
-
-                    await self._run_by_predicate(message.channel, pred)
-                    await self._display_stats(message.channel)
-                elif self._tests.find_by_name(name) is None:
-                    text = ":x: There is no test called `{}`"
-                    await message.channel.send(message.channel, text.format(name))
-                else:
-                    await message.channel.send("Running test `{}`".format(name))
-                    await self.run_test(self._tests.find_by_name(name), message.channel)
-                    await self._display_stats(message.channel)
-            # Status display command
+                await self.run_tests(name)
+                await self._display_stats(message.channel)
             elif message.content in ["::stats", "::list"]:
                 await self._display_stats(message.channel)
             elif message.content == "::help":
                 await message.channel.send(HELP_TEXT)
+
+    async def run_tests(self, channel: discord.TextChannel, name: str):
+        """ Helper function for choosing and running an appropriate suite of tests
+
+            :param discord.TextChannel channel: The channel in which to run the tests
+            :param str name: Selector string used to determine what category of test to run
+        """
+        print("Running test:", name)
+        if name == "all":
+            await self._run_by_predicate(channel, lambda t: True)
+        elif name == "unrun":
+
+            def pred(t):
+                return t.result is TestResult.UNRUN
+
+            await self._run_by_predicate(channel, pred)
+        elif name == "failed":
+
+            def pred(t):
+                return t.result is TestResult.FAILED
+
+            await self._run_by_predicate(channel, pred)
+        elif self._tests.find_by_name(name) is None:
+            text = ":x: There is no test called `{}`"
+            await channel.send(message.channel, text.format(name))
+        else:
+            await channel.send("Running test `{}`".format(name))
+            await self.run_test(self._tests.find_by_name(name), channel)
 
 
 class DiscordCliInterface(DiscordInteractiveInterface):
@@ -170,7 +168,7 @@ class DiscordCliInterface(DiscordInteractiveInterface):
         channel_id: int,
         stats: bool,
         timeout: int,
-    ) -> None:
+    ):
         super().__init__(target_name, collector, timeout)
         self._test_to_run = test
         self._channel_id = channel_id
@@ -182,47 +180,18 @@ class DiscordCliInterface(DiscordInteractiveInterface):
         super().run(token)
         return self.failure
 
-    async def _display_stats(self, channel: discord.TextChannel):
-        """Override of ``DiscordInteractiveInterface._display_stats`` that closes the client
-           after displaying stats"""
-        await super()._display_stats(channel)
-        await super().close()
-
     async def on_ready(self):
-        """ Report when the bot is ready for use """
+        """ For CLI, the bot should start testing as soon as its ready, and exit when it is done.
+            Therefore, this ``on_ready`` does both.
+        """
         self._channel = self.get_channel(self._channel_id)
         print("Started distest bot.")
-        print(f"Running test {self._test_to_run}")
         if self._test_to_run is not None:
-            if self._test_to_run == "all":
-                await self._run_by_predicate(self._channel, lambda t: True)
-                await self._display_stats(self._channel)
-            elif self._test_to_run == "unrun":
-
-                def pred(t):
-                    return t.result is TestResult.UNRUN
-
-                await self._run_by_predicate(self._channel, pred)
-                await self._display_stats(self._channel)
-            elif self._test_to_run == "failed":
-
-                def pred(t):
-                    return t.result is TestResult.FAILED
-
-                await self._run_by_predicate(self._channel, pred)
-                await self._display_stats(self._channel)
-            elif self._tests.find_by_name(self._test_to_run) is None:
-                text = ":x: There is no test called `{}`"
-                await self._channel.send(text.format(self._test_to_run))
-            else:
-                await self._channel.send("Running test `{}`".format(self._test_to_run))
-                await self.run_test(
-                    self._tests.find_by_name(self._test_to_run), self._channel
-                )
-                await self._display_stats(self._channel)
-        elif self._stats:
-            # Status display command
+            await self.run_tests(self._channel, self._test_to_run)
             await self._display_stats(self._channel)
+        elif self._stats:
+            await self._display_stats(self._channel)
+        await self.close()
 
 
 def run_dtest_bot(sysargs, test_collector: TestCollector, timeout=5):
