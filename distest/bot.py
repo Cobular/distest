@@ -119,7 +119,7 @@ class DiscordInteractiveInterface(DiscordBot):
             :param discord.TextChannel channel: The channel in which to run the tests
             :param str name: Selector string used to determine what category of test to run
         """
-        print("Running test:", name)
+        print("Running: ", name)
         if name == "all":
             await self._run_by_predicate(channel)
         elif name == "unrun":
