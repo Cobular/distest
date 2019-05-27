@@ -71,7 +71,7 @@ class DiscordInteractiveInterface(DiscordBot):
         self.timeout = timeout
         self.failure = False
 
-    async def _run_by_predicate(self, channel, predicate):
+    async def _run_by_predicate(self, channel, predicate=lambda test: True):
         for test in self._tests:
             if predicate(test):
                 await channel.send("**Running test {}**".format(test.name))
@@ -129,19 +129,15 @@ class DiscordInteractiveInterface(DiscordBot):
         """
         print("Running test:", name)
         if name == "all":
-            await self._run_by_predicate(channel, lambda t: True)
+            await self._run_by_predicate(channel)
         elif name == "unrun":
-
-            def pred(t):
-                return t.result is TestResult.UNRUN
-
-            await self._run_by_predicate(channel, pred)
+            await self._run_by_predicate(
+                channel, lambda test: test.result is TestResult.UNRUN
+            )
         elif name == "failed":
-
-            def pred(t):
-                return t.result is TestResult.FAILED
-
-            await self._run_by_predicate(channel, pred)
+            await self._run_by_predicate(
+                channel, lambda test: test.result is TestResult.FAILED
+            )
         elif self._tests.find_by_name(name) is None:
             text = ":x: There is no test called `{}`"
             await channel.send(message.channel, text.format(name))
