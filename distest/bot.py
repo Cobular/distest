@@ -36,6 +36,7 @@ class DiscordBot(discord.Client):
         """
         test_interface = TestInterface(self, channel, self._find_target(channel.guild))
         try:
+            print("Running test: {}".format(test.name))
             await test.func(test_interface)
         except TestRequirementFailure:
             test.result = TestResult.FAILED
@@ -133,6 +134,7 @@ class DiscordInteractiveInterface(DiscordBot):
             text = ":x: There is no test called `{}`"
             await channel.send(channel, text.format(name))
         else:
+            print("Running test: {}".format(name))
             await self.run_test(self._tests.find_by_name(name), channel)
 
 
