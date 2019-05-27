@@ -5,7 +5,7 @@
 """
 
 import argparse
-from sys import exit
+import sys
 
 import discord
 
@@ -362,4 +362,4 @@ def run_command_line_bot(target, token, tests, channel_id, stats, collector, tim
     """
     bot = DiscordCliInterface(target, collector, tests, channel_id, stats, timeout)
     failed = bot.run(token)  # returns True if a test failed
-    exit(1 if failed else 0)
+    sys.exit(1 if failed else 0)
