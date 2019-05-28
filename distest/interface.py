@@ -220,7 +220,8 @@ class TestInterface:
         await message.add_reaction("\u274C")
 
         def check(human_reaction, user):
-            return human_reaction.message
+            if human_reaction.count > 1:
+                return human_reaction.message
 
         try:
             reaction: discord.Reaction = await self.client.wait_for(
@@ -230,5 +231,5 @@ class TestInterface:
             raise HumanResponseTimeout
         else:
             reaction, _ = reaction
-            if reaction.emoji == "\u274C":
+            if reaction.emoji == "\u274c":
                 raise HumanResponseFailure
