@@ -9,4 +9,5 @@ env:
   - TARGET_NAME=DistestUnitTestTarget
 
 script:
-  - test.sh
+  - ls
+  - ./run_tests.sh
