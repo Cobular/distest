@@ -1,13 +1,17 @@
 dist: xenial
 language: python
-python:
-  "3.7"
+python: '3.7'
 install:
-  - pip install -r requirements.txt
-  - pip install .
+- pip install -r requirements.txt
+- pip install .
 env:
-  - TARGET_NAME=DistestUnitTestTarget
-
+- TARGET_NAME=DistestUnitTestTarget
 script:
-  - ls
-  - ./run_tests.sh
+- "./run_tests.sh"
+deploy:
+  provider: pypi
+  user: Cobular
+  password:
+    secure: b5+J4MyyBe789vl0ARRPALtpLMfdN5nZTUG4aESv38DhAd4m6Dpz1ELB6qyC90/tYsGDkFqf3muW4MgKtp1PTvC+Do0IG0MDEw1S0O8cvHP/6V/bQt/8TxeBWzvo19zzkHWV7ujW9ivug5wYMB8+yLQbhYAQR9SKD9LIvmuXB3GrGuc04FxYb328zCqzavA2HfisfOBGeG4d9P2Y8pEQGo8nHe9O/Ey9oBL3I7o4aaA4QXNXO1RPSDrjV/4nwdAvU+VnkZXA/TwkneFnWf9CbJ0zxxbn+nQxKo3dUfSvfDeHqWlWaquelkVmlacoIlR2UM0/xMrYDOdSTHDoquGDODS9jOt5uJzGr9NH0Nbn/FFFrlbE4+3wuiIM0RPHvdv5Z31d3cJDiurCW8qnV1b83yay94n9N7eeJyuPknEtoWGKgEUp8BjtovDmMydG/WbcPb8tQ4bs2nLn/OPUiIgF5tFXnpnTQbMeJBCp+wIVe7tbclM1RCcdLCSeVquroRTgJKGk/i/WNpm4adi36OxCaXcmurIjqWNFb0pPQL5I0txOnLZ9sNeT4Pzy3ujkc35qqJsgVt5LEuztTchpYtUpbF4eSEjYD85RcrewPmEK3A20d8xEXdFu2r//sXd8BCwJA5UJJOXPLxISa+WTEataZiKixE836VhIEg9bq3qkOoE=
+  on:
+    branch: master

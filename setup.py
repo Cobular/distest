@@ -9,7 +9,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="distest",
-    version="0.2.0",
+    version="0.3.0",
     description="Automate the testing of discord bots... With discord bots!",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -20,4 +20,13 @@ setup(
     packages=["distest"],
     install_requires=["discord.py>=1.0.0"],
     zip_safe=False,
+    classifiers=["Topic :: Software Development :: Testing :: Unit"],
+    keywords=[
+        "Discord",
+        "Discord.py",
+        "Unit Test",
+        "Test",
+        "Distest",
+        "Discord Testing",
+    ],
 )
