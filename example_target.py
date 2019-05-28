@@ -23,14 +23,19 @@ async def on_ready():
 async def on_message(message):
     sent = None
     if message.content == "ping?":
+        await asyncio.sleep(1)
         sent = await message.channel.send("pong!")
     if message.content.startswith("Say something matching the regex"):
+        await asyncio.sleep(1)
         sent = await message.channel.send("61")
     if message.content == "Please say 'epic!'":
+        await asyncio.sleep(1)
         sent = await message.channel.send("epic!")
     if message.content.startswith("Say something containing 'gamer'"):
+        await asyncio.sleep(1)
         sent = await message.channel.send("gamers r00l")
     if message.content.startswith("Post something with an image!"):
+        await asyncio.sleep(1)
         sent = await message.channel.send("https://imgs.xkcd.com/comics/ui_vs_ux.png")
     if message.content.startswith("React with"):
         await asyncio.sleep(1)
