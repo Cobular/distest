@@ -218,7 +218,6 @@ class TestInterface:
         message = await self.channel.send(query)
         await message.add_reaction("\u2714")
         await message.add_reaction("\u274C")
-        await asyncio.sleep(0.5)
 
         def check(human_reaction, user):
             return human_reaction.message
