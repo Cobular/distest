@@ -1,5 +1,9 @@
 # Distest
 
+[![CodeFactor](https://www.codefactor.io/repository/github/jakecover/distest/badge/feature/refactor_modules?style=flat-square)](https://www.codefactor.io/repository/github/jakecover/distest/overview/feature/refactor_modules?style=flat-square)
+[![Build Status](https://img.shields.io/travis/JakeCover/distest/develop.svg?style=flat-square)](https://travis-ci.org/JakeCover/distest)
+
+
 A small library used to write automated test for Discord bots.
 
 Test framework originally written by [DXsmiley](https://github.com/DXsmiley), update to the rewrite and re-worked UI done by [me](https://github.com/JacobCover)
@@ -87,12 +91,23 @@ Commands you can run in discord once the bot is running in interactive mode.
 
 
 ## Contributing
-Not much of note here, just that I use Black for formatting consistency, so please use that if you are contributing. If you don't, I will apply it during the PR but please just do that yourself. 
+Please open an issue for your contribution and tag it with contribution to discuss it. I recommend waiting for a response before pouring hours and hours into the contribution, but it will likely be approved either way. The other thing is to make sure you check the github project to see if there is someone else already working on it who you can help. Other notes:
 
-If you are adding new test types, please make sure you test them well to make sure they work as intended, and please add a demo of them in use to the `example_tests()` for others to see. And when you are done, please open a PR and I'll add it in!
+* If you are adding new test types, please make sure you test them well to make sure they work as intended, and please add a demo of them in use to the `example_tests()` for others to see. When you are done, please open a PR and I'll add it in!
+
+* I use Black for my code formatting, it would be appreciated if you could use it when contributing as well. I will remind you when you make a PR if you don't, it is essential to make sure that diffs aren't cluttered up with silly formatting changes. Additionally, CodeFactor *should* be tracking code quality and doing something with PRs. We will see soon exactly how that will work out.
+
+* Make sure that your issue goes onto the project, that's how we keep track of to-do and in progress things.
+
+* Also, if you just want to propose an idea, create an issue and tag it with enhancement. Thank you for your help!
+
+
 
 
 ## TODO
+
+I used to use this, now using the GitHib project instead. This will no longer be used.
+
 - [x] Update the Bot to the newly re-written discord.py 1.0
 - [ ] Verify each test and add to `example_tests.py`
     - [ ] send_message
