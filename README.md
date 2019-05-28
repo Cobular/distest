@@ -1,14 +1,17 @@
 # Distest
 
-[![CodeFactor](https://www.codefactor.io/repository/github/jakecover/distest/badge/feature/refactor_modules?style=flat-square)](https://www.codefactor.io/repository/github/jakecover/distest/overview/feature/refactor_modules?style=flat-square)
+[![CodeFactor](https://www.codefactor.io/repository/github/jakecover/distest/badge/?style=flat-square)](https://www.codefactor.io/repository/github/jakecover/distest/overview/?style=flat-square)
 [![Build Status](https://img.shields.io/travis/JakeCover/distest/develop.svg?style=flat-square)](https://travis-ci.org/JakeCover/distest)
+[![PyPi Version](https://img.shields.io/pypi/v/distest.svg?style=flat-square
+)](https://pypi.org/project/distest)
+
 
 
 A small library used to write automated test for Discord bots.
 
 Test framework originally written by [DXsmiley](https://github.com/DXsmiley), update to the rewrite and re-worked UI done by [me](https://github.com/JacobCover)
 
-Just need to get command line stuff working reliably and this will be ready for a 0.1 pre-release. Until I get everything to a 1.0 though, expect the command line arguments and everything else to be volatile. In addition to the example here, my [main bot](https://github.com/JacobCover/ReplyBot) will be implementing this soon.
+Just about ready for a 1.0, just need to add a few more features. Until I get everything to a 1.0 though, expect the command line arguments and everything else to be volatile. In addition to the example here, my [main bot](https://github.com/JacobCover/ReplyBot) will be implementing this soon.
 
 ## Installation
 
