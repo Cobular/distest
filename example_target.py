@@ -34,7 +34,8 @@ async def on_message(message):
         sent = await message.channel.send("https://imgs.xkcd.com/comics/ui_vs_ux.png")
     if message.content.startswith("React with"):
         sent = await message.add_reaction("\u2714")
-
+    if message.content.startswith("Click the Check!"):
+        sent = await message.add_reaction("\u2714")
     if sent is not None:
         print("Message sent: {}".format(sent.clean_content))
 
