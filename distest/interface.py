@@ -72,6 +72,9 @@ class TestInterface:
         """
         return await self.channel.send(content)
 
+    async def checkMessage(self, message):
+        return message.channel == self.channel and message.author == self.target
+
     @staticmethod
     async def edit_message(message: discord.Message, new_content):
         """ Modified a message. Doesn't actually care what this message is. """
@@ -84,7 +87,7 @@ class TestInterface:
         so this is not meant to be run by the user dirrectly in most cases.
         """
 
-        def check(reaction, user):
+        def checkReaction(reaction, user):
             return (
                 reaction.message.id == message.id
                 and user == self.target
@@ -93,7 +96,7 @@ class TestInterface:
 
         try:
             result = await self.client.wait_for(
-                "reaction_add", timeout=self.client.timeout, check=check
+                "reaction_add", timeout=self.client.timeout, check=checkReaction
             )
         except _base.TimeoutError:
             raise NoReactionError
@@ -104,13 +107,9 @@ class TestInterface:
         """ Waits for the bot the send a message.
             If the bot takes longer than 5 seconds (default) the test fails.
         """
-
-        def check(message: discord.Message):
-            return message.channel == self.channel and message.author == self.target
-
         try:
             result = await self.client.wait_for(
-                "message", timeout=self.client.timeout, check=check
+                "message", timeout=self.client.timeout, check=self.checkMessage
             )
         except _base.TimeoutError:
             raise NoResponseError
@@ -184,13 +183,9 @@ class TestInterface:
 
     async def ensure_silence(self):
         """ Ensures that the bot does not post any messages for some number of seconds. """
-
-        def check(message: discord.Message):
-            return message.channel == self.channel and message.author == self.target
-
         try:
             await self.client.wait_for(
-                "message", timeout=self.client.timeout, check=check
+                "message", timeout=self.client.timeout, check=self.checkMessage
             )
         except _base.TimeoutError:
             pass
