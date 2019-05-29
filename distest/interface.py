@@ -39,13 +39,11 @@ class Test:
     def __init__(self, name: str, func, needs_human: bool = False) -> None:
         if name in SPECIAL_TEST_NAMES:
             raise ValueError("{} is not a valid test name".format(name))
-        self.name = name  # The name of the test
-        self.func = func  # The function to run when running the test
-        self.last_run = 0  # When the test was last run
-        self.result = (
-            TestResult.UNRUN
-        )  # The result of the test (True or False) or None if it was not run
-        self.needs_human = needs_human  # Whether the test requires human interation
+        self.name = name
+        self.func = func
+        self.last_run = 0
+        self.result = TestResult.UNRUN
+        self.needs_human = needs_human
 
 
 class TestInterface:
@@ -61,14 +59,14 @@ class TestInterface:
         channel: discord.TextChannel,
         target: discord.Member,
     ):
-        self.client = client  # The discord.py client object
-        self.channel = channel  # The channel the test is running in
-        self.target = target  # The bot which we are testing
+        self.client = client
+        self.channel = channel
+        self.target = target
 
     async def send_message(self, content):
         """ Send a message to the testing channel.
 
-        :return Message: Returns the discord `Message` class for the sent message
+        :rtype discord.Message:
         """
         return await self.channel.send(content)
 
@@ -77,15 +75,11 @@ class TestInterface:
 
     @staticmethod
     async def edit_message(message: discord.Message, new_content):
-        """ Modified a message. Doesn't actually care what this message is. """
+        """ Modify a message."""
         return await message.edit(content=new_content)
 
     async def wait_for_reaction(self, message: discord.Message):
-        """ Tests to make sure a message is reacted to.
-
-        Requires a discord.py Message as input to run,
-        so this is not meant to be run by the user dirrectly in most cases.
-        """
+        """ Assert that ``message`` is reacted to."""
 
         def checkReaction(reaction, user):
             return (
@@ -104,7 +98,7 @@ class TestInterface:
             return result
 
     async def wait_for_message(self):
-        """ Waits for the bot the send a message.
+        """ Wait for the bot the send a message.
             If the bot takes longer than 5 seconds (default) the test fails.
         """
         try:
@@ -117,7 +111,7 @@ class TestInterface:
             return result
 
     async def wait_for_reply(self, content):
-        """ Sends a message and returns the next message that the targeted bot sends. """
+        """ Send a message and returns the next message that the targeted bot sends. """
         await self.channel.send(content)
         return await self.wait_for_message()
 
@@ -142,7 +136,7 @@ class TestInterface:
     async def assert_message_has_image(self, message: discord.Message):
         """ Assert ``message`` has an attachment. If not, fail the test."""
         if message.attachments == [] and message.embeds == []:
-            raise ResponseDidNotMatchError
+            raise UnexpectedResponseError
         return message
 
     async def assert_reply_equals(self, contents: str, matches: str):
@@ -168,6 +162,7 @@ class TestInterface:
         return await self.assert_message_matches(response)
 
     async def assert_reaction_equals(self, contents, emoji):
+        """ Send a message and ensure that the reaction is equal to ``emoji``"""
         reaction = await self.wait_for_reaction(await self.send_message(contents))
         if str(reaction[0].emoji) != emoji:
             raise ReactionDidNotMatchError
@@ -182,7 +177,7 @@ class TestInterface:
         return await self.assert_message_has_image(message)
 
     async def ensure_silence(self):
-        """ Ensures that the bot does not post any messages for some number of seconds. """
+        """ Assert that the bot does not post any messages for some number of seconds. """
         try:
             await self.client.wait_for(
                 "message", timeout=self.client.timeout, check=self.checkMessage
@@ -193,10 +188,10 @@ class TestInterface:
             raise UnexpectedResponseError
 
     async def ask_human(self, query):
-        """ Asks a human for an opinion on a question. Currently, only yes-no questions
+        """ Ask a human for an opinion on a question. Currently, only yes-no questions
             are supported. If the human answers 'no', the test will be failed.
         """
-        message = await self.channel.send(query)
+        message = await self.send_message(query)
         await message.add_reaction("\u2714")
         await message.add_reaction("\u274C")
 
