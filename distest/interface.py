@@ -134,12 +134,11 @@ class TestInterface:
             raise ResponseDidNotMatchError
         return message
 
-    async def assert_message_matches(self, regex):
+    async def assert_message_matches(self, message: discord.Message, regex):
         """ If `message` does not match a regex, fail the test."""
-        response = await self.wait_for_message()
-        if not re.match(regex, response.content):
+        if not re.match(regex, message.content):
             raise ResponseDidNotMatchError
-        return response
+        return message
 
     async def assert_message_has_image(self, message: discord.Message):
         """ Assert ``message`` has an attachment. If not, fail the test."""
@@ -166,9 +165,8 @@ class TestInterface:
             match a regex, fail the test. Requires a properly formatted Python regex
             ready to be used in the ``re`` functions.
         """
-        await self.send_message(contents)
-        response = await self.assert_message_matches(regex)
-        return response
+        response = await self.wait_for_reply(contents)
+        return await self.assert_message_matches(response)
 
     async def assert_reaction_equals(self, contents, emoji):
         reaction = await self.wait_for_reaction(await self.send_message(contents))
