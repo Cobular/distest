@@ -122,14 +122,11 @@ class TestInterface:
         await self.channel.send(content)
         return await self.wait_for_message()
 
-    async def assert_message_equals(self, matches):
-        """ Waits for the next message.
-            If the message does not match a string exactly, fail the test.
-        """
-        response = await self.wait_for_message()
-        if response.content != matches:
+    async def assert_message_equals(self, message: discord.Message, matches):
+        """ If the message does not match a string exactly, fail the test."""
+        if message.content != matches:
             raise ResponseDidNotMatchError
-        return response
+        return message
 
     async def assert_message_contains(self, substring):
         """ Waits for the next message.
@@ -159,11 +156,8 @@ class TestInterface:
         """ Send a message and wait for a response.
             If the response does not match a string exactly, fail the test.
         """
-        await self.send_message(contents)
-        response = await self.wait_for_message()
-        if response.content != matches:
-            raise ResponseDidNotMatchError
-        return response
+        response = await self.wait_for_reply(contents)
+        return await self.assert_message_equals(response)
 
     async def assert_reply_contains(self, contents: str, substring: str):
         """ Send a message and wait for a response.
