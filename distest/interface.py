@@ -143,7 +143,7 @@ class TestInterface:
 
     async def assert_message_has_image(self, message: discord.Message):
         """ Assert ``message`` has an attachment. If not, fail the test."""
-        if message.attachments is None:
+        if message.attachments == [] and message.embeds == []:
             raise ResponseDidNotMatchError
         return message
 
@@ -181,6 +181,7 @@ class TestInterface:
            Check that the reply contains an attachment. If not, fail the test.
         """
         message = await self.wait_for_reply(contents)
+        await asyncio.sleep(1)  # Give discord a moment to add the embed if its a link
         return await self.assert_message_has_image(message)
 
     async def ensure_silence(self):
