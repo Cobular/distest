@@ -123,24 +123,19 @@ class TestInterface:
         return await self.wait_for_message()
 
     async def assert_message_equals(self, message: discord.Message, matches):
-        """ If the message does not match a string exactly, fail the test."""
+        """ If `message` does not match a string exactly, fail the test."""
         if message.content != matches:
             raise ResponseDidNotMatchError
         return message
 
-    async def assert_message_contains(self, substring):
-        """ Waits for the next message.
-            If the message does not contain the given substring, fail the test.
-        """
-        response = await self.wait_for_message()
-        if substring not in response.content:
+    async def assert_message_contains(self, message: discord.Message, substring):
+        """ If `message` does not contain the given substring, fail the test."""
+        if substring not in message.content:
             raise ResponseDidNotMatchError
-        return response
+        return message
 
     async def assert_message_matches(self, regex):
-        """ Waits for the next message.
-            If the message does not match a regex, fail the test.
-        """
+        """ If `message` does not match a regex, fail the test."""
         response = await self.wait_for_message()
         if not re.match(regex, response.content):
             raise ResponseDidNotMatchError
@@ -163,11 +158,8 @@ class TestInterface:
         """ Send a message and wait for a response.
             If the response does not contain the given substring, fail the test.
         """
-        await self.send_message(contents)
-        response = await self.wait_for_message()
-        if substring not in response.content:
-            raise ResponseDidNotMatchError
-        return response
+        response = await self.wait_for_reply(contents)
+        return await self.assert_message_contains(response, substring)
 
     async def assert_reply_matches(self, contents: str, regex):
         """ Send a message and wait for a response. If the response does not
