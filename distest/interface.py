@@ -66,7 +66,10 @@ class TestInterface:
         self.target = target  # The bot which we are testing
 
     async def send_message(self, content):
-        """ Send a message to the testing channel. """
+        """ Send a message to the testing channel.
+
+        :return Message: Returns the discord `Message` class for the sent message
+        """
         return await self.channel.send(content)
 
     @staticmethod
@@ -178,9 +181,7 @@ class TestInterface:
             ready to be used in the ``re`` functions.
         """
         await self.send_message(contents)
-        response = await self.wait_for_message()
-        if not re.match(regex, response.content):
-            raise ResponseDidNotMatchError
+        response = await self.assert_message_matches(regex)
         return response
 
     async def assert_reaction_equals(self, contents, emoji):
