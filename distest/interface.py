@@ -159,7 +159,7 @@ class TestInterface:
             ready to be used in the ``re`` functions.
         """
         response = await self.wait_for_reply(contents)
-        return await self.assert_message_matches(response)
+        return await self.assert_message_matches(response, regex)
 
     async def assert_reaction_equals(self, contents, emoji):
         """ Send a message and ensure that the reaction is equal to ``emoji``"""
