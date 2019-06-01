@@ -70,7 +70,7 @@ class TestInterface:
         """
         return await self.channel.send(content)
 
-    async def checkMessage(self, message):
+    def checkMessage(self, message):
         return message.channel == self.channel and message.author == self.target
 
     @staticmethod
