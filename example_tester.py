@@ -4,7 +4,7 @@ A functional demo of all possible test cases. This is the format you will want t
     Run with:
         python example_tests.py TARGET_NAME TESTER_TOKEN
 """
-
+import asyncio
 import sys
 from distest import TestCollector
 from distest import run_interactive_bot, run_dtest_bot
@@ -57,6 +57,14 @@ async def test_ask_human(interface):
 @test_collector()
 async def test_reply_has_image(interface):
     await interface.assert_reply_has_image("Post something with an image!")
+
+
+@test_collector()
+async def test_reply_on_edit(interface):
+    message = await interface.send_message("Say 'Yeah, that cool!'")
+    await asyncio.sleep(1)
+    await interface.edit_message(message, "Say 'Yeah, that is cool!'")
+    await interface.assert_message_contains(message, "Yeah, that is cool!")
 
 
 # Actually run the bot

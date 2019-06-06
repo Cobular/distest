@@ -47,4 +47,14 @@ async def on_message(message):
         print("Message sent: {}".format(sent.clean_content))
 
 
+@client.event
+async def on_message_edit(before, after):
+    sent = None
+    if after.content.startswith("Say 'Yeah, that is cool!'"):
+        await asyncio.sleep(1)
+        sent = await after.channel.send("Yeah, that is cool!")
+    if sent is not None:
+        print("Message sent: {}".format(sent.clean_content))
+
+
 client.run(sys.argv[1])
