@@ -64,7 +64,7 @@ async def test_reply_on_edit(interface):
     message = await interface.send_message("Say 'Yeah, that cool!'")
     await asyncio.sleep(1)
     await interface.edit_message(message, "Say 'Yeah, that is cool!'")
-    await interface.assert_message_contains("Yeah, that is cool!")
+    await interface.assert_message_contains(message, "Yeah, that is cool!")
 
 
 # Actually run the bot

@@ -144,7 +144,7 @@ class TestInterface:
             If the response does not match a string exactly, fail the test.
         """
         response = await self.wait_for_reply(contents)
-        return await self.assert_message_equals(response)
+        return await self.assert_message_equals(response, matches)
 
     async def assert_reply_contains(self, contents: str, substring: str):
         """ Send a message and wait for a response.
