@@ -9,13 +9,13 @@ Welcome to Distest's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   usage/installation
-   usage/demo
-   usage/quickstart
+    usage/installation
+    usage/demo
+    usage/quickstart
 
-   documentation
+    distest
 
 
 
