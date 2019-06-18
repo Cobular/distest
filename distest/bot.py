@@ -30,7 +30,8 @@ class DiscordBot(discord.Client):
         of the two interfaces, :py:class:`DiscordInteractiveInterface` and :py:class:`DiscordCliInterface` to make the
         library more DRY
 
-        :param str target_name: The name of the target bot, used in :py:func:`_find_target` to insure that the target user is actually present in the server. Good for checking for typos ot other simple mistakes.
+        :param str target_name: The name of the target bot, used in :py:func:`_find_target` to insure that the target
+        user is actually present in the server. Good for checking for typos ot other simple mistakes.
     """
 
     def __init__(self, target_name):
