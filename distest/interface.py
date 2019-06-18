@@ -34,7 +34,12 @@ class TestResult(enum.Enum):
 
 
 class Test:
-    """ Holds data about a specific test """
+    """ Holds data about a specific test.
+
+        :param str name: The name of the test, checks this against the valid test names
+        :param function func: The function in the tester bot that makes up this test
+        :param bool needs_human: Weather or not this test will require human interaction to complete
+    """
 
     def __init__(self, name: str, func, needs_human: bool = False) -> None:
         if name in SPECIAL_TEST_NAMES:

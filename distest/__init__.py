@@ -14,10 +14,9 @@ from .collector import TestCollector
 def run_dtest_bot(sysargs, test_collector: TestCollector, timeout=5):
     """ Wrapper for the library, designed to be called from the tester bot, handles the CLI.
     
-        :param list sysargs: The list returned by ``sys.argv``, this function parses it and will handle errors in the
-        args
+        :param list sysargs: The list returned by ``sys.argv``, this function parses it and will handle errors in format
         :param TestCollector test_collector: The :ref:`TestCollector` that has been used to decorate the tests
-        :param int timeout: An optional parameter to override the amount of time to wait for responses before failing
+        :param int timeout: An optional parameter to override the amount of time to wait for responses before failing \
         tests. Defaults to 5 seconds.
         :rtype: None
     """
@@ -126,7 +125,6 @@ def run_interactive_bot(target_name, token, test_collector, timeout=5):
         :param str token: The tester's token, used to log in.
         :param TestCollector test_collector: The ``TestCollector`` that gathered our tests.
         :param int timeout: The amount of time to wait for responses before failing tests.
-        :rtype: None
     """
     # TODO: Implement interactive timeout
 
@@ -147,7 +145,6 @@ def run_command_line_bot(target, token, tests, channel_id, stats, collector, tim
         :param bool stats: Determines whether or not to display stats after run.
         :param TestCollector collector: The ``TestCollector`` that gathered our tests.
         :param int timeout: The amount of time to wait for responses before failing tests.
-        :rtype: None
     """
     # TODO: Fix the reference, not sure how to do that rn. Don't have internet
     bot = DiscordCliInterface(target, collector, tests, channel_id, stats, timeout)
