@@ -23,7 +23,6 @@ def run_dtest_bot(sysargs, test_collector: TestCollector, timeout=5):
     """
     from distest.validate_discord_token import token_arg
 
-
     all_run_options = ["all"]
     for i in test_collector._tests:
         all_run_options.append(i.name)
