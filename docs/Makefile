@@ -2,8 +2,11 @@
 #
 
 # You can set these variables from the command line.
+#
+# DISTEST DEVS:
+# You must be in a virtual environment for make commands to work
 SPHINXOPTS    =
-SPHINXBUILD   = python /home/royalcows9/cs/git/distest/venv/bin/sphinx-build
+SPHINXBUILD   = $(VIRTUAL_ENV)/bin/sphinx-build
 PAPER         =
 BUILDDIR      = build
 
