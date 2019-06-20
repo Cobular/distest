@@ -25,13 +25,13 @@ HELP_TEXT = """\
 
 class DiscordBot(discord.Client):
     """ Discord bot used to run tests.
+    This class by itself does not provide any useful methods for human interaction,
+    and is just used as a superclass of the two interfaces,
+    :py:class:`DiscordInteractiveInterface` and :py:class:`DiscordCliInterface`
 
-        This class by itself does not provide any useful methods for human interaction, and is just used as a superclass
-        of the two interfaces, :py:class:`DiscordInteractiveInterface` and :py:class:`DiscordCliInterface` to make the
-        library more DRY
+    :param str target_name: The name of the target bot, used to ensure that the target user is actually
+                            present in the server. Good for checking for typos or other simple mistakes.
 
-        :param str target_name: The name of the target bot, used in :py:func:`_find_target` to insure that the target \
-        user is actually present in the server. Good for checking for typos ot other simple mistakes.
     """
 
     def __init__(self, target_name):
@@ -41,7 +41,8 @@ class DiscordBot(discord.Client):
     def _find_target(self, server: discord.Guild) -> discord.Member:
         """ Confirms that the target user is actually present in the specified guild
 
-            :param server: The ``discord.Guild()`` object of the guild to look fot the target user in
+            :param discord.Guild server: The ``discord.Guild()`` object of the guild
+            to look for the target user in
             :rtype:  discord.Member
         """
         for member in server.members:
@@ -55,12 +56,12 @@ class DiscordBot(discord.Client):
         """ Run a single test in a given channel.
 
             Updates the test with the result and returns it
-        
+
             :param Test test: The :py:class:`Test` that is to be run
             :param discord.TextChannel channel: The
             :param stop_error: Weather or not to stop the program on error. Not currently in use.
-            :return: TestResult
-            :rtype: Enum
+            :return: Result of the test
+            :rtype: TestResult
         """
         test_interface = TestInterface(self, channel, self._find_target(channel.guild))
         try:
@@ -76,13 +77,14 @@ class DiscordBot(discord.Client):
 
 
 class DiscordInteractiveInterface(DiscordBot):
-    """ A variant of the discord bot which commands sent in discord to allow a human to run the tests manually.
+    """ A variant of the discord bot which commands sent in discord to allow
+    a human to run the tests manually.
 
-        Does NOT support CLI arguments
+    Does NOT support CLI arguments
 
-        :param str target_name: The name of the bot to target (Username, no discriminator)
-        :param TestCollector collector: The instance of Test Collector that contains the tests to run
-        :param int timeout: The amount of time to wait for responses before failing tests.
+    :param str target_name: The name of the bot to target (Username, no discriminator)
+    :param TestCollector collector: The instance of Test Collector that contains the tests to run
+    :param int timeout: The amount of time to wait for responses before failing tests.
     """
 
     def __init__(self, target_name, collector: TestCollector, timeout=5):
@@ -94,8 +96,8 @@ class DiscordInteractiveInterface(DiscordBot):
     async def _run_by_predicate(self, channel, predicate=lambda test: True):
         """ Iterate through ``_tests`` and run any test for which ``predicate`` returns True
 
-            :param discord.TextChannel channel: The channel to run the test in.
-            :param function predicate: The check a test must pass to be run.
+        :param discord.TextChannel channel: The channel to run the test in.
+        :param function predicate: The check a test must pass to be run.
         """
         # TODO: explain what predicate means a bit more
         for test in self._tests:
@@ -104,13 +106,13 @@ class DiscordInteractiveInterface(DiscordBot):
 
     async def _build_stats(self, tests) -> str:
         """ Helper function for constructing the stat display based on test status.
+        Iterate over each test in ``tests`` and creates a string (``response``) based
+        on the result property of each ``Test``
 
-            Simply iterates over each test in ``tests`` and creates a string (``response``) based on the result property
-            of each ``Test``
-
-            :param list[Test] tests: The list of tests used to create the stats
-            :return: Ready-to-send string congaing the results of the tests, including discord markdown
-            :rtype: str
+        :param list[Test] tests: The list of tests used to create the stats
+        :return: Ready-to-send string congaing the results of the tests, including
+                 discord markdown
+        :rtype: str
         """
         response = "```\n"
         longest_name = max(map(lambda t: len(t.name), tests))
@@ -131,11 +133,15 @@ class DiscordInteractiveInterface(DiscordBot):
         return response
 
     async def _display_stats(self, channel: discord.TextChannel):
-        """Display the status of the various tests. Just a send wrapper for :py:func:`_build_stats`"""
+        """ Display the status of the various tests. Just a send wrapper for
+        :py:func:`_build_stats`
+        """
         await channel.send(await self._build_stats(self._tests))
 
     async def on_ready(self):
-        """ Report when the bot is ready for use and report the available tests to the console"""
+        """ Report when the bot is ready for use and report the available tests
+        to the console
+        """
         # todo: make the bot say something in discord as well
         print("Started distest bot.")
         print("Available tests are:")
@@ -143,12 +149,13 @@ class DiscordInteractiveInterface(DiscordBot):
             print("   {}".format(test.name))
 
     async def on_message(self, message: discord.Message):
-        """ Handle an incoming message, see :discord:func:`event.on_message` for event reference
+        """ Handle an incoming message, see :discord:ref:`event.on_message` for
+        event reference.
 
-            Parses a message, can ignore it or parse the message as a command and run some tests or do one of the \
-            alternate functions (stats, list, or help)
+        Parse a message, can ignore it or parse the message as a command and
+        run some tests or do one of the alternate functions (stats, list, or help)
 
-            :param discord.Message message: The message being recieved, passed by discord.py
+        :param discord.Message message: The message being recieved, passed by discord.py
         """
         # TODO: Make this into an intersphinx link to discord's docs
         if message.author == self.user:
@@ -165,11 +172,11 @@ class DiscordInteractiveInterface(DiscordBot):
 
     async def run_tests(self, channel: discord.TextChannel, name: str):
         """ Helper function for choosing and running an appropriate suite of tests
+        Makes sure only tests that still need to be run are run, also prints
+        to the console when a test is run
 
-            Makes sure only tests that still need to be run are run, also prints to the console when a test is run
-
-            :param discord.TextChannel channel: The channel in which to run the tests
-            :param str name: Selector string used to determine what category of test to run
+        :param discord.TextChannel channel: The channel in which to run the tests
+        :param str name: Selector string used to determine what category of test to run
         """
         print("Running: ", name)
         if name == "all":
@@ -194,21 +201,14 @@ class DiscordCliInterface(DiscordInteractiveInterface):
     """ A variant of the discord bot which is designed to be run off command line arguments.
 
     :param str target_name: The name of the bot to target (Username, no discriminator)
-    :param TestCollector collector: The instance of Test Collector that contains the tests to run
+    :param TestCollector collector: The instance of Test Collector that contains the
+                                    tests to run
     :param str test: The name of the test option (all, specific test, etc)
     :param int channel_id: The ID of the channel to run the bot in
     :param bool stats: If true, run in hstats mode. TODO: See if this is actually useful
     """
 
-    def __init__(
-        self,
-        target_name,
-        collector: TestCollector,
-        test: str,
-        channel_id: int,
-        stats: bool,
-        timeout: int,
-    ):
+    def __init__(self, target_name, collector, test, channel_id, stats, timeout):
         super().__init__(target_name, collector, timeout)
         self._test_to_run = test
         self._channel_id = channel_id
@@ -218,21 +218,20 @@ class DiscordCliInterface(DiscordInteractiveInterface):
     #
     def run(self, token) -> int:
         """ Override of the default run() that returns failure state after completion.
+        Allows the failure to cascade back up until it is processed into an exit code by
+        :py:func:`run_command_line_bot`
 
-            Allows the failure to cascade back up until it is processed into an exit code by
-            :py:func:`run_command_line_bot`
-
-            :param str token: The tester bot token
-            :return: Returns 1 if the any test failed, otherwise returns zero.
-            :rtype: int
+        :param str token: The tester bot token
+        :return: Returns 1 if the any test failed, otherwise returns zero.
+        :rtype: int
         """
         super().run(token)
         return self.failure
 
     async def on_ready(self):
-        """ Runs all the tests sequentially when the bot becomes awake and exits when the tests finish.
-
-            The CLI should run all by itself without prompting, and this allows it to behave that way.
+        """ Run all the tests sequentially when the bot becomes awake and exit when the
+        tests finish. The CLI should run all by itself without prompting, and this allows it
+        to behave that way.
         """
         self._channel = self.get_channel(self._channel_id)
         print("Started distest bot.")

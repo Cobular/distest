@@ -9,14 +9,13 @@ from .interface import Test
 
 
 class ExpectCalls:
-    """ Wrap a function in an object which counts the number of times it was called.
+    """ Wrap a function in an object which counts the number of times it was called. If the number
+    of calls is not equal to the expected number when this object is garbage collected, something has
+    gone wrong, and in that case an error is thrown.
 
-        If the number of calls is not equal to the expected number when this object is garbage collected, something has
-        gone wrong, and in that case an error is thrown.
-
-        :param function function: The test :py:class:`function` to track
-        :param int expected_calls: The number of calls expected for that function. \
-        Defaults to 1, and is not currently able to be set to another value
+    :param function function: The test :py:class:`function` to track
+    :param int expected_calls: The number of calls expected for that function. Defaults to 1,
+                               and is not currently able to be set to another value
     """
 
     def __init__(self, function, expected_calls=1):
@@ -78,9 +77,10 @@ class TestCollector:
     def add(self, function, name: str = "", needs_human: bool = False):
         """ Adds a test function to the group, if one with that name is not already present
 
-        :param function function: The function to add
-        :param str name: The name of the function to add, defaults to the function name but can be overridden with the \
-        provided name just like with :discord:func:`discord.ext.bot.command()`. See sample code above.
+        :param func function: The function to add
+        :param str name: The name of the function to add, defaults to the function name but can be overridden
+                         with the provided name just like with :discord:func:`discord.ext.bot.command()`.
+                         See sample code above.
         :param bool needs_human: Optional boolean, true if the test requires a human interaction
         """
         name = name or function.__name__
@@ -89,15 +89,18 @@ class TestCollector:
             raise KeyError("A test case called {} already exists.".format(name))
         self._tests.append(test)
 
-    def find_by_name(self, name: str):
-        """ Return the test with the given name, return None if it does not exist. """
+    def find_by_name(self, name):
+        """ Return the test with the given name, return ``None`` if it does not exist.
+
+        :param str name: The name of the test
+        """
         for i in self._tests:
             if i.name == name:
                 return i
         return None
 
     def __call__(self, *args, **kwargs):
-        """ Add a test decorator-style, simply calls ``add`` when used to decorate something. """
+        """ Add a test decorator-style, simply calls `add` when used to decorate something. """
 
         def _decorator(function):
             self.add(function, *args, **kwargs)
@@ -105,5 +108,5 @@ class TestCollector:
         return ExpectCalls(_decorator, 1)
 
     def __iter__(self):
-        """ Makes the ``TestCollector`` able to be iterated over, which is really helpful in a number of cases."""
+        """ Makes the `TestCollector` able to be iterated over, which is really helpful in a number of cases."""
         return (i for i in self._tests)

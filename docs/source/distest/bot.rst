@@ -1,4 +1,4 @@
-Bot Module
+Bot
 ==========
 
 .. automodule:: distest.bot
@@ -6,14 +6,17 @@ Bot Module
 ------------------------
 
 .. autoclass:: distest.bot.DiscordBot
-    :members: run_test, _find_target
+    :no-private-members:
+    :members:
 
 ------------------------
 
 .. autoclass:: distest.bot.DiscordInteractiveInterface
-    :members: _run_by_predicate, _build_stats, _display_stats, on_ready, on_message, run_tests
+    :no-private-members:
+    :members:
 
 ------------------------
 
 .. autoclass:: distest.bot.DiscordCliInterface
+    :no-private-members:
     :members:

@@ -12,7 +12,7 @@ Distest is a library that makes it very easy to write great application tests fo
 
 .. toctree::
     :maxdepth: 2
-    :caption: Usage Documentation
+    :caption: Usage
 
     distest
     distest/bot
@@ -22,7 +22,7 @@ Distest is a library that makes it very easy to write great application tests fo
 
 .. toctree::
     :maxdepth: 2
-    :caption: In-Depth Internal Documentation
+    :caption: Other Stuff
 
     distest/exceptions
     distest/getting-started-documentation
