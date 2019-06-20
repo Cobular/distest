@@ -1,8 +1,6 @@
 Bot Module
 ==========
 
-.. con::
-
 .. automodule:: distest.bot
 
 ------------------------

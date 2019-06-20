@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = python /home/royalcows9/cs/git/distest/venv/bin/sphinx-build
-PAPER         = letter
+PAPER         =
 BUILDDIR      = build
 
 # Internal variables.

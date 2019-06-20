@@ -30,7 +30,7 @@ class DiscordBot(discord.Client):
         of the two interfaces, :py:class:`DiscordInteractiveInterface` and :py:class:`DiscordCliInterface` to make the
         library more DRY
 
-        :param str target_name: The name of the target bot, used in :py:func:`_find_target` to insure that the target
+        :param str target_name: The name of the target bot, used in :py:func:`_find_target` to insure that the target \
         user is actually present in the server. Good for checking for typos ot other simple mistakes.
     """
 
@@ -149,8 +149,8 @@ class DiscordInteractiveInterface(DiscordBot):
             alternate functions (stats, list, or help)
 
             :param discord.Message message: The message being recieved, passed by discord.py
-            TODO: Make this into an intersphinx link to discord's docs
         """
+        # TODO: Make this into an intersphinx link to discord's docs
         if message.author == self.user:
             return
         if not isinstance(message.channel, (discord.DMChannel, discord.GroupChannel)):
