@@ -69,7 +69,7 @@ class DiscordBot(discord.Client):
             await test.func(test_interface)
         except TestRequirementFailure:
             test.result = TestResult.FAILED
-            if not stop_error:  # TODO: make stopping on errors optional by using this
+            if not stop_error:
                 raise
         else:
             test.result = TestResult.SUCCESS
@@ -99,7 +99,6 @@ class DiscordInteractiveInterface(DiscordBot):
         :param discord.TextChannel channel: The channel to run the test in.
         :param function predicate: The check a test must pass to be run.
         """
-        # TODO: explain what predicate means a bit more
         for test in self._tests:
             if predicate(test):
                 await self.run_test(test, channel, stop_error=True)

@@ -79,7 +79,7 @@ class TestCollector:
 
         :param func function: The function to add
         :param str name: The name of the function to add, defaults to the function name but can be overridden
-                         with the provided name just like with :discord:func:`discord.ext.bot.command()`.
+                         with the provided name just like with :py:class:`discord.ext.commands.Command`.
                          See sample code above.
         :param bool needs_human: Optional boolean, true if the test requires a human interaction
         """

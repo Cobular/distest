@@ -122,7 +122,6 @@ def run_interactive_bot(target_name, token, test_collector, timeout=5):
         :param TestCollector test_collector: The collector that gathered our tests.
         :param int timeout: The amount of time to wait for responses before failing tests.
     """
-    # TODO: Implement interactive timeout
 
     bot = DiscordInteractiveInterface(target_name, test_collector)
     bot.run(token)  # Starts the bot
@@ -142,7 +141,6 @@ def run_command_line_bot(target, token, tests, channel_id, stats, collector, tim
         :param TestCollector collector: The collector that gathered our tests.
         :param int timeout: The amount of time to wait for responses before failing tests.
     """
-    # TODO: Fix the reference, not sure how to do that rn. Don't have internet
     bot = DiscordCliInterface(target, collector, tests, channel_id, stats, timeout)
     failed = bot.run(token)  # returns True if a test failed
     sys.exit(1 if failed else 0)  # Calls sys.exit based on the state of `failed`
