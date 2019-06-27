@@ -123,7 +123,7 @@ def run_interactive_bot(target_name, token, test_collector, timeout=5):
         :param int timeout: The amount of time to wait for responses before failing tests.
     """
 
-    bot = DiscordInteractiveInterface(target_name, test_collector)
+    bot = DiscordInteractiveInterface(target_name, test_collector, timeout)
     bot.run(token)  # Starts the bot
 
 
