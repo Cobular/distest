@@ -50,7 +50,7 @@ class TestCollector:
 
     .. literalinclude:: ../../../example_tester.py
        :linenos:
-       :language: python
+       :language: python3
        :lines: 38-50
        :emphasize-lines: 1, 8
 
@@ -59,7 +59,7 @@ class TestCollector:
     def __init__(self):
         self._tests = []
 
-    def add(self, function, name: str = "", needs_human: bool = False):
+    def add(self, function, name=None, needs_human=False):
         """ Adds a test function to the group, if one with that name is not already present
 
         :param func function: The function to add

@@ -86,7 +86,7 @@ class TestInterface:
         return await message.edit(content=new_content)
 
     async def wait_for_reaction(self, message):
-        """ Assert that ``message`` is reacted to.
+        """ Assert that `message` is reacted to.
 
         :param discord.Message message: The message to test with
         :returns: The reaction object.

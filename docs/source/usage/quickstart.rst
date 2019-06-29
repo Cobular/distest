@@ -7,7 +7,10 @@ Installation
 ------------
 
 1. Install the library with pip:
-     ``pip install distest``
+     .. code-block:: console
+
+        $ pip install distest
+
 2. Distest works by using a second bot (the 'tester') to assert that your bot (the 'target') reacts
    to events appropriately. This means you will need to create a second bot account through the
    `Discord Developer's Portal <https://www.discordapp.com/developers/applications>`_ and obtain the
@@ -24,26 +27,30 @@ for automating your test suite, allowing you to implement Continuous Integration
 
 .. _interactive:
 
-Interactive
-^^^^^^^^^^^
+Interactive Mode
+^^^^^^^^^^^^^^^^
 
-1. Run the bot by running your test suite module directly (called example_tester.py here): ::
+1. Run the bot by running your test suite module directly (called example_tester.py here):
+     .. code-block:: console
 
-       python example_tester.py ${TARGET_NAME} ${TESTER_TOKEN}
+        $ python example_tester.py TARGET_NAME TESTER_TOKEN
 
-2. Go to the channel you want to run your tests in and call the bot using the ``::run`` command. You can designate specific tests to run by name or use ``::run all``
+2. Go to the channel you want to run your tests in and call the bot using the ``::run`` command. You can either designate specific tests to run by name or use ``::run all``
 
 .. seealso::
-    run the ``::help`` command for more options.
+
+    ``::help`` for more commands/options.
 
 .. _command-line:
 
-Command-Line
-^^^^^^^^^^^^
+Command-Line Mode
+^^^^^^^^^^^^^^^^^
 
-For command-line you have to designate the ID of the channel you want to run tests in (preceded by the ``-c`` flag). You must also designated which
-tests to run (with the ``-r`` flag). Your command should look something like this: ::
+For command-line you have to designate the ID of the channel you want to run tests in (preceded by the ``-c`` flag). You must also designate which
+tests to run (with the ``-r`` flag). Your command should look something like this:
 
-    python example_tester.py ${TARGET_NAME} ${TESTER_TOKEN} -c ${CHANNEL_ID} -r all
+  .. code-block:: console
+
+     $ python example_tester.py TARGET_NAME TESTER_TOKEN -c CHANNEL_ID -r all
 
 The program will print test names to the console as it runs them, and then exit.

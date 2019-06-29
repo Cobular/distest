@@ -1,6 +1,3 @@
-""" Distest is a small library designed to allow you to make discord bots to test other bots.
-"""
-
 import argparse
 import sys
 
@@ -9,7 +6,8 @@ from .collector import TestCollector
 
 
 def run_dtest_bot(sysargs, test_collector, timeout=5):
-    """ Wrapper for the library, designed to be called from the tester bot, handles the CLI.
+    """ This is the function you will call in your test suite's ``if __name__ == "__main__":`` statement to
+    get the bot started.
 
     :param list sysargs: The list returned by ``sys.argv``, this function parses it and will handle errors in format
     :param TestCollector test_collector: The :ref:`TestCollector` that has been used to decorate the tests

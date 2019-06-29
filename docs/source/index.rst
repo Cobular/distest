@@ -1,7 +1,13 @@
 Welcome to Distest's documentation!
 ===================================
 
-Distest is a library that makes it very easy to write great application tests for your discord bots! See the :ref:`quickstart <quickstart>` for information on how to get started fast!
+Distest is a library that makes it very easy to write great application tests for your discord bots! See :ref:`quickstart <quickstart>` for information on how to get started fast!
+
+Distest works by using a secondary Discord bot account to send specified commands to your bot and ensure that it reacts appropriately. Without Distest,
+you would have to mock a discord server to properly test your bot. With Distest, you can automate the testing of your bot using a shell script, making
+testing and continous integration painless and easy.
+
+See the :ref:`interface <interface>` reference for a list of assertions this library is capable of. If you can think of an assertion that would be useful, make a pull request!
 
 .. toctree::
     :maxdepth: 2
@@ -9,23 +15,22 @@ Distest is a library that makes it very easy to write great application tests fo
 
     usage/quickstart
     usage/example
-    usage/demo
 
 .. toctree::
     :maxdepth: 2
-    :caption: Usage
+    :caption: Reference
 
     distest
+    distest/interface
+    distest/enums
     distest/bot
     distest/collector
-    distest/interface
-    distest/other
+    distest/exceptions
 
 .. toctree::
     :maxdepth: 2
-    :caption: Other Stuff
+    :caption: Other
 
-    distest/exceptions
     distest/getting-started-documentation
 
 Meta Documentation Pages
