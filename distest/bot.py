@@ -148,7 +148,7 @@ class DiscordInteractiveInterface(DiscordBot):
             print("   {}".format(test.name))
 
     async def on_message(self, message: discord.Message):
-        """ Handle an incoming message, see :discord:ref:`event.on_message` for
+        """ Handle an incoming message, see :py:func:`discord.event.on_message` for
         event reference.
 
         Parse a message, can ignore it or parse the message as a command and

@@ -444,3 +444,7 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/", None),
     "discord": ("https://discordpy.readthedocs.io/en/latest/", None),
 }
+
+# autodoc config
+autodoc_member_order = "alphabetical"
+autodoc_typehints = "none"

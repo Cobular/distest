@@ -1,3 +1,5 @@
+.. _exceptions:
+
 Exceptions
 ==========
 
@@ -11,5 +13,3 @@ Exceptions
 
 .. autoclass:: TestRequirementFailure
     :members:
-
-

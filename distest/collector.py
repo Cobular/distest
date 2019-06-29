@@ -44,30 +44,15 @@ class ExpectCalls:
 class TestCollector:
     """ Used to group tests and pass them around all at once.
 
-        Tests can be either added with :py:func:`distest.collector.TestCollector.add()` or by using ``@TestCollector``
-        to decorate the function, as seen in the sample code below. Is very similar in function to
-        :py:class:`discord.ext.commands.Command` from discord.py, which you might already be familiar with.
+    Tests can be either added with :func:`add <distest.collector.TestCollector.add>` or by using ``@TestCollector``
+    to decorate the function, as seen in the sample code below. Is very similar in function to
+    :py:class:`Command <discord.ext.commands.Command>` from discord.py, which you might already be familiar with.
 
-        .. code-block:: python
-            :linenos:
-            :emphasize-lines: 1, 8
-            :caption: tester-bot.py
-            :name: Tester Bot
-
-            @test_collector()
-            async def test_reply_equals(interface):
-                await interface.assert_reply_equals("Please say 'epic!'", "epic!")
-
-            @test_collector("Name Override", needs_human=True)
-            async def test_reply_matches(interface):
-                await interface.assert_reply_matches(
-                    "Say something matching the regex `[0-9]{1,3}`", r"[0-9]{1,3}"
-                )
-
-            async def test_silence(interface):
-                await interface.send_message("Shhhhh...")
-                await interface.ensure_silence()
-            test_collector.add(test_silence)
+    .. literalinclude:: ../../../example_tester.py
+       :linenos:
+       :language: python
+       :lines: 38-50
+       :emphasize-lines: 1, 8
 
     """
 

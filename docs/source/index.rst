@@ -8,6 +8,7 @@ Distest is a library that makes it very easy to write great application tests fo
     :caption: Getting Started
 
     usage/quickstart
+    usage/example
     usage/demo
 
 .. toctree::
@@ -33,4 +34,3 @@ Meta Documentation Pages
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
