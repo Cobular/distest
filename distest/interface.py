@@ -49,8 +49,20 @@ class Test:
 
 class TestInterface:
     """ All the tests, and some supporting functions. Tests are designed to be run
-    by the tester bot and mixed together or with `send_message`.
-    in order to actually test the bot.
+    by the tester and mixed together in order to actually test the bot.
+
+    .. note::
+        In addition to the tests failing due to their own reasons, all tests will also fail if they timeout.
+        This period is specified when the bot is run.
+
+    .. note::
+        Some functions (``send_message`` and ``edit_message``) are helper functions rather than tests and serve to bring
+        some of the functionality of the discord library onto the same level as the tests.
+
+    .. note::
+        ``assert_reply_*`` tests will send a message with the passed content, while ``assert_message_*`` tests require a
+        ``Message`` to be passed to them. This allows for more flexibility when you need it and an easier
+        option when you don't.
 
     :param discord.Client client: The discord client of the tester.
     :param discord.TextChannel channel: The discord channel in which to run the tests.
@@ -63,7 +75,7 @@ class TestInterface:
         self.target = target
 
     async def send_message(self, content):
-        """ Send a message to the testing channel.
+        """ Send a message to the channel the test is being run in. **Helper Function**
 
         :param str content: Text to send in the message
         :returns: The message that was sent
@@ -76,9 +88,10 @@ class TestInterface:
 
     @staticmethod
     async def edit_message(message, new_content):
-        """ Modify a message.
+        """ Modify a message. Most tests and ``send_message`` return the ``discord.Message`` they sent, which can be
+        used here. **Helper Function**
 
-        :param discord.Message message: The target message.
+        :param discord.Message message: The target message. Must be a ``discord.Message``
         :param str new_content: The text to change `message` to.
         :returns: `message` after modification.
         :rtype: discord.Message
@@ -86,7 +99,7 @@ class TestInterface:
         return await message.edit(content=new_content)
 
     async def wait_for_reaction(self, message):
-        """ Assert that `message` is reacted to.
+        """ Assert that ``message`` is reacted to with any reaction.
 
         :param discord.Message message: The message to test with
         :returns: The reaction object.
@@ -111,8 +124,8 @@ class TestInterface:
             return result
 
     async def wait_for_message(self):
-        """ Wait for the bot the send a message. If the bot takes longer than 5
-        seconds (default) the test fails.
+        """ Wait for the bot the send any message. Will fail on timeout, but will ignore messages sent by anything other
+        that the target.
 
         :returns: The message we've been waiting for.
         :rtype: discord.Message
@@ -128,7 +141,8 @@ class TestInterface:
             return result
 
     async def wait_for_reply(self, content):
-        """ Send a message and returns the next message that the targeted bot sends.
+        """ Send a message with ``content`` and returns the next message that the targeted bot sends. Used in many other
+        tests.
 
         :param str content: The text of the trigger message.
         :returns: The message we've been waiting for.
@@ -139,7 +153,7 @@ class TestInterface:
         return await self.wait_for_message()
 
     async def assert_message_equals(self, message, matches):
-        """ If `message` does not match a string exactly, fail the test.
+        """ If ``message`` does not match a string exactly, fail the test.
 
         :param discord.Message message: The message to test.
         :param str matches: The string to test `message` against.
@@ -167,6 +181,9 @@ class TestInterface:
     async def assert_message_matches(self, message, regex):
         """ If `message` does not match a regex, fail the test.
 
+        Requires a properly formatted Python regex ready to be used in the ``re`` functions.
+
+
         :param discord.Message message: The message to test.
         :param str regex: The regular expression to test `messsage` against.
         :returns: `message`
@@ -190,7 +207,7 @@ class TestInterface:
         return message
 
     async def assert_reply_equals(self, contents, matches):
-        """ Send a message and wait for a response. If the response does not match a string
+        """ Send a message and wait for a response. If the response does not match the string
         exactly, fail the test.
 
         :param str contents: The content of the trigger message. (A command)
@@ -216,9 +233,9 @@ class TestInterface:
         return await self.assert_message_contains(response, substring)
 
     async def assert_reply_matches(self, contents, regex):
-        """ Send a message and wait for a response. If the response does not
-        match a regex, fail the test. Requires a properly formatted Python regex
-        ready to be used in the ``re`` functions.
+        """ Send a message and wait for a response. If the response does not match a regex, fail the test.
+
+        Requires a properly formatted Python regex ready to be used in the ``re`` functions.
 
         :param str contents: The content of the trigger message. (A command)
         :param str regex: The regular expression to test against.
@@ -230,7 +247,7 @@ class TestInterface:
         return await self.assert_message_matches(response, regex)
 
     async def assert_reaction_equals(self, contents, emoji):
-        """ Send a message and ensure that the reaction is equal to `emoji`
+        """ Send a message and ensure that the reaction is equal to `emoji`. If not, fail the test.
 
         :param str contents: The content of the trigger message. (A command)
         :param discord.Emoji emoji: The emoji that the reaction must equal.
@@ -245,7 +262,8 @@ class TestInterface:
 
     async def assert_reply_has_image(self, contents):
         """Send a message consisting of `contents` and wait for a reply.
-        Check that the reply contains an attachment. If not, fail the test.
+
+        Check that the reply contains a ``discord.Attachment``. If not, fail the test.
 
         :param str contents: The content of the trigger message. (A command)
         :returns: The reply.
@@ -271,8 +289,11 @@ class TestInterface:
             raise UnexpectedResponseError
 
     async def ask_human(self, query):
-        """ Ask a human for an opinion on a question. Currently, only yes-no questions
-        are supported. If the human answers 'no', the test will be failed.
+        """ Ask a human for an opinion on a question using reactions.
+
+        Currently, only yes-no questions are supported. If the human answers 'no', the test will be failed. Do not use
+        if avoidable, since this test is not really automateable. Will fail if the reaction is wrong or takes too long
+        to arrive
 
         :param str query: The question for the human.
         :raises: HumanResponseTimeout, HumanResponseFailure
