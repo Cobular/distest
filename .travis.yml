@@ -6,7 +6,7 @@ install:
 - pip install .
 matrix:
   include:
-    - name: "application_test"
+    - name: "library_test"
       python: "3.7"
       env:
         - TARGET_NAME=DistestUnitTestTarget
