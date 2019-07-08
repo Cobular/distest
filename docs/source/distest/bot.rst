@@ -11,6 +11,7 @@ Bot
     :no-private-members:
     :members:
 
+
 ------------------------
 
 .. autoclass:: distest.bot.DiscordInteractiveInterface

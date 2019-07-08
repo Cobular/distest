@@ -27,9 +27,9 @@ This allows for automating your test suite, allowing you to implement Continuous
 
 No matter how you run your tester, the file must contain:
 
-1. A call to :ref:`run_dtest_bot <distest.run_dtest_bot>`, which will handle all command line arguments and run the tester in the correct mode
-2. A :ref:`TestCollector <TestCollector>`, which will let the bot find and run the you specify
-3. One or more :ref:`Test <Test>`, which should be decorated with the :ref:`TestCollector <TestCollector>`, and are the actual tests that are run.
+1. A call to :py:meth:`run_dtest_bot <distest.run_dtest_bot>`, which will handle all command line arguments and run the tester in the correct mode
+2. A :py:meth:`TestCollector <distest.collector.TestCollector>`, which will let the bot find and run the you specify
+3. One or more :py:meth:`Test <distest.interface.Test>`, which should be decorated with the :py:meth:`TestCollector <distest.collector.TestCollector>`, and are the actual tests that are run.
 
 .. note::
     The error codes will currently be 0 on success or 1 on failure, but we plan to implement meaningful error codes
