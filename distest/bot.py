@@ -141,7 +141,6 @@ class DiscordInteractiveInterface(DiscordBot):
         """ Report when the bot is ready for use and report the available tests
         to the console
         """
-        # todo: make the bot say something in discord as well
         print("Started distest bot.")
         print("Available tests are:")
         for test in self._tests:
@@ -156,7 +155,6 @@ class DiscordInteractiveInterface(DiscordBot):
 
         :param discord.Message message: The message being recieved, passed by discord.py
         """
-        # TODO: Make this into an intersphinx link to discord's docs
         if message.author == self.user:
             return
         if not isinstance(message.channel, (discord.DMChannel, discord.GroupChannel)):
@@ -204,7 +202,7 @@ class DiscordCliInterface(DiscordInteractiveInterface):
                                     tests to run
     :param str test: The name of the test option (all, specific test, etc)
     :param int channel_id: The ID of the channel to run the bot in
-    :param bool stats: If true, run in hstats mode. TODO: See if this is actually useful
+    :param bool stats: If true, run in hstats mode.
     """
 
     def __init__(self, target_name, collector, test, channel_id, stats, timeout):

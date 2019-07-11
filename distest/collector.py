@@ -20,9 +20,7 @@ class ExpectCalls:
 
     def __init__(self, function, expected_calls=1):
         self.function = function
-        self.expected_calls = (
-            expected_calls
-        )  # TODO: implement this in some way, figure out proper use
+        self.expected_calls = expected_calls
         self.call_count = 0
 
     def __call__(self, *args, **kwargs):
