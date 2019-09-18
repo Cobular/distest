@@ -43,6 +43,10 @@ async def on_message(message):
     if message.content.startswith("Click the Check!"):
         await asyncio.sleep(1)
         sent = await message.add_reaction("\u2714")
+    if message.content.startswith("Test the Embed!"):
+        await asyncio.sleep(1)
+        embed = discord.Embed(title="This is a test!")
+        sent = await message.channel.send(embed=embed)
     if sent is not None:
         print("Message sent: {}".format(sent.clean_content))
 

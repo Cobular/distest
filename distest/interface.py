@@ -115,6 +115,15 @@ class TestInterface:
         await self.channel.send(content)
         return await self.wait_for_message()
 
+    async def assert_embed_equals(
+        self, message: discord.Message, matches: discord.Embed
+    ):
+        """ If the first embed does not equal the given one, fail the test"""
+        if message.embeds[0].title is not matches.title:
+            # TODO: Until now only compares the titles, needs to be extended to all the attributes
+            raise ResponseDidNotMatchError
+        return message
+
     async def assert_message_equals(self, message: discord.Message, matches):
         """ If `message` does not match a string exactly, fail the test."""
         if message.content != matches:
@@ -152,6 +161,10 @@ class TestInterface:
         """
         response = await self.wait_for_reply(contents)
         return await self.assert_message_contains(response, substring)
+
+    async def assert_reply_embed_equals(self, message: str, equals: discord.Embed):
+        response = await self.wait_for_reply(message)
+        return await self.assert_embed_equals(response, equals)
 
     async def assert_reply_matches(self, contents: str, regex):
         """ Send a message and wait for a response. If the response does not

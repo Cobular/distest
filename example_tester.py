@@ -8,6 +8,7 @@ import asyncio
 import sys
 from distest import TestCollector
 from distest import run_interactive_bot, run_dtest_bot
+from discord import Embed
 
 # The tests themselves
 
@@ -65,6 +66,12 @@ async def test_reply_on_edit(interface):
     await asyncio.sleep(1)
     await interface.edit_message(message, "Say 'Yeah, that is cool!'")
     await interface.assert_message_contains(message, "Yeah, that is cool!")
+
+
+@test_collector()
+async def test_embed_matches(interface):
+    embed = Embed(title="This is a test!")
+    await interface.assert_reply_embed_equals("Test the Embed!", embed)
 
 
 # Actually run the bot
