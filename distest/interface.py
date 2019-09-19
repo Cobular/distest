@@ -116,12 +116,45 @@ class TestInterface:
         return await self.wait_for_message()
 
     async def assert_embed_equals(
-        self, message: discord.Message, matches: discord.Embed
+        self,
+        message: discord.Message,
+        matches: discord.Embed,
+        values_to_prove: list = None,
     ):
-        """ If the first embed does not equal the given one, fail the test"""
-        if message.embeds[0].title is not matches.title:
-            # TODO: Until now only compares the titles, needs to be extended to all the attributes
-            raise ResponseDidNotMatchError
+        """
+        If the first embed does not equal the given one, fail the test.
+        :param message: original message
+        :param matches: embed object to compare to
+        :param values_to_prove: a string list with the attributes of the embed, which are to compare
+        :return:
+        """
+
+        # All possible attributes a user can set during initialisation
+        possible_attributes = [
+            "title",
+            "type",
+            "description",
+            "url",
+            "timestamp",
+            "color",
+        ]
+
+        attributes = []
+
+        if values_to_prove is not None:
+            for value in values_to_prove:
+                if value not in possible_attributes:
+                    raise NotImplementedError(
+                        '"' + value + '" is not a possible value.'
+                    )
+                attributes.append(value)
+        else:
+            attributes = possible_attributes
+
+        for embed in message.embeds:
+            for attribute in attributes:
+                if not getattr(embed, attribute) == getattr(matches, attribute):
+                    raise ResponseDidNotMatchError
         return message
 
     async def assert_message_equals(self, message: discord.Message, matches):
