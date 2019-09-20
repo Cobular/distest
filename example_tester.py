@@ -56,6 +56,17 @@ async def test_ask_human(interface):
 
 
 @test_collector()
+async def test_embed_matches(interface):
+    embed = Embed(
+        title="This is a test!",
+        description="Descriptive",
+        url="http://www.example.com",
+        color=0x00FFCC,
+    )
+    await interface.assert_reply_embed_equals("Test the Embed!", embed)
+
+
+@test_collector()
 async def test_reply_has_image(interface):
     await interface.assert_reply_has_image("Post something with an image!")
 
@@ -66,12 +77,6 @@ async def test_reply_on_edit(interface):
     await asyncio.sleep(1)
     await interface.edit_message(message, "Say 'Yeah, that is cool!'")
     await interface.assert_message_contains(message, "Yeah, that is cool!")
-
-
-@test_collector()
-async def test_embed_matches(interface):
-    embed = Embed(title="This is a test!")
-    await interface.assert_reply_embed_equals("Test the Embed!", embed)
 
 
 # Actually run the bot

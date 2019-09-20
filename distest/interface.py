@@ -132,10 +132,8 @@ class TestInterface:
         # All possible attributes a user can set during initialisation
         possible_attributes = [
             "title",
-            "type",
             "description",
             "url",
-            "timestamp",
             "color",
         ]
 
@@ -154,6 +152,7 @@ class TestInterface:
         for embed in message.embeds:
             for attribute in attributes:
                 if not getattr(embed, attribute) == getattr(matches, attribute):
+                    print("Did not match:", attribute, getattr(embed, attribute), getattr(matches, attribute))
                     raise ResponseDidNotMatchError
         return message
 
