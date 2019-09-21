@@ -89,10 +89,19 @@ class TestInterface:
         return message.channel == self.channel and message.author == self.target
 
     async def connect(self, channel):
+        """
+        Connect to a given VoiceChannel
+        :param channel: The VoiceChannel to connect to.
+        :return:
+        """
         self.voice_channel: discord.VoiceChannel = self.client.get_channel(channel)
         self.voice_client: discord.VoiceClient = await self.voice_channel.connect()
 
     async def disconnect(self):
+        """
+        Disconnect from the VoiceChannel; Doesn't work if the Bot isn't connected.
+        :return:
+        """
         if self.voice_channel is None:
             raise NotImplementedError("The Bot isn't connected.")
         await self.voice_client.disconnect()
@@ -164,20 +173,27 @@ class TestInterface:
         return await self.wait_for_message()
 
     async def get_delayed_reply(
-        self, seconds_to_wait, assert_function, argument_list=None
+        self, seconds_to_wait, assert_function, argument_list=[]
     ):
+        """
+        Get the last reply after a specific time and assert it to a test.
+        :param seconds_to_wait: Time to wait in s
+        :param assert_function: The function to call afterwards, without parenthesis
+            (assert_message_equals, not assert_message_equals()!)
+        :param argument_list: The arguments to pass, required is the first one,
+            which is the expected result to compare to.
+        :rtype argument_list: list
+        :return:
+        """
         if argument_list is None:
             argument_list = []
         await asyncio.sleep(seconds_to_wait)
         message: discord.Message = self.channel.last_message
-        if len(argument_list) == 2:
-            return await assert_function(message, argument_list[0], argument_list[1])
-        elif len(argument_list) == 3:
+        if len(argument_list) == 1:
+            return await assert_function(message, argument_list[0])
+        elif len(argument_list) == 2:
             return await assert_function(
-                message,
-                argument_list[0],
-                argument_list[1],
-                attributes_to_prove=argument_list[2],
+                message, argument_list[0], attributes_to_prove=argument_list[1]
             )
         else:
             raise SyntaxError("Invalid Number of Arguments")
