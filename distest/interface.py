@@ -172,11 +172,9 @@ class TestInterface:
         await self.channel.send(content)
         return await self.wait_for_message()
 
-    async def get_delayed_reply(
-        self, seconds_to_wait, assert_function, argument_list
-    ):
-        """
-        Get the last reply after a specific time and assert it to a test.
+    async def get_delayed_reply(self, seconds_to_wait, assert_function, argument_list):
+        """Get the last reply after a specific time and assert it to a test.
+
         :param seconds_to_wait: Time to wait in s
         :param assert_function: The function to call afterwards, without parenthesis
             (assert_message_equals, not assert_message_equals()!)
@@ -204,13 +202,13 @@ class TestInterface:
         matches: discord.Embed,
         attributes_to_prove: list = None,
     ):
-        """
-        If ``matches`` doesn't match the embed of ``message``, fail the test.
+        """If ``matches`` doesn't match the embed of ``message``, fail the test.
+
         :param message: original message
         :param matches: embed object to compare to
         :param attributes_to_prove: a string list with the attributes of the embed, which are to compare
-        This are all the Attributes you can prove: "title", "description", "url", "color", "author", "video",
-        "image" and "thumbnail".
+            This are all the Attributes you can prove: "title", "description", "url", "color",
+            "author", "video", "image" and "thumbnail".
         :return: message
         :rtype: discord.Message
         """
