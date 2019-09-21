@@ -119,13 +119,13 @@ class TestInterface:
         self,
         message: discord.Message,
         matches: discord.Embed,
-        values_to_prove: list = None,
+        attributes_to_prove: list = None,
     ):
         """
         If the first embed does not equal the given one, fail the test.
         :param message: original message
         :param matches: embed object to compare to
-        :param values_to_prove: a string list with the attributes of the embed, which are to compare
+        :param attributes_to_prove: a string list with the attributes of the embed, which are to compare
         :return:
         """
 
@@ -135,24 +135,60 @@ class TestInterface:
             "description",
             "url",
             "color",
+            "author",  # This is not the original author of the message, author is a attribute you are able to set.
+            "video",
+            "image",
+            "thumbnail"
         ]
+        # View all (visible) attributes visualized here: https://imgur.com/a/tD7Ibc4
 
         attributes = []
 
-        if values_to_prove is not None:
-            for value in values_to_prove:
+        # Proves, if the attribute provided by the user is a valid attribute to check
+        if attributes_to_prove is not None:
+            for value in attributes_to_prove:
                 if value not in possible_attributes:
                     raise NotImplementedError(
                         '"' + value + '" is not a possible value.'
                     )
                 attributes.append(value)
         else:
+            # If no attributes to check are provided, check them all.
             attributes = possible_attributes
 
         for embed in message.embeds:
             for attribute in attributes:
-                if not getattr(embed, attribute) == getattr(matches, attribute):
-                    print("Did not match:", attribute, getattr(embed, attribute), getattr(matches, attribute))
+                if attribute == "image" or attribute == "thumbnail":
+                    # Comparison of Embedded Images / Thumbnails
+                    if getattr(getattr(embed, attribute), "url") != getattr(
+                        getattr(matches, attribute), "url"
+                    ):
+                        raise ResponseDidNotMatchError(
+                            "The {} attribute did't match".format(attribute)
+                        )
+                elif attribute == "video":
+                    # Comparison of Embedded Video
+                    if getattr(getattr(embed, "video"), "url") != getattr(
+                        getattr(matches, "video"), "url"
+                    ):
+                        raise ResponseDidNotMatchError(
+                            "The video attribute did't match"
+                        )
+                elif attribute == "author":
+                    # Comparison of Author
+                    if getattr(getattr(embed, "author"), "name") != getattr(
+                        getattr(matches, "author"), "name"
+                    ):
+                        raise ResponseDidNotMatchError(
+                            "The author attribute did't match"
+                        )
+                elif not getattr(embed, attribute) == getattr(matches, attribute):
+                    print(
+                        "Did not match:",
+                        attribute,
+                        getattr(embed, attribute),
+                        getattr(matches, attribute),
+                    )
                     raise ResponseDidNotMatchError
         return message
 

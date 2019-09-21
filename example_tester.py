@@ -63,6 +63,14 @@ async def test_embed_matches(interface):
         url="http://www.example.com",
         color=0x00FFCC,
     )
+    embed.set_author(name="Author")
+    embed.set_image(
+        url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
+    )
+    embed.set_thumbnail(
+        url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
+    )
+    # This image is in WikiMedia Public Domain
     await interface.assert_reply_embed_equals("Test the Embed!", embed)
 
 
