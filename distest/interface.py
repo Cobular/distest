@@ -159,11 +159,14 @@ class TestInterface:
         attributes_to_prove: list = None,
     ):
         """
-        If the first embed does not equal the given one, fail the test.
+        If ``matches`` doesn't match the embed of ``message``, fail the test.
         :param message: original message
         :param matches: embed object to compare to
         :param attributes_to_prove: a string list with the attributes of the embed, which are to compare
-        :return:
+        This are all the Attributes you can prove: "title", "description", "url", "color", "author", "video",
+        "image" and "thumbnail".
+        :return: message
+        :rtype: discord.Message
         """
 
         # All possible attributes a user can set during initialisation
@@ -175,7 +178,7 @@ class TestInterface:
             "author",  # This is not the original author of the message, author is a attribute you are able to set.
             "video",
             "image",
-            "thumbnail"
+            "thumbnail",
         ]
         # View all (visible) attributes visualized here: https://imgur.com/a/tD7Ibc4
 
@@ -309,9 +312,13 @@ class TestInterface:
         response = await self.wait_for_reply(contents)
         return await self.assert_message_contains(response, substring)
 
-    async def assert_reply_embed_equals(self, message: str, equals: discord.Embed):
+    async def assert_reply_embed_equals(
+        self, message: str, equals: discord.Embed, attributes_to_prove: list = None
+    ):
         response = await self.wait_for_reply(message)
-        return await self.assert_embed_equals(response, equals)
+        return await self.assert_embed_equals(
+            response, equals, attributes_to_prove=attributes_to_prove
+        )
 
     async def assert_reply_matches(self, contents: str, regex):
         """ Send a message and wait for a response. If the response does not match a regex, fail the test.

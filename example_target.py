@@ -61,6 +61,10 @@ async def on_message(message):
             url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
         )
         sent = await message.channel.send(embed=embed)
+    if message.content.startswith("Test the Part Embed!"):
+        await asyncio.sleep(1)
+        embed = discord.Embed(title="Testing Title.", description="Right Description!")
+        sent = await message.channel.send(embed=embed)
     if sent is not None:
         print("Message sent: {}".format(sent.clean_content))
 

@@ -75,6 +75,14 @@ async def test_embed_matches(interface):
 
 
 @test_collector()
+async def test_embed_part_matches(interface):
+    embed = Embed(title="Testing Title.", description="Wrong Description")
+    await interface.assert_reply_embed_equals(
+        "Test the Part Embed!", embed, attributes_to_prove=["title"]
+    )
+
+
+@test_collector()
 async def test_reply_has_image(interface):
     await interface.assert_reply_has_image("Post something with an image!")
 
