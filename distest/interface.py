@@ -73,6 +73,8 @@ class TestInterface:
         self.client = client
         self.channel = channel
         self.target = target
+        self.voice_client = None
+        self.voice_channel = None
 
     async def send_message(self, content):
         """ Send a message to the channel the test is being run in. **Helper Function**
@@ -85,6 +87,15 @@ class TestInterface:
 
     def _checkMessage(self, message):
         return message.channel == self.channel and message.author == self.target
+
+    async def connect(self, channel):
+        self.voice_channel: discord.VoiceChannel = self.client.get_channel(channel)
+        self.voice_client: discord.VoiceClient = await self.voice_channel.connect()
+
+    async def disconnect(self):
+        if self.voice_channel is None:
+            raise NotImplementedError("The Bot isn't connected.")
+        await self.voice_client.disconnect()
 
     @staticmethod
     async def edit_message(message, new_content):
@@ -151,6 +162,105 @@ class TestInterface:
         """
         await self.channel.send(content)
         return await self.wait_for_message()
+
+    async def get_delayed_reply(
+        self, seconds_to_wait, assert_function, argument_list=None
+    ):
+        if argument_list is None:
+            argument_list = []
+        await asyncio.sleep(seconds_to_wait)
+        message: discord.Message = self.channel.last_message
+        if len(argument_list) == 2:
+            return await assert_function(message, argument_list[0], argument_list[1])
+        elif len(argument_list) == 3:
+            return await assert_function(
+                message,
+                argument_list[0],
+                argument_list[1],
+                attributes_to_prove=argument_list[2],
+            )
+        else:
+            raise SyntaxError("Invalid Number of Arguments")
+
+    async def assert_embed_equals(
+        self,
+        message: discord.Message,
+        matches: discord.Embed,
+        attributes_to_prove: list = None,
+    ):
+        """
+        If ``matches`` doesn't match the embed of ``message``, fail the test.
+        :param message: original message
+        :param matches: embed object to compare to
+        :param attributes_to_prove: a string list with the attributes of the embed, which are to compare
+        This are all the Attributes you can prove: "title", "description", "url", "color", "author", "video",
+        "image" and "thumbnail".
+        :return: message
+        :rtype: discord.Message
+        """
+
+        # All possible attributes a user can set during initialisation
+        possible_attributes = [
+            "title",
+            "description",
+            "url",
+            "color",
+            "author",  # This is not the original author of the message, author is a attribute you are able to set.
+            "video",
+            "image",
+            "thumbnail",
+        ]
+        # View all (visible) attributes visualized here: https://imgur.com/a/tD7Ibc4
+
+        attributes = []
+
+        # Proves, if the attribute provided by the user is a valid attribute to check
+        if attributes_to_prove is not None:
+            for value in attributes_to_prove:
+                if value not in possible_attributes:
+                    raise NotImplementedError(
+                        '"' + value + '" is not a possible value.'
+                    )
+                attributes.append(value)
+        else:
+            # If no attributes to check are provided, check them all.
+            attributes = possible_attributes
+
+        for embed in message.embeds:
+            for attribute in attributes:
+                if attribute == "image" or attribute == "thumbnail":
+                    # Comparison of Embedded Images / Thumbnails
+                    if getattr(getattr(embed, attribute), "url") != getattr(
+                        getattr(matches, attribute), "url"
+                    ):
+                        raise ResponseDidNotMatchError(
+                            "The {} attribute did't match".format(attribute)
+                        )
+                elif attribute == "video":
+                    # Comparison of Embedded Video
+                    if getattr(getattr(embed, "video"), "url") != getattr(
+                        getattr(matches, "video"), "url"
+                    ):
+                        raise ResponseDidNotMatchError(
+                            "The video attribute did't match"
+                        )
+                elif attribute == "author":
+                    # Comparison of Author
+                    if getattr(getattr(embed, "author"), "name") != getattr(
+                        getattr(matches, "author"), "name"
+                    ):
+                        raise ResponseDidNotMatchError(
+                            "The author attribute did't match"
+                        )
+                elif not getattr(embed, attribute) == getattr(matches, attribute):
+                    print(
+                        "Did not match:",
+                        attribute,
+                        getattr(embed, attribute),
+                        getattr(matches, attribute),
+                    )
+                    raise ResponseDidNotMatchError
+        return message
 
     async def assert_message_equals(self, message, matches):
         """ If ``message`` does not match a string exactly, fail the test.
