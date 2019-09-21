@@ -173,7 +173,7 @@ class TestInterface:
         return await self.wait_for_message()
 
     async def get_delayed_reply(
-        self, seconds_to_wait, assert_function, argument_list=[]
+        self, seconds_to_wait, assert_function, argument_list
     ):
         """
         Get the last reply after a specific time and assert it to a test.
