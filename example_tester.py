@@ -57,19 +57,22 @@ async def test_ask_human(interface):
 
 @test_collector()
 async def test_embed_matches(interface):
-    embed = Embed(
-        title="This is a test!",
-        description="Descriptive",
-        url="http://www.example.com",
-        color=0x00FFCC,
+    embed = (
+        Embed(
+            title="This is a test!",
+            description="Descriptive",
+            url="http://www.example.com",
+            color=0x00FFCC,
+        )
+        .set_author(name="Author")
+        .set_thumbnail(
+            url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
+        )
+        .set_image(
+            url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
+        )
     )
-    embed.set_author(name="Author")
-    embed.set_image(
-        url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
-    )
-    embed.set_thumbnail(
-        url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
-    )
+
     # This image is in WikiMedia Public Domain
     await interface.assert_reply_embed_equals("Test the Embed!", embed)
 
