@@ -1,8 +1,3 @@
-""" This file contains the tests the bot can run, as well as some supporting fluff.
-
-Tests are within TestInterface(), please add more tests there.
-"""
-
 import enum
 import asyncio
 from concurrent.futures import _base
@@ -34,9 +29,15 @@ class TestResult(enum.Enum):
 
 
 class Test:
-    """ Holds data about a specific test """
+    """ Holds data about a specific test.
 
-    def __init__(self, name: str, func, needs_human: bool = False) -> None:
+    :param str name: The name of the test, checks this against the valid test names
+    :param function func: The function in the tester bot that makes up this test
+    :param bool needs_human: Weather or not this test will require human interaction to complete
+    :raises: ValueError
+    """
+
+    def __init__(self, name, func, needs_human=False):
         if name in SPECIAL_TEST_NAMES:
             raise ValueError("{} is not a valid test name".format(name))
         self.name = name
@@ -47,39 +48,64 @@ class Test:
 
 
 class TestInterface:
-    """ All the tests, and some supporting functions.
+    """ All the tests, and some supporting functions. Tests are designed to be run
+    by the tester and mixed together in order to actually test the bot.
 
-        Tests are designed to be run by the tester bot and mixed together
-        or with `send_message()` in order to actually test the bot.
+    .. note::
+        In addition to the tests failing due to their own reasons, all tests will also fail if they timeout.
+        This period is specified when the bot is run.
+
+    .. note::
+        Some functions (``send_message`` and ``edit_message``) are helper functions rather than tests and serve to bring
+        some of the functionality of the discord library onto the same level as the tests.
+
+    .. note::
+        ``assert_reply_*`` tests will send a message with the passed content, while ``assert_message_*`` tests require a
+        ``Message`` to be passed to them. This allows for more flexibility when you need it and an easier
+        option when you don't.
+
+    :param discord.Client client: The discord client of the tester.
+    :param discord.TextChannel channel: The discord channel in which to run the tests.
+    :param discord.Member target: The bot we're testing.
     """
 
-    def __init__(
-        self,
-        client: discord.Client,
-        channel: discord.TextChannel,
-        target: discord.Member,
-    ):
+    def __init__(self, client, channel, target):
         self.client = client
         self.channel = channel
         self.target = target
 
     async def send_message(self, content):
-        """ Send a message to the testing channel.
+        """ Send a message to the channel the test is being run in. **Helper Function**
 
-        :rtype discord.Message:
+        :param str content: Text to send in the message
+        :returns: The message that was sent
+        :rtype: discord.Message
         """
         return await self.channel.send(content)
 
-    def checkMessage(self, message):
+    def _checkMessage(self, message):
         return message.channel == self.channel and message.author == self.target
 
     @staticmethod
-    async def edit_message(message: discord.Message, new_content):
-        """ Modify a message."""
+    async def edit_message(message, new_content):
+        """ Modify a message. Most tests and ``send_message`` return the ``discord.Message`` they sent, which can be
+        used here. **Helper Function**
+
+        :param discord.Message message: The target message. Must be a ``discord.Message``
+        :param str new_content: The text to change `message` to.
+        :returns: `message` after modification.
+        :rtype: discord.Message
+        """
         return await message.edit(content=new_content)
 
-    async def wait_for_reaction(self, message: discord.Message):
-        """ Assert that ``message`` is reacted to."""
+    async def wait_for_reaction(self, message):
+        """ Assert that ``message`` is reacted to with any reaction.
+
+        :param discord.Message message: The message to test with
+        :returns: The reaction object.
+        :rtype: discord.Reaction
+        :raises NoReactionError:
+        """
 
         def checkReaction(reaction, user):
             return (
@@ -98,12 +124,16 @@ class TestInterface:
             return result
 
     async def wait_for_message(self):
-        """ Wait for the bot the send a message.
-            If the bot takes longer than 5 seconds (default) the test fails.
+        """ Wait for the bot the send any message. Will fail on timeout, but will ignore messages sent by anything other
+        that the target.
+
+        :returns: The message we've been waiting for.
+        :rtype: discord.Message
+        :raises: NoResponseError
         """
         try:
             result = await self.client.wait_for(
-                "message", timeout=self.client.timeout, check=self.checkMessage
+                "message", timeout=self.client.timeout, check=self._checkMessage
             )
         except _base.TimeoutError:
             raise NoResponseError
@@ -111,7 +141,14 @@ class TestInterface:
             return result
 
     async def wait_for_reply(self, content):
-        """ Send a message and returns the next message that the targeted bot sends. """
+        """ Send a message with ``content`` and returns the next message that the targeted bot sends. Used in many other
+        tests.
+
+        :param str content: The text of the trigger message.
+        :returns: The message we've been waiting for.
+        :rtype: discord.Message
+        :raises: NoResponseError
+        """
         await self.channel.send(content)
         return await self.wait_for_message()
 
@@ -156,40 +193,82 @@ class TestInterface:
                     raise ResponseDidNotMatchError
         return message
 
-    async def assert_message_equals(self, message: discord.Message, matches):
-        """ If `message` does not match a string exactly, fail the test."""
+    async def assert_message_equals(self, message, matches):
+        """ If ``message`` does not match a string exactly, fail the test.
+
+        :param discord.Message message: The message to test.
+        :param str matches: The string to test `message` against.
+        :returns: `message`
+        :rtype: discord.Message
+        :raises: ResponseDidNotMatchError
+        """
         if message.content != matches:
             raise ResponseDidNotMatchError
         return message
 
-    async def assert_message_contains(self, message: discord.Message, substring):
-        """ If `message` does not contain the given substring, fail the test."""
+    async def assert_message_contains(self, message, substring):
+        """ If `message` does not contain the given substring, fail the test.
+
+        :param discord.Message message: The message to test.
+        :param str substring: The string to test `message` against.
+        :returns: `message`
+        :rtype: discord.Message
+        :raises: ResponseDidNotMatchError
+        """
         if substring not in message.content:
             raise ResponseDidNotMatchError
         return message
 
-    async def assert_message_matches(self, message: discord.Message, regex):
-        """ If `message` does not match a regex, fail the test."""
+    async def assert_message_matches(self, message, regex):
+        """ If `message` does not match a regex, fail the test.
+
+        Requires a properly formatted Python regex ready to be used in the ``re`` functions.
+
+
+        :param discord.Message message: The message to test.
+        :param str regex: The regular expression to test `messsage` against.
+        :returns: `message`
+        :rtype: discord.Message
+        :raises: ResponseDidNotMatchError
+        """
         if not re.match(regex, message.content):
             raise ResponseDidNotMatchError
         return message
 
-    async def assert_message_has_image(self, message: discord.Message):
-        """ Assert ``message`` has an attachment. If not, fail the test."""
+    async def assert_message_has_image(self, message):
+        """ Assert `message` has an attachment. If not, fail the test.
+
+        :param discord.Message message: The message to test.
+        :returns: `message`
+        :rtype: discord.Message
+        :raises: UnexpectedResponseError
+        """
         if message.attachments == [] and message.embeds == []:
             raise UnexpectedResponseError
         return message
 
-    async def assert_reply_equals(self, contents: str, matches: str):
-        """ Send a message and wait for a response.
-            If the response does not match a string exactly, fail the test.
+    async def assert_reply_equals(self, contents, matches):
+        """ Send a message and wait for a response. If the response does not match the string
+        exactly, fail the test.
+
+        :param str contents: The content of the trigger message. (A command)
+        :param str matches: The string to test against.
+        :returns: The reply.
+        :rtype: discord.Message
+        :raises: ResponseDidNotMatchError
         """
         response = await self.wait_for_reply(contents)
         return await self.assert_message_equals(response, matches)
 
-    async def assert_reply_contains(self, contents: str, substring: str):
-        """ Send a message and wait for a response.
-            If the response does not contain the given substring, fail the test.
+    async def assert_reply_contains(self, contents, substring):
+        """ Send a message and wait for a response. If the response does not contain
+        the given substring, fail the test.
+
+        :param str contents: The content of the trigger message. (A command)
+        :param str substring: The string to test against.
+        :returns: The reply.
+        :rtype: discord.Message
+        :raises: ResponseDidNotMatchError
         """
         response = await self.wait_for_reply(contents)
         return await self.assert_message_contains(response, substring)
@@ -199,33 +278,56 @@ class TestInterface:
         return await self.assert_embed_equals(response, equals)
 
     async def assert_reply_matches(self, contents: str, regex):
-        """ Send a message and wait for a response. If the response does not
-            match a regex, fail the test. Requires a properly formatted Python regex
-            ready to be used in the ``re`` functions.
+        """ Send a message and wait for a response. If the response does not match a regex, fail the test.
+
+        Requires a properly formatted Python regex ready to be used in the ``re`` functions.
+
+        :param str contents: The content of the trigger message. (A command)
+        :param str regex: The regular expression to test against.
+        :returns: The reply.
+        :rtype: discord.Message
+        :raises: ResponseDidNotMatchError
+        develop
         """
         response = await self.wait_for_reply(contents)
         return await self.assert_message_matches(response, regex)
 
     async def assert_reaction_equals(self, contents, emoji):
-        """ Send a message and ensure that the reaction is equal to ``emoji``"""
+        """ Send a message and ensure that the reaction is equal to `emoji`. If not, fail the test.
+
+        :param str contents: The content of the trigger message. (A command)
+        :param discord.Emoji emoji: The emoji that the reaction must equal.
+        :returns: The resultant reaction object.
+        :rtype: discord.Reaction
+        :raises: ReactionDidNotMatchError
+        """
         reaction = await self.wait_for_reaction(await self.send_message(contents))
         if str(reaction[0].emoji) != emoji:
             raise ReactionDidNotMatchError
         return reaction
 
-    async def assert_reply_has_image(self, contents: str) -> discord.Message:
-        """Send a message consisting of ``contents`` and wait for a reply.
-           Check that the reply contains an attachment. If not, fail the test.
+    async def assert_reply_has_image(self, contents):
+        """Send a message consisting of `contents` and wait for a reply.
+
+        Check that the reply contains a ``discord.Attachment``. If not, fail the test.
+
+        :param str contents: The content of the trigger message. (A command)
+        :returns: The reply.
+        :rtype: discord.Message
+        :raises: ResponseDidNotMatchError, NoResponseError
         """
         message = await self.wait_for_reply(contents)
         await asyncio.sleep(1)  # Give discord a moment to add the embed if its a link
         return await self.assert_message_has_image(message)
 
     async def ensure_silence(self):
-        """ Assert that the bot does not post any messages for some number of seconds. """
+        """ Assert that the bot does not post any messages for some number of seconds.
+
+        :raises: UnexpectedResponseError, TimeoutError
+        """
         try:
             await self.client.wait_for(
-                "message", timeout=self.client.timeout, check=self.checkMessage
+                "message", timeout=self.client.timeout, check=self._checkMessage
             )
         except _base.TimeoutError:
             pass
@@ -233,8 +335,14 @@ class TestInterface:
             raise UnexpectedResponseError
 
     async def ask_human(self, query):
-        """ Ask a human for an opinion on a question. Currently, only yes-no questions
-            are supported. If the human answers 'no', the test will be failed.
+        """ Ask a human for an opinion on a question using reactions.
+
+        Currently, only yes-no questions are supported. If the human answers 'no', the test will be failed. Do not use
+        if avoidable, since this test is not really automateable. Will fail if the reaction is wrong or takes too long
+        to arrive
+
+        :param str query: The question for the human.
+        :raises: HumanResponseTimeout, HumanResponseFailure
         """
         message = await self.send_message(query)
         await message.add_reaction("\u2714")
