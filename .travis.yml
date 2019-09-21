@@ -1,13 +1,21 @@
 dist: xenial
 language: python
-python: '3.7'
+python: "3.7"
 install:
-  - pip install -r requirements.txt
-  - pip install .
-#env:
-#- TARGET_NAME=DistestUnitTestTarget
+- pip install -r requirements-dev.txt
+- pip install .
+matrix:
+  include:
+    - name: "library_test"
+      python: "3.7"
+      env:
+        - TARGET_NAME=DistestUnitTestTarget
+        - SCRIPT_NAME="run_tests.sh"
+    - name: "documentation_test"
+      python: "3.7"
+      env: SCRIPT_NAME="test_sphinx.sh"
 script:
-  - "./run_tests.sh"
+- ./$SCRIPT_NAME
 deploy:
   provider: pypi
   user: Cobular
