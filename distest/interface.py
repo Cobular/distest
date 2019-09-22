@@ -156,15 +156,16 @@ class TestInterface:
         self,
         message: discord.Message,
         matches: discord.Embed,
-        attributes_to_prove: list = None,
+        attributes_to_check: list = None,
     ):
         """
         If ``matches`` doesn't match the embed of ``message``, fail the test.
         :param message: original message
         :param matches: embed object to compare to
-        :param attributes_to_prove: a string list with the attributes of the embed, which are to compare
+        :param attributes_to_check: A string list, containing all the attributes of the embed which should be compared.
         This are all the Attributes you can prove: "title", "description", "url", "color", "author", "video",
         "image" and "thumbnail".
+        Example: ["title", "description"] This only checks for equality of the title as well as the description attribute.
         :return: message
         :rtype: discord.Message
         """
@@ -185,8 +186,8 @@ class TestInterface:
         attributes = []
 
         # Proves, if the attribute provided by the user is a valid attribute to check
-        if attributes_to_prove is not None:
-            for value in attributes_to_prove:
+        if attributes_to_check is not None:
+            for value in attributes_to_check:
                 if value not in possible_attributes:
                     raise NotImplementedError(
                         '"' + value + '" is not a possible value.'
@@ -317,7 +318,7 @@ class TestInterface:
     ):
         response = await self.wait_for_reply(message)
         return await self.assert_embed_equals(
-            response, equals, attributes_to_prove=attributes_to_prove
+            response, equals, attributes_to_check=attributes_to_prove
         )
 
     async def assert_reply_matches(self, contents: str, regex):
