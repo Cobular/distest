@@ -330,7 +330,6 @@ class TestInterface:
         :returns: The reply.
         :rtype: discord.Message
         :raises: ResponseDidNotMatchError
-        develop
         """
         response = await self.wait_for_reply(contents)
         return await self.assert_message_matches(response, regex)
