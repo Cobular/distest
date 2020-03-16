@@ -20,6 +20,12 @@ async def test_ping(interface):
 
 
 @test_collector()
+async def test_delayed_reply(interface):
+    message = await interface.send_message("Say some stuff, but at 4 seconds, say 'yeet'")
+    await interface.get_delayed_reply(5, interface.assert_message_equals, "yeet")
+
+
+@test_collector()
 async def test_reaction(interface):
     await interface.assert_reaction_equals("React with \u2714 please!", u"\u2714")
 
@@ -57,12 +63,6 @@ async def test_ask_human(interface):
 @test_collector()
 async def test_reply_has_image(interface):
     await interface.assert_reply_has_image("Post something with an image!")
-
-
-@test_collector()
-async def test_delayed_reply(interface):
-    message = await interface.send_message("Say some stuff, but at 4 seconds, say 'yeet'")
-    await interface.get_delayed_reply(5, interface.assert_message_equals, ["yeet"])
 
 
 @test_collector()

@@ -3,6 +3,7 @@ import asyncio
 from concurrent.futures import _base
 import re
 import discord
+from inspect import signature, _ParameterKind
 
 from .exceptions import (
     TestRequirementFailure,
@@ -129,9 +130,9 @@ class TestInterface:
 
         def checkReaction(reaction, user):
             return (
-                reaction.message.id == message.id
-                and user == self.target
-                and reaction.message.channel == self.channel
+                    reaction.message.id == message.id
+                    and user == self.target
+                    and reaction.message.channel == self.channel
             )
 
         try:
@@ -172,36 +173,50 @@ class TestInterface:
         await self.channel.send(content)
         return await self.wait_for_message()
 
-    async def get_delayed_reply(self, seconds_to_wait, test_function, argument_list):
+    async def get_delayed_reply(self, seconds_to_wait, test_function, *args):
         """Get the last reply after a specific time and check it against a given test.
 
-        TODO: Change to use *args instead of this jank thing
-
-        :param seconds_to_wait: Time to wait in s
-        :param test_function: The function to call afterwards, without parenthesis
+        :param float seconds_to_wait: Time to wait in s
+        :param method test_function: The function to call afterwards, without parenthesis
             (assert_message_equals, not assert_message_equals()!)
-        :param argument_list: The arguments to pass to the test, at least one argument is required.
-        :rtype argument_list: list
-        :return:
+        :param args: The arguments to pass to the test, requires the same number of args as the test function.
+            Make sur to pass in **all** args, including kwargs with defaults.
+            NOTE: this policy may change if it becomes kinda stupid down the road.
+        :rtype: Method
+        :raises SyntaxError:
+        :returns: The instance of the test requested
         """
-        if argument_list is None:
-            argument_list = []
-        await asyncio.sleep(seconds_to_wait)
-        message: discord.Message = self.channel.last_message
-        if len(argument_list) == 1:
-            return await test_function(message, argument_list[0])
-        elif len(argument_list) == 2:
-            return await test_function(
-                message, argument_list[0], attributes_to_prove=argument_list[1]
-            )
-        else:
+
+        def parse_parameters(method) -> list:
+            kwarg, parg, either, var_kwarg, var_parg = 0, 0, 0, 0, 0
+            for i in signature(method).parameters:
+                j = signature(method).parameters[i]
+                if j.kind == _ParameterKind.KEYWORD_ONLY:
+                    kwarg += 1
+                if j.kind == _ParameterKind.POSITIONAL_ONLY:
+                    parg += 1
+                if j.kind == _ParameterKind.POSITIONAL_OR_KEYWORD:
+                    either += 1
+                if j.kind == _ParameterKind.VAR_KEYWORD:
+                    var_kwarg += 1
+                if j.kind == _ParameterKind.VAR_POSITIONAL:
+                    var_parg += 1
+            return [kwarg, parg, either, var_kwarg, var_parg]
+
+        desired_method_parameters = parse_parameters(test_function)
+        num_desired_parameters = sum(desired_method_parameters[0:3]) - 1
+        if len(args) != num_desired_parameters:
             raise SyntaxError("Invalid Number of Arguments")
 
+        await asyncio.sleep(seconds_to_wait)
+        message: discord.Message = self.channel.last_message
+        return await test_function(message, *args)
+
     async def assert_embed_equals(
-        self,
-        message: discord.Message,
-        matches: discord.Embed,
-        attributes_to_prove: list = None,
+            self,
+            message: discord.Message,
+            matches: discord.Embed,
+            attributes_to_prove: list = None,
     ):
         """If ``matches`` doesn't match the embed of ``message``, fail the test.
 
@@ -246,7 +261,7 @@ class TestInterface:
                 if attribute == "image" or attribute == "thumbnail":
                     # Comparison of Embedded Images / Thumbnails
                     if getattr(getattr(embed, attribute), "url") != getattr(
-                        getattr(matches, attribute), "url"
+                            getattr(matches, attribute), "url"
                     ):
                         raise ResponseDidNotMatchError(
                             "The {} attribute did't match".format(attribute)
@@ -254,7 +269,7 @@ class TestInterface:
                 elif attribute == "video":
                     # Comparison of Embedded Video
                     if getattr(getattr(embed, "video"), "url") != getattr(
-                        getattr(matches, "video"), "url"
+                            getattr(matches, "video"), "url"
                     ):
                         raise ResponseDidNotMatchError(
                             "The video attribute did't match"
@@ -262,7 +277,7 @@ class TestInterface:
                 elif attribute == "author":
                     # Comparison of Author
                     if getattr(getattr(embed, "author"), "name") != getattr(
-                        getattr(matches, "author"), "name"
+                            getattr(matches, "author"), "name"
                     ):
                         raise ResponseDidNotMatchError(
                             "The author attribute did't match"
