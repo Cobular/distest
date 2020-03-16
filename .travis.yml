@@ -9,7 +9,7 @@ matrix:
     - name: "library_test"
       python: "3.7"
       env:
-        - TARGET_NAME=DistestUnitTestTarget
+#        - TARGET_NAME=DistestUnitTestTarget
         - SCRIPT_NAME="run_tests.sh"
     - name: "documentation_test"
       python: "3.7"

@@ -8,6 +8,7 @@ import asyncio
 import sys
 from distest import TestCollector
 from distest import run_interactive_bot, run_dtest_bot
+from discord import Embed
 
 # The tests themselves
 
@@ -52,6 +53,36 @@ async def test_reply_matches(interface):
 @test_collector()
 async def test_ask_human(interface):
     await interface.ask_human("Click the Check!")
+
+
+@test_collector()
+async def test_embed_matches(interface):
+    embed = (
+        Embed(
+            title="This is a test!",
+            description="Descriptive",
+            url="http://www.example.com",
+            color=0x00FFCC,
+        )
+        .set_author(name="Author")
+        .set_thumbnail(
+            url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
+        )
+        .set_image(
+            url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
+        )
+    )
+
+    # This image is in WikiMedia Public Domain
+    await interface.assert_reply_embed_equals("Test the Embed!", embed)
+
+
+@test_collector()
+async def test_embed_part_matches(interface):
+    embed = Embed(title="Testing Title.", description="Wrong Description")
+    await interface.assert_reply_embed_equals(
+        "Test the Part Embed!", embed, attributes_to_check=["title"]
+    )
 
 
 @test_collector()

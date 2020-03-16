@@ -152,6 +152,94 @@ class TestInterface:
         await self.channel.send(content)
         return await self.wait_for_message()
 
+    async def assert_embed_equals(
+        self,
+        message: discord.Message,
+        matches: discord.Embed,
+        attributes_to_check: list = None,
+    ):
+        """
+        If ``matches`` doesn't match the embed of ``message``, fail the test.
+        :param message: original message
+        :param matches: embed object to compare to
+        :param attributes_to_check: A string list, containing all the attributes of the embed which should be compared.
+        This are all the Attributes you can prove: "title", "description", "url", "color", "author", "video",
+        "image" and "thumbnail".
+        Example: ["title", "description"] This only checks for equality of the title as well as the description attribute.
+        :return: message
+        :rtype: discord.Message
+        """
+
+        # All possible attributes a user can set during initialisation
+        possible_attributes = [
+            "title",
+            "description",
+            "url",
+            "color",
+            "author",  # This is not the original author of the message, author is a attribute you are able to set.
+            "video",
+            "image",
+            "thumbnail",
+        ]
+        # View all (visible) attributes visualized here: https://imgur.com/a/tD7Ibc4
+
+        attributes = []
+
+        # Proves, if the attribute provided by the user is a valid attribute to check
+        if attributes_to_check is not None:
+            for value in attributes_to_check:
+                if value not in possible_attributes:
+                    raise NotImplementedError(
+                        '"' + value + '" is not a possible value.'
+                    )
+                attributes.append(value)
+        else:
+            # If no attributes to check are provided, check them all.
+            attributes = possible_attributes
+
+        for embed in message.embeds:
+            for attribute in attributes:
+                if attribute == "image" or attribute == "thumbnail":
+                    # Comparison of Embedded Images / Thumbnails
+                    if getattr(getattr(embed, attribute), "url") != getattr(
+                        getattr(matches, attribute), "url"
+                    ):
+                        raise ResponseDidNotMatchError(
+                            "The {} attribute did't match".format(attribute)
+                        )
+                elif attribute == "video":
+                    # Comparison of Embedded Video
+                    if getattr(getattr(embed, "video"), "url") != getattr(
+                        getattr(matches, "video"), "url"
+                    ):
+                        raise ResponseDidNotMatchError(
+                            "The video attribute did't match"
+                        )
+                elif attribute == "author":
+                    # Comparison of Author
+                    if getattr(getattr(embed, "author"), "name") != getattr(
+                        getattr(matches, "author"), "name"
+                    ):
+                        raise ResponseDidNotMatchError(
+                            "The author attribute did't match"
+                        )
+                elif attribute == "fields":
+                    pairs = []
+                    for field in matches.fields:
+                        pairs.append({"name": field.name, "value": field.value})
+                    for field in embed.fields:
+                        if {"name": field.name, "value": field.value} not in pairs:
+                            raise ResponseDidNotMatchError
+                elif not getattr(embed, attribute) == getattr(matches, attribute):
+                    print(
+                        "Did not match:",
+                        attribute,
+                        getattr(embed, attribute),
+                        getattr(matches, attribute),
+                    )
+                    raise ResponseDidNotMatchError
+        return message
+
     async def assert_message_equals(self, message, matches):
         """ If ``message`` does not match a string exactly, fail the test.
 
@@ -232,7 +320,15 @@ class TestInterface:
         response = await self.wait_for_reply(contents)
         return await self.assert_message_contains(response, substring)
 
-    async def assert_reply_matches(self, contents, regex):
+    async def assert_reply_embed_equals(
+        self, message: str, equals: discord.Embed, attributes_to_check: list = None
+    ):
+        response = await self.wait_for_reply(message)
+        return await self.assert_embed_equals(
+            response, equals, attributes_to_check=attributes_to_check
+        )
+
+    async def assert_reply_matches(self, contents: str, regex):
         """ Send a message and wait for a response. If the response does not match a regex, fail the test.
 
         Requires a properly formatted Python regex ready to be used in the ``re`` functions.

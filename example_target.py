@@ -21,6 +21,8 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    if message.author.id is client.user.id:
+        return
     sent = None
     if message.content == "ping?":
         await asyncio.sleep(1)
@@ -43,6 +45,26 @@ async def on_message(message):
     if message.content.startswith("Click the Check!"):
         await asyncio.sleep(1)
         sent = await message.add_reaction("\u2714")
+    if message.content.startswith("Test the Embed!"):
+        await asyncio.sleep(1)
+        embed = discord.Embed(
+            title="This is a test!",
+            description="Descriptive",
+            url="http://www.example.com",
+            color=0x00FFCC,
+        )
+        embed.set_author(name="Author")
+        embed.set_image(
+            url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
+        )
+        embed.set_thumbnail(
+            url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
+        )
+        sent = await message.channel.send(embed=embed)
+    if message.content.startswith("Test the Part Embed!"):
+        await asyncio.sleep(1)
+        embed = discord.Embed(title="Testing Title.", description="Right Description!")
+        sent = await message.channel.send(embed=embed)
     if sent is not None:
         print("Message sent: {}".format(sent.clean_content))
 
