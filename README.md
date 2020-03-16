@@ -4,12 +4,14 @@
 [![Build Status](https://img.shields.io/travis/JakeCover/distest/develop.svg?style=flat-square)](https://travis-ci.org/JakeCover/distest)
 [![PyPi Version](https://img.shields.io/pypi/v/distest.svg?style=flat-square
 )](https://pypi.org/project/distest)
-
+[![Discord Server](https://img.shields.io/discord/523301176309972993.svg?label=Discord)](https://discord.gg/Dah7RHH)
 
 
 A small library used to write automated test for Discord bots.
 
 Test framework originally written by [DXsmiley](https://github.com/DXsmiley), update to the rewrite and re-worked UI done by [me](https://github.com/JakeCover), with tons of help from [ALobsterDog](https://github.com/ALobsterDog)
+
+Want to see the bots in action? Join us here on [discord](https://discord.gg/Dah7RHH) for help and to see the example bots whenever they are being tested. See you there!
 
 Just about ready for a 1.0, just need to add a few more features. Until I get everything to a 1.0 though, expect the command line arguments and everything else to be volatile. In addition to the example here, my [main bot](https://github.com/JakeCover/ReplyBot) will be implementing this soon.
 
