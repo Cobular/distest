@@ -60,6 +60,12 @@ async def test_reply_has_image(interface):
 
 
 @test_collector()
+async def test_delayed_reply(interface):
+    message = await interface.send_message("Say some stuff, but at 4 seconds, say 'yeet'")
+    await interface.get_delayed_reply(5, interface.assert_message_equals, ["yeet"])
+
+
+@test_collector()
 async def test_reply_on_edit(interface):
     message = await interface.send_message("Say 'Yeah, that cool!'")
     await asyncio.sleep(1)

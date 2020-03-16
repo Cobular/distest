@@ -43,6 +43,13 @@ async def on_message(message):
     if message.content.startswith("Click the Check!"):
         await asyncio.sleep(1)
         sent = await message.add_reaction("\u2714")
+    if message.content.startswith("Say some stuff, but at 4 seconds, say 'yeet'"):
+        await asyncio.sleep(1)
+        await message.channel.send("hahaha!")
+        await message.channel.send("No!")
+        await message.channel.send("Ok...")
+        await asyncio.sleep(3)
+        sent = await message.channel.send("yeet")
     if sent is not None:
         print("Message sent: {}".format(sent.clean_content))
 
