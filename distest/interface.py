@@ -172,14 +172,15 @@ class TestInterface:
         await self.channel.send(content)
         return await self.wait_for_message()
 
-    async def get_delayed_reply(self, seconds_to_wait, assert_function, argument_list):
-        """Get the last reply after a specific time and assert it to a test.
+    async def get_delayed_reply(self, seconds_to_wait, test_function, argument_list):
+        """Get the last reply after a specific time and check it against a given test.
+
+        TODO: Change to use *args instead of this jank thing
 
         :param seconds_to_wait: Time to wait in s
-        :param assert_function: The function to call afterwards, without parenthesis
+        :param test_function: The function to call afterwards, without parenthesis
             (assert_message_equals, not assert_message_equals()!)
-        :param argument_list: The arguments to pass, required is the first one,
-            which is the expected result to compare to.
+        :param argument_list: The arguments to pass to the test, at least one argument is required.
         :rtype argument_list: list
         :return:
         """
@@ -188,9 +189,9 @@ class TestInterface:
         await asyncio.sleep(seconds_to_wait)
         message: discord.Message = self.channel.last_message
         if len(argument_list) == 1:
-            return await assert_function(message, argument_list[0])
+            return await test_function(message, argument_list[0])
         elif len(argument_list) == 2:
-            return await assert_function(
+            return await test_function(
                 message, argument_list[0], attributes_to_prove=argument_list[1]
             )
         else:
