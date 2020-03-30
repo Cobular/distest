@@ -334,7 +334,8 @@ class TestInterface:
             raise ResponseDidNotMatchError
         return message
 
-    async def assert_message_has_image(self, message):
+    @staticmethod
+    async def assert_message_has_image(message):
         """ Assert `message` has an attachment. If not, fail the test.
 
         :param discord.Message message: The message to test.
