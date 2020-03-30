@@ -3,6 +3,7 @@ import asyncio
 from concurrent.futures import _base
 import re
 import discord
+from inspect import signature, _ParameterKind
 
 from .exceptions import (
     TestRequirementFailure,
@@ -73,6 +74,8 @@ class TestInterface:
         self.client = client
         self.channel = channel
         self.target = target
+        self.voice_client = None
+        self.voice_channel = None
 
     async def send_message(self, content):
         """ Send a message to the channel the test is being run in. **Helper Function**
@@ -85,6 +88,24 @@ class TestInterface:
 
     def _checkMessage(self, message):
         return message.channel == self.channel and message.author == self.target
+
+    async def connect(self, channel):
+        """
+        Connect to a given VoiceChannel
+        :param channel: The VoiceChannel to connect to.
+        :return:
+        """
+        self.voice_channel: discord.VoiceChannel = self.client.get_channel(channel)
+        self.voice_client: discord.VoiceClient = await self.voice_channel.connect()
+
+    async def disconnect(self):
+        """
+        Disconnect from the VoiceChannel; Doesn't work if the Bot isn't connected.
+        :return:
+        """
+        if self.voice_channel is None:
+            raise NotImplementedError("The Bot isn't connected.")
+        await self.voice_client.disconnect()
 
     @staticmethod
     async def edit_message(message, new_content):
@@ -109,9 +130,9 @@ class TestInterface:
 
         def checkReaction(reaction, user):
             return (
-                reaction.message.id == message.id
-                and user == self.target
-                and reaction.message.channel == self.channel
+                    reaction.message.id == message.id
+                    and user == self.target
+                    and reaction.message.channel == self.channel
             )
 
         try:
@@ -152,20 +173,58 @@ class TestInterface:
         await self.channel.send(content)
         return await self.wait_for_message()
 
-    async def assert_embed_equals(
-        self,
-        message: discord.Message,
-        matches: discord.Embed,
-        attributes_to_check: list = None,
-    ):
+    async def get_delayed_reply(self, seconds_to_wait, test_function, *args):
+        """Get the last reply after a specific time and check it against a given test.
+
+        :param float seconds_to_wait: Time to wait in s
+        :param method test_function: The function to call afterwards, without parenthesis
+            (assert_message_equals, not assert_message_equals()!)
+        :param args: The arguments to pass to the test, requires the same number of args as the test function.
+            Make sur to pass in **all** args, including kwargs with defaults.
+            NOTE: this policy may change if it becomes kinda stupid down the road.
+        :rtype: Method
+        :raises SyntaxError:
+        :returns: The instance of the test requested
         """
-        If ``matches`` doesn't match the embed of ``message``, fail the test.
+
+        def parse_parameters(method) -> list:
+            kwarg, parg, either, var_kwarg, var_parg = 0, 0, 0, 0, 0
+            for i in signature(method).parameters:
+                j = signature(method).parameters[i]
+                if j.kind == _ParameterKind.KEYWORD_ONLY:
+                    kwarg += 1
+                if j.kind == _ParameterKind.POSITIONAL_ONLY:
+                    parg += 1
+                if j.kind == _ParameterKind.POSITIONAL_OR_KEYWORD:
+                    either += 1
+                if j.kind == _ParameterKind.VAR_KEYWORD:
+                    var_kwarg += 1
+                if j.kind == _ParameterKind.VAR_POSITIONAL:
+                    var_parg += 1
+            return [kwarg, parg, either, var_kwarg, var_parg]
+
+        desired_method_parameters = parse_parameters(test_function)
+        num_desired_parameters = sum(desired_method_parameters[0:3]) - 1
+        if len(args) != num_desired_parameters:
+            raise SyntaxError("Invalid Number of Arguments")
+
+        await asyncio.sleep(seconds_to_wait)
+        message: discord.Message = self.channel.last_message
+        return await test_function(message, *args)
+
+    async def assert_embed_equals(
+            self,
+            message: discord.Message,
+            matches: discord.Embed,
+            attributes_to_prove: list = None,
+    ):
+        """If ``matches`` doesn't match the embed of ``message``, fail the test.
+
         :param message: original message
         :param matches: embed object to compare to
-        :param attributes_to_check: A string list, containing all the attributes of the embed which should be compared.
-        This are all the Attributes you can prove: "title", "description", "url", "color", "author", "video",
-        "image" and "thumbnail".
-        Example: ["title", "description"] This only checks for equality of the title as well as the description attribute.
+        :param attributes_to_prove: a string list with the attributes of the embed, which are to compare
+            This are all the Attributes you can prove: "title", "description", "url", "color",
+            "author", "video", "image" and "thumbnail".
         :return: message
         :rtype: discord.Message
         """
@@ -186,8 +245,8 @@ class TestInterface:
         attributes = []
 
         # Proves, if the attribute provided by the user is a valid attribute to check
-        if attributes_to_check is not None:
-            for value in attributes_to_check:
+        if attributes_to_prove is not None:
+            for value in attributes_to_prove:
                 if value not in possible_attributes:
                     raise NotImplementedError(
                         '"' + value + '" is not a possible value.'
@@ -202,7 +261,7 @@ class TestInterface:
                 if attribute == "image" or attribute == "thumbnail":
                     # Comparison of Embedded Images / Thumbnails
                     if getattr(getattr(embed, attribute), "url") != getattr(
-                        getattr(matches, attribute), "url"
+                            getattr(matches, attribute), "url"
                     ):
                         raise ResponseDidNotMatchError(
                             "The {} attribute did't match".format(attribute)
@@ -210,7 +269,7 @@ class TestInterface:
                 elif attribute == "video":
                     # Comparison of Embedded Video
                     if getattr(getattr(embed, "video"), "url") != getattr(
-                        getattr(matches, "video"), "url"
+                            getattr(matches, "video"), "url"
                     ):
                         raise ResponseDidNotMatchError(
                             "The video attribute did't match"
@@ -218,18 +277,11 @@ class TestInterface:
                 elif attribute == "author":
                     # Comparison of Author
                     if getattr(getattr(embed, "author"), "name") != getattr(
-                        getattr(matches, "author"), "name"
+                            getattr(matches, "author"), "name"
                     ):
                         raise ResponseDidNotMatchError(
                             "The author attribute did't match"
                         )
-                elif attribute == "fields":
-                    pairs = []
-                    for field in matches.fields:
-                        pairs.append({"name": field.name, "value": field.value})
-                    for field in embed.fields:
-                        if {"name": field.name, "value": field.value} not in pairs:
-                            raise ResponseDidNotMatchError
                 elif not getattr(embed, attribute) == getattr(matches, attribute):
                     print(
                         "Did not match:",

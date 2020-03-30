@@ -65,6 +65,13 @@ async def on_message(message):
         await asyncio.sleep(1)
         embed = discord.Embed(title="Testing Title.", description="Right Description!")
         sent = await message.channel.send(embed=embed)
+    if message.content.startswith("Say some stuff, but at 4 seconds, say 'yeet'"):
+        await asyncio.sleep(1)
+        await message.channel.send("hahaha!")
+        await message.channel.send("No!")
+        await message.channel.send("Ok...")
+        await asyncio.sleep(3)
+        sent = await message.channel.send("yeet")
     if sent is not None:
         print("Message sent: {}".format(sent.clean_content))
 
