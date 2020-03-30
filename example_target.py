@@ -70,7 +70,7 @@ async def on_message(message):
         await message.channel.send("hahaha!")
         await message.channel.send("No!")
         await message.channel.send("Ok...")
-        await asyncio.sleep(3)
+        await asyncio.sleep(2.5)
         sent = await message.channel.send("yeet")
     if sent is not None:
         print("Message sent: {}".format(sent.clean_content))
