@@ -377,7 +377,7 @@ class TestInterface:
     ):
         response = await self.wait_for_reply(message)
         return await self.assert_embed_equals(
-            response, equals, attributes_to_check=attributes_to_check
+            response, equals, attributes_to_prove=attributes_to_check
         )
 
     async def assert_reply_matches(self, contents: str, regex):
