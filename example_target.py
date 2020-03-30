@@ -72,6 +72,9 @@ async def on_message(message):
         await message.channel.send("Ok...")
         await asyncio.sleep(2.5)
         sent = await message.channel.send("yeet")
+    if message.content.startswith("Create a tc called yeet"):
+        await asyncio.sleep(1)
+        await message.guild.create_text_channel("yeet")
     if sent is not None:
         print("Message sent: {}".format(sent.clean_content))
 

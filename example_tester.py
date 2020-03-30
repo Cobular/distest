@@ -35,6 +35,11 @@ async def test_reaction(interface):
 async def test_reply_equals(interface):
     await interface.assert_reply_equals("Please say 'epic!'", "epic!")
 
+@test_collector()
+async def test_channel_create(interface):
+    await interface.send_message("Create a tc called yeet")
+    await interface.assert_channel_created("yeet")
+
 
 @test_collector()
 async def test_silence(interface):

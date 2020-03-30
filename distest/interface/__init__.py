@@ -71,6 +71,7 @@ class TestInterface:
         assert_reply_has_image, get_delayed_reply
     from ._embeds import assert_embed_equals
     from ._wait_for import wait_for_message, wait_for_reaction, wait_for_reply
+    from ._channel import assert_channel_created
 
     edit_message = staticmethod(edit_message)
     assert_message_equals = staticmethod(assert_message_equals)
