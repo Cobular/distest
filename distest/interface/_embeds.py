@@ -10,6 +10,8 @@ async def assert_embed_equals(
 ):
     """If ``matches`` doesn't match the embed of ``message``, fail the test.
 
+    Checks only the attributes from ``attributes_to_prove``.
+
     :param message: original message
     :param matches: embed object to compare to
     :param attributes_to_prove: a string list with the attributes of the embed, which are to compare

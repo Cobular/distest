@@ -22,7 +22,9 @@ async def test_ping(interface):
 
 @test_collector()
 async def test_delayed_reply(interface):
-    message = await interface.send_message("Say some stuff, but at 4 seconds, say 'yeet'")
+    message = await interface.send_message(
+        "Say some stuff, but at 4 seconds, say 'yeet'"
+    )
     await interface.get_delayed_reply(5, interface.assert_message_equals, "yeet")
 
 
@@ -35,10 +37,11 @@ async def test_reaction(interface):
 async def test_reply_equals(interface):
     await interface.assert_reply_equals("Please say 'epic!'", "epic!")
 
+
 @test_collector()
 async def test_channel_create(interface):
     await interface.send_message("Create a tc called yeet")
-    await interface.assert_channel_created("yeet")
+    await interface.assert_guild_channel_created("yeet")
 
 
 @test_collector()

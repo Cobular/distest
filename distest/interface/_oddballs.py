@@ -1,6 +1,10 @@
 from concurrent.futures import _base
 from discord import Reaction
-from distest.exceptions import UnexpectedResponseError, HumanResponseTimeout, HumanResponseFailure
+from distest.exceptions import (
+    UnexpectedResponseError,
+    HumanResponseTimeout,
+    HumanResponseFailure,
+)
 
 
 async def ensure_silence(self):

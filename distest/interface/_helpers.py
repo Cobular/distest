@@ -8,7 +8,7 @@ async def send_message(self, content):
     return await self.channel.send(content)
 
 
-def _checkMessage(self, message):
+def _check_message(self, message):
     return message.channel == self.channel and message.author == self.target
 
 

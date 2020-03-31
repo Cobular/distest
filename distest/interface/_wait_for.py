@@ -1,6 +1,6 @@
 from distest.exceptions import NoResponseError
 from concurrent.futures import _base
-
+from typing import Callable, Optional
 
 
 async def wait_for_reaction(self, message):
@@ -14,9 +14,9 @@ async def wait_for_reaction(self, message):
 
     def check_reaction(reaction, user):
         return (
-                reaction.message.id == message.id
-                and user == self.target
-                and reaction.message.channel == self.channel
+            reaction.message.id == message.id
+            and user == self.target
+            and reaction.message.channel == self.channel
         )
 
     try:
@@ -58,3 +58,28 @@ async def wait_for_reply(self, content):
     """
     await self.channel.send(content)
     return await self.wait_for_message()
+
+
+async def wait_for_event(
+    self, event: str, check: Optional[Callable[..., bool]] = None, timeout: float = None
+):
+    """ A wrapper for the discord.py function :py:func:`wait_for <discord.Client.wait_for>`, tuned to be useful for distest.
+
+    See https://discordpy.readthedocs.io/en/latest/api.html#event-reference for a list of events.
+
+    :param event: The discord.py event, as a string and with the ``on_`` removed from the beginning.
+    :param Callable[...,bool] check: A check function that all events of the type are ran against. Should return true when the desired event occurs, takes the event's params as it's params
+    :param float timeout: How many seconds to wait for the event to occur.
+    :return: The parameters of the event requested
+    :raises: NoResponseError
+    """
+    if timeout is None:
+        timeout = self.client.timeout
+
+    try:
+        result = await self.client.wait_for(event, timeout=timeout, check=check)
+    except _base.TimeoutError:
+        raise NoResponseError
+    # TODO: What happens if the event is wrong / not valid?
+    else:
+        return result
