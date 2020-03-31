@@ -85,6 +85,7 @@ class TestInterface:
         wait_for_reaction,
         wait_for_reply,
         wait_for_event,
+        wait_for_message_in_channel,
     )
     from ._guild_channel import (
         assert_guild_channel_created,

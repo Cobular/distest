@@ -84,6 +84,9 @@ async def on_message(message):
         await text_channel.delete()
     if sent is not None:
         print("Message sent: {}".format(sent.clean_content))
+    if message.content.startswith("Say stuff in another channel"):
+        await asyncio.sleep(1)
+        await client.get_channel(694397509958893640).send("here is a message in another channel")
 
 
 @client.event
