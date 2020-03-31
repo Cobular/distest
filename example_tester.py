@@ -43,6 +43,11 @@ async def test_channel_create(interface):
     await interface.send_message("Create a tc called yeet")
     await interface.assert_guild_channel_created("yeet")
 
+@test_collector()
+async def test_channel_delete(interface):
+    await interface.send_message("Delete that TC bro!")
+    await interface.assert_guild_channel_deleted("yeet")
+
 
 @test_collector()
 async def test_silence(interface):
@@ -110,6 +115,9 @@ async def test_reply_on_edit(interface):
     await asyncio.sleep(1)
     await interface.edit_message(message, "Say 'Yeah, that is cool!'")
     await interface.assert_message_contains(message, "Yeah, that is cool!")
+
+
+
 
 
 # Actually run the bot
