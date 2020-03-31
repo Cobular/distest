@@ -17,7 +17,7 @@ async def assert_guild_channel_created(self, channel_name, timeout=None):
         return channel.name == channel_name
 
     return await self.wait_for_event(
-        "guild_channel_create", check=check_for_channel_name, timeout=30
+        "guild_channel_create", check=check_for_channel_name, timeout=timeout
     )
 
 
@@ -39,43 +39,43 @@ async def assert_guild_channel_deleted(self, channel_name, timeout=None):
     return await self.wait_for_event(
         "guild_channel_delete", check=check_for_channel_name, timeout=timeout
     )
-
-
-async def assert_guild_channel_pin_content_equals(self, channel, message):
-    """ Checks when a channel has a message pinned, and that it matches the message provided. Doesn't work that well currently, maybe don't use
-
-    Useful to check if a specific message has been pinned.
-
-    For various reasons, this cannot currently check if the message was pinned or unpinned,
-        so please be careful to avoid any issues with mis-triggers. This may change in the future.
-
-    :param discord.TextChannel channel: The text channel to watch for pin changes on.
-    :param discord.Message message: The message to check the most recent pin against, compares IDs
-    """
-
-    # TODO: Check if I would use pins[0] or pins[-1] to get the most recent item
-
-    async def check(updated_channel, last_pin):
-        return updated_channel.id == channel.id
-
-    updated_channel, last_pin = await self.wait_for_event(
-        "guild_channel_pins_update", check=check, timeout=30
-    )
-
-    pins = await updated_channel.pins()
-
-    if pins[0].id == message.id:
-        return [updated_channel, last_pin]
-    else:
-        raise ResponseDidNotMatchError
-
-
-async def assert_guild_channel_unpin_content_equals(self, channel, message):
-    """ Checks when a channel's pin is updated.  Doesn't work at all rn, maybe don't use
-
-    """
-
-    def check(updated_channel,):
-        return updated_channel.id == channel.id
-
-    return
+#
+#
+# async def assert_guild_channel_pin_content_equals(self, channel, message):
+#     """ Checks when a channel has a message pinned, and that it matches the message provided. Doesn't work that well currently, maybe don't use
+#
+#     Useful to check if a specific message has been pinned.
+#
+#     For various reasons, this cannot currently check if the message was pinned or unpinned,
+#         so please be careful to avoid any issues with mis-triggers. This may change in the future.
+#
+#     :param discord.TextChannel channel: The text channel to watch for pin changes on.
+#     :param discord.Message message: The message to check the most recent pin against, compares IDs
+#     """
+#
+#     # TODO: Check if I would use pins[0] or pins[-1] to get the most recent item
+#
+#     async def check(updated_channel, last_pin):
+#         return updated_channel.id == channel.id
+#
+#     updated_channel, last_pin = await self.wait_for_event(
+#         "guild_channel_pins_update", check=check, timeout=30
+#     )
+#
+#     pins = await updated_channel.pins()
+#
+#     if pins[0].id == message.id:
+#         return [updated_channel, last_pin]
+#     else:
+#         raise ResponseDidNotMatchError
+#
+#
+# async def assert_guild_channel_unpin_content_equals(self, channel, message):
+#     """ Checks when a channel's pin is updated.  Doesn't work at all rn, maybe don't use
+#
+#     """
+#
+#     def check(updated_channel,):
+#         return updated_channel.id == channel.id
+#
+#     return

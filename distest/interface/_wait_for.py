@@ -39,7 +39,7 @@ async def wait_for_message(self):
     """
     try:
         result = await self.client.wait_for(
-            "message", timeout=self.client.timeout, check=self._checkMessage
+            "message", timeout=self.client.timeout, check=self._check_message
         )
     except _base.TimeoutError:
         raise NoResponseError

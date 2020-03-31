@@ -61,7 +61,7 @@ class TestInterface:
         self.voice_channel = None
 
     # Imported Methods
-    from ._helpers import send_message, _checkMessage, edit_message
+    from ._helpers import send_message, _check_message, edit_message
     from ._voice import connect, disconnect
     from ._oddballs import ask_human, ensure_silence
     from ._reaction import assert_reaction_equals
@@ -89,8 +89,8 @@ class TestInterface:
     from ._guild_channel import (
         assert_guild_channel_created,
         assert_guild_channel_deleted,
-        assert_guild_channel_pin_content_equals,
-        assert_guild_channel_unpin_content_equals,
+        # assert_guild_channel_pin_content_equals,
+        # assert_guild_channel_unpin_content_equals,
     )
 
     edit_message = staticmethod(edit_message)

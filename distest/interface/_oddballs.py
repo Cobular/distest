@@ -14,7 +14,7 @@ async def ensure_silence(self):
     """
     try:
         await self.client.wait_for(
-            "message", timeout=self.client.timeout, check=self._checkMessage
+            "message", timeout=self.client.timeout, check=self._check_message
         )
     except _base.TimeoutError:
         pass
