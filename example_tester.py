@@ -13,7 +13,7 @@ from discord import Embed
 # The tests themselves
 
 test_collector = TestCollector()
-
+created_channel = None
 
 @test_collector()
 async def test_ping(interface):
@@ -22,7 +22,9 @@ async def test_ping(interface):
 
 @test_collector()
 async def test_delayed_reply(interface):
-    message = await interface.send_message("Say some stuff, but at 4 seconds, say 'yeet'")
+    message = await interface.send_message(
+        "Say some stuff, but at 4 seconds, say 'yeet'"
+    )
     await interface.get_delayed_reply(5, interface.assert_message_equals, "yeet")
 
 
@@ -34,6 +36,24 @@ async def test_reaction(interface):
 @test_collector()
 async def test_reply_equals(interface):
     await interface.assert_reply_equals("Please say 'epic!'", "epic!")
+
+
+@test_collector()
+async def test_channel_create(interface):
+    await interface.send_message("Create a tc called yeet")
+    created_channel = await interface.assert_guild_channel_created("yeet")
+
+
+# @test_collector
+# async def test_pin_in_channel(interface):
+#     await interface.send_message("Pin 'this is cool' in yeet")
+#     await interface.assert_guild_channel_pin_content_equals(created_channel )
+
+
+@test_collector()
+async def test_channel_delete(interface):
+    await interface.send_message("Delete that TC bro!")
+    await interface.assert_guild_channel_deleted("yeet")
 
 
 @test_collector()
@@ -70,11 +90,11 @@ async def test_embed_matches(interface):
             url="http://www.example.com",
             color=0x00FFCC,
         )
-        .set_author(name="Author")
-        .set_thumbnail(
+            .set_author(name="Author")
+            .set_thumbnail(
             url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
         )
-        .set_image(
+            .set_image(
             url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
         )
     )
@@ -102,6 +122,7 @@ async def test_reply_on_edit(interface):
     await asyncio.sleep(1)
     await interface.edit_message(message, "Say 'Yeah, that is cool!'")
     await interface.assert_message_contains(message, "Yeah, that is cool!")
+
 
 
 # Actually run the bot

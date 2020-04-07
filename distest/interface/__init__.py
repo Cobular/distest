@@ -61,16 +61,37 @@ class TestInterface:
         self.voice_channel = None
 
     # Imported Methods
-    from ._helpers import send_message, _checkMessage, edit_message
+    from ._helpers import send_message, _check_message, edit_message
     from ._voice import connect, disconnect
     from ._oddballs import ask_human, ensure_silence
     from ._reaction import assert_reaction_equals
-    from ._message import assert_message_equals, assert_message_contains, assert_message_has_image, \
-        assert_message_matches
-    from ._reply import assert_reply_equals, assert_reply_contains, assert_reply_embed_equals, assert_reply_matches, \
-        assert_reply_has_image, get_delayed_reply
+    from ._message import (
+        assert_message_equals,
+        assert_message_contains,
+        assert_message_has_image,
+        assert_message_matches,
+    )
+    from ._reply import (
+        assert_reply_equals,
+        assert_reply_contains,
+        assert_reply_embed_equals,
+        assert_reply_matches,
+        assert_reply_has_image,
+        get_delayed_reply,
+    )
     from ._embeds import assert_embed_equals
-    from ._wait_for import wait_for_message, wait_for_reaction, wait_for_reply
+    from ._wait_for import (
+        wait_for_message,
+        wait_for_reaction,
+        wait_for_reply,
+        wait_for_event,
+    )
+    from ._guild_channel import (
+        assert_guild_channel_created,
+        assert_guild_channel_deleted,
+        # assert_guild_channel_pin_content_equals,
+        # assert_guild_channel_unpin_content_equals,
+    )
 
     edit_message = staticmethod(edit_message)
     assert_message_equals = staticmethod(assert_message_equals)

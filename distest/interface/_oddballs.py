@@ -1,6 +1,10 @@
 from concurrent.futures import _base
 from discord import Reaction
-from distest.exceptions import UnexpectedResponseError, HumanResponseTimeout, HumanResponseFailure
+from distest.exceptions import (
+    UnexpectedResponseError,
+    HumanResponseTimeout,
+    HumanResponseFailure,
+)
 
 
 async def ensure_silence(self):
@@ -10,7 +14,7 @@ async def ensure_silence(self):
     """
     try:
         await self.client.wait_for(
-            "message", timeout=self.client.timeout, check=self._checkMessage
+            "message", timeout=self.client.timeout, check=self._check_message
         )
     except _base.TimeoutError:
         pass

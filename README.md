@@ -28,7 +28,7 @@ The most important thing to know about this bot is that it has two modes, intera
 
 First, you need to run the bot that you wish to test. You can run the example bot supplied with this repo as follows:
 ```
-python example_bot.py TARGET_TOKEN
+python example_target.py TARGET_TOKEN
 ```
 
 Then, you have to run the tester bot (This will run it in interactive mode - CLI mode demo shown later):

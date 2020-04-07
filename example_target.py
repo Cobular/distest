@@ -18,6 +18,7 @@ client = discord.Client()
 async def on_ready():
     print("Ready")
 
+text_channel_id = None
 
 @client.event
 async def on_message(message):
@@ -72,6 +73,15 @@ async def on_message(message):
         await message.channel.send("Ok...")
         await asyncio.sleep(2.5)
         sent = await message.channel.send("yeet")
+    if message.content.startswith("Create a tc called yeet"):
+        global text_channel_id
+        await asyncio.sleep(1)
+        text_channel = await message.guild.create_text_channel("yeet")
+        text_channel_id = text_channel.id
+    if message.content.startswith("Delete that TC bro!"):
+        await asyncio.sleep(1)
+        text_channel = client.get_channel(text_channel_id)
+        await text_channel.delete()
     if sent is not None:
         print("Message sent: {}".format(sent.clean_content))
 

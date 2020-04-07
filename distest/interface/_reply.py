@@ -32,7 +32,7 @@ async def assert_reply_contains(self, contents, substring):
 
 
 async def assert_reply_embed_equals(
-        self, message: str, equals: Embed, attributes_to_check: list = None
+    self, message: str, equals: Embed, attributes_to_check: list = None
 ):
     response = await self.wait_for_reply(message)
     return await self.assert_embed_equals(
