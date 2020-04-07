@@ -1,9 +1,3 @@
-""" Distest is a small library designed to allow you to make discord bots to test other bots.
-
-    This is the main file, and contains the code that is directly involved in running the bot
-    and interacting with the command line, including the classes for bot types and the two interfaces.
-"""
-
 import argparse
 import sys
 
@@ -11,7 +5,15 @@ from .bot import DiscordInteractiveInterface, DiscordCliInterface
 from .collector import TestCollector
 
 
-def run_dtest_bot(sysargs, test_collector: TestCollector, timeout=5):
+def run_dtest_bot(sysargs, test_collector, timeout=5):
+    """ This is the function you will call in your test suite's ``if __name__ == "__main__":`` statement to
+    get the bot started.
+
+    :param list sysargs: The list returned by ``sys.argv``, this function parses it and will handle errors in format
+    :param TestCollector test_collector: The :ref:`TestCollector` that has been used to decorate the tests
+    :param int timeout: An optional parameter to override the amount of time to wait for responses before failing
+                        tests. Defaults to 5 seconds.
+    """
     from distest.validate_discord_token import token_arg
 
     all_run_options = ["all"]
@@ -108,22 +110,35 @@ def run_dtest_bot(sysargs, test_collector: TestCollector, timeout=5):
 
 
 def run_interactive_bot(target_name, token, test_collector, timeout=5):
-    bot = DiscordInteractiveInterface(target_name, test_collector)
+    """ Run the bot in interactive mode.
+
+        Relies on :py:func:`run_dtest_bot` to parse the command line arguments and pass them here.
+        Not really meant to be called by the user.
+
+        :param str target_name: The display name of the bot we are testing.
+        :param str token: The tester's token, used to log in.
+        :param TestCollector test_collector: The collector that gathered our tests.
+        :param int timeout: The amount of time to wait for responses before failing tests.
+    """
+
+    bot = DiscordInteractiveInterface(target_name, test_collector, timeout)
     bot.run(token)  # Starts the bot
 
 
 def run_command_line_bot(target, token, tests, channel_id, stats, collector, timeout):
     """ Start the bot in command-line mode. The program will exit 1 if any of the tests failed.
 
+        Relies on :py:func:`run_dtest_bot` to parse the command line arguments and pass them here.
+        Not really meant to be called by the user.
+
         :param str target: The display name of the bot we are testing.
         :param str token: The tester's token, used to log in.
         :param str tests: List of tests to run.
         :param int channel_id: The ID of the channel in which to run the tests.
         :param bool stats: Determines whether or not to display stats after run.
-        :param TestCollector collector: The ``TestCollector`` that gathered our tests.
+        :param TestCollector collector: The collector that gathered our tests.
         :param int timeout: The amount of time to wait for responses before failing tests.
-        :rtype: None
     """
     bot = DiscordCliInterface(target, collector, tests, channel_id, stats, timeout)
     failed = bot.run(token)  # returns True if a test failed
-    sys.exit(1 if failed else 0)
+    sys.exit(1 if failed else 0)  # Calls sys.exit based on the state of `failed`
