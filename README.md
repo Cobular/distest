@@ -2,8 +2,7 @@
 
 [![CodeFactor](https://www.codefactor.io/repository/github/jakecover/distest/badge/?style=flat-square)](https://www.codefactor.io/repository/github/jakecover/distest/overview/?style=flat-square)
 [![Build Status](https://img.shields.io/travis/JakeCover/distest/develop.svg?style=flat-square)](https://travis-ci.org/JakeCover/distest)
-[![PyPi Version](https://img.shields.io/pypi/v/distest.svg?style=flat-square
-)](https://pypi.org/project/distest)
+[![PyPi Version](https://img.shields.io/pypi/v/distest.svg?style=flat-square)](https://pypi.org/project/distest)
 [![Discord Server](https://img.shields.io/discord/523301176309972993.svg?label=Discord)](https://discord.gg/Dah7RHH)
 
 
