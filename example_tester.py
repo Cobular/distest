@@ -13,7 +13,7 @@ from discord import Embed
 # The tests themselves
 
 test_collector = TestCollector()
-
+created_channel = None
 
 @test_collector()
 async def test_ping(interface):
@@ -41,7 +41,13 @@ async def test_reply_equals(interface):
 @test_collector()
 async def test_channel_create(interface):
     await interface.send_message("Create a tc called yeet")
-    await interface.assert_guild_channel_created("yeet")
+    created_channel = await interface.assert_guild_channel_created("yeet")
+
+
+# @test_collector
+# async def test_pin_in_channel(interface):
+#     await interface.send_message("Pin 'this is cool' in yeet")
+#     await interface.assert_guild_channel_pin_content_equals(created_channel )
 
 
 @test_collector()
@@ -116,6 +122,7 @@ async def test_reply_on_edit(interface):
     await asyncio.sleep(1)
     await interface.edit_message(message, "Say 'Yeah, that is cool!'")
     await interface.assert_message_contains(message, "Yeah, that is cool!")
+
 
 
 # Actually run the bot

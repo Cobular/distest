@@ -89,7 +89,7 @@ class TestInterface:
     from ._guild_channel import (
         assert_guild_channel_created,
         assert_guild_channel_deleted,
-        # assert_guild_channel_pin_content_equals,
+        assert_guild_channel_pin_content_equals,
         # assert_guild_channel_unpin_content_equals,
     )
 
