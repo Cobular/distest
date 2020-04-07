@@ -4,9 +4,7 @@ from distest.exceptions import ResponseDidNotMatchError
 
 
 async def assert_embed_equals(
-        message: Message,
-        matches: Embed,
-        attributes_to_prove: list = None,
+    message: Message, matches: Embed, attributes_to_prove: list = None,
 ):
     """If ``matches`` doesn't match the embed of ``message``, fail the test.
 
@@ -40,9 +38,7 @@ async def assert_embed_equals(
     if attributes_to_prove is not None:
         for value in attributes_to_prove:
             if value not in possible_attributes:
-                raise NotImplementedError(
-                    '"' + value + '" is not a possible value.'
-                )
+                raise NotImplementedError('"' + value + '" is not a possible value.')
             attributes.append(value)
     else:
         # If no attributes to check are provided, check them all.
@@ -53,7 +49,7 @@ async def assert_embed_equals(
             if attribute == "image" or attribute == "thumbnail":
                 # Comparison of Embedded Images / Thumbnails
                 if getattr(getattr(embed, attribute), "url") != getattr(
-                        getattr(matches, attribute), "url"
+                    getattr(matches, attribute), "url"
                 ):
                     raise ResponseDidNotMatchError(
                         "The {} attribute did't match".format(attribute)
@@ -61,19 +57,15 @@ async def assert_embed_equals(
             elif attribute == "video":
                 # Comparison of Embedded Video
                 if getattr(getattr(embed, "video"), "url") != getattr(
-                        getattr(matches, "video"), "url"
+                    getattr(matches, "video"), "url"
                 ):
-                    raise ResponseDidNotMatchError(
-                        "The video attribute did't match"
-                    )
+                    raise ResponseDidNotMatchError("The video attribute did't match")
             elif attribute == "author":
                 # Comparison of Author
                 if getattr(getattr(embed, "author"), "name") != getattr(
-                        getattr(matches, "author"), "name"
+                    getattr(matches, "author"), "name"
                 ):
-                    raise ResponseDidNotMatchError(
-                        "The author attribute did't match"
-                    )
+                    raise ResponseDidNotMatchError("The author attribute did't match")
             elif not getattr(embed, attribute) == getattr(matches, attribute):
                 print(
                     "Did not match:",

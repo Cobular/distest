@@ -39,6 +39,8 @@ async def assert_guild_channel_deleted(self, channel_name, timeout=None):
     return await self.wait_for_event(
         "guild_channel_delete", check=check_for_channel_name, timeout=timeout
     )
+
+
 #
 #
 # async def assert_guild_channel_pin_content_equals(self, channel, message):

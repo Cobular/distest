@@ -47,7 +47,7 @@ async def wait_for_message(self):
         return result
 
 
-async def wait_for_message_in_channel(self, content,  channel_id):
+async def wait_for_message_in_channel(self, content, channel_id):
     """ Send a message with ``content`` and returns the next message that the targeted bot sends. Used in many other
     tests.
 
@@ -57,6 +57,7 @@ async def wait_for_message_in_channel(self, content,  channel_id):
     :rtype: discord.Message
     :raises: NoResponseError
     """
+
     def check_for_message_in_channel(message):
         return message.channel.id == channel_id and message.content == content
 
