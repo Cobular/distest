@@ -1,4 +1,4 @@
-from concurrent.futures import _base
+from asyncio.exceptions import TimeoutError
 from discord import Reaction
 from distest.exceptions import (
     UnexpectedResponseError,
@@ -16,7 +16,7 @@ async def ensure_silence(self):
         await self.client.wait_for(
             "message", timeout=self.client.timeout, check=self._check_message
         )
-    except _base.TimeoutError:
+    except TimeoutError:
         pass
     else:
         raise UnexpectedResponseError
@@ -44,7 +44,7 @@ async def ask_human(self, query):
         reaction: Reaction = await self.client.wait_for(
             "reaction_add", timeout=self.client.timeout, check=check
         )
-    except _base.TimeoutError:
+    except TimeoutError:
         raise HumanResponseTimeout
     else:
         reaction, _ = reaction

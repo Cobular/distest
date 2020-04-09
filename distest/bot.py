@@ -10,7 +10,7 @@ start the bot when it wakes up
 """
 import discord
 
-from .interface import TestResult, Test, TestInterface
+from .TestInterface import TestResult, Test, TestInterface
 from .exceptions import TestRequirementFailure
 from .collector import TestCollector
 
