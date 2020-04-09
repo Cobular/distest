@@ -142,6 +142,7 @@ class DiscordInteractiveInterface(DiscordBot):
         to the console
         """
         print("Started distest bot.")
+        print(f"Invite Link: https://discordapp.com/oauth2/authorize?client_id={self.user.id}&scope=bot&permissions=8 ")
         print("Available tests are:")
         for test in self._tests:
             print("   {}".format(test.name))
@@ -232,6 +233,7 @@ class DiscordCliInterface(DiscordInteractiveInterface):
         """
         self._channel = self.get_channel(self._channel_id)
         print("Started distest bot.")
+        print(f"Invite Link: https://discordapp.com/oauth2/authorize?client_id={self.user.id}&scope=bot&permissions=8 ")
         if self._test_to_run is not None:
             await self.run_tests(self._channel, self._test_to_run)
             await self._display_stats(self._channel)
