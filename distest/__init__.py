@@ -3,6 +3,7 @@ import sys
 
 from .bot import DiscordInteractiveInterface, DiscordCliInterface
 from .collector import TestCollector
+from .interface import TestInterface
 
 
 def run_dtest_bot(sysargs, test_collector, timeout=5):
