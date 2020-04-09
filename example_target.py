@@ -18,7 +18,9 @@ client = discord.Client()
 async def on_ready():
     print("Ready")
 
+
 text_channel_id = None
+
 
 @client.event
 async def on_message(message):

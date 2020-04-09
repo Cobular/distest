@@ -23,18 +23,17 @@ def run_dtest_bot(sysargs, test_collector, timeout=5):
 
     parser = argparse.ArgumentParser(
         description="A small library used to write automated unit tests for Discord bots. "
-        "Has 2 modes, Interactive and CLI. "
-        "If you include -c, the bot will expect to be used in CLI mode. "
-        "See the github wiki for more info"
+                    "Has 2 modes, Interactive and CLI. "
+                    "If you include -c, the bot will expect to be used in CLI mode. "
+                    "See the github wiki for more info"
     )
     required = parser.add_argument_group("Always Required Arguments")
     required.add_argument(
         "bot_target",
         metavar="target_bot_user",
-        type=str,
+        type=int,
         nargs=1,
-        help="The username of the target bot (not this bot). "
-        "Remove the discriminant (#1234) so it is just the account's name.",
+        help="The client ID of the target bot.",
     )
     required.add_argument(
         "bot_token",
@@ -51,7 +50,7 @@ def run_dtest_bot(sysargs, test_collector, timeout=5):
         type=int,
         nargs=1,
         help="The channel ID that the tests should be occurring in (CLI) "
-        "or the ID to send the awake message to (Interactive)",
+             "or the ID to send the awake message to (Interactive)",
         dest="channel",
     )
     run_stats_group = cli_only.add_mutually_exclusive_group()
@@ -61,15 +60,15 @@ def run_dtest_bot(sysargs, test_collector, timeout=5):
         type=str,
         choices=all_run_options,
         help="Runs the bot in run mode, equivalent to ::run <option>. "
-        "Options are listed, they are the tests declared in the bot and the three default options."
-        "Required for the bot to be run in CLI mode, if using in Interactive mode, don't specify this",
+             "Options are listed, they are the tests declared in the bot and the three default options."
+             "Required for the bot to be run in CLI mode, if using in Interactive mode, don't specify this",
     )
     run_stats_group.add_argument(
         "--stats",
         "-s",
         action="store_true",
         help="Runs the bot in stats mode, outputting the last runs stats. "
-        "Equivalent to ::stats",
+             "Equivalent to ::stats",
     )
     parser.add_argument(
         "--timeout",
@@ -77,7 +76,7 @@ def run_dtest_bot(sysargs, test_collector, timeout=5):
         type=int,
         nargs=1,
         help="Changes the timeout (in seconds) on tests before they are assumed to have failed. "
-        "Default is 5 sec.",
+             "Default is 5 sec.",
     )
 
     sysargs.pop(0)  # Pops off the first arg (the filename that is being run)
