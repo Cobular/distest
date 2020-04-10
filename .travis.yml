@@ -4,23 +4,26 @@ python: "3.7"
 install:
 - pip install -r requirements-dev.txt
 - pip install .
-matrix:
+jobs:
   include:
-    - name: "library_test"
+    - stage: "Test"
+      name: "Distest Test"
       python: "3.7"
       env:
         - TARGET_NAME="582625299611648042"
         - CHANNEL="586041924129914910"
-        - SCRIPT_NAME="run_tests.sh"
-    - name: "documentation_test"
+      script: ./run_tests.sh
+    - name: "Docs Test"
       python: "3.7"
-      env: SCRIPT_NAME="test_sphinx.sh"
-script:
-- ./$SCRIPT_NAME
-deploy:
-  provider: pypi
-  user: "__token__"
-  password:
-    secure: "hW6LGiTrizRbn/Q50ed2ajPh5dcQuZMmYLMqokNls3Pttl35Pj28nQwnS2Mt1gODFK3AiTkKdE0M4TuHvCnOxDcbjqROJF9U48LrBADzaQvlj1SWwuKm6qQRtF+1xuONfbc0CNmt/VzqR2v3U7ML0IM1Y/VFMwjcJrjD4of/1SUXINA9jfgsotK8LWSFj/8GN1RiJ0s04yzzZZgggipw2SHcIHkgH8SNTfgRYxRU7t72hgP5m873pruH8KcO/J9HXp+rBoRskLknnJ4KzUblBmDVvJHxHmVZwRE71GnP+x2JKSHQ2lAXCqNjeqSIRNzpAV7pPHIKQeojDEEv0WHXgFhUiz+fmv2N3Hj/qOXYDhtkn1gcjqF9Eahh2KDQoKnoPqoO+7NU5m5s1j5YVLPg9ctX1v2rD/uYK6YfOnhyV4FOKCdJaqY6cMgocs6l1BKwKFT+FIxjoVqUnxfftS2A8USL7v/9DcydJ8UwVrME1cKGFpK0FKknh8dm6LFDD3tY7IMGZpMt5p4HrVwarw9/0aDOrnoofwWadJLdBHEsIxJ1YXzkpyGfbLkMkmx7X0lBvnI9Gd1e9NIE2DJUjQBwproCTRV2e16hJfu8113FmGhNegPUUsy8Ikc+Ii93ic0v8iuHVaWsR7rNSvmcaMzeQ5pepLOuMtci3MnJrNUaLXA="
-  on:
-    branch: master
+      script: ./test_sphinx.sh
+    - name: "Deploy to PyPi"
+      stage: Deploy
+      if: branch = master
+      script: skip
+      deploy:
+        - provider: pypi
+          user: "__token__"
+          password:
+            secure: "hW6LGiTrizRbn/Q50ed2ajPh5dcQuZMmYLMqokNls3Pttl35Pj28nQwnS2Mt1gODFK3AiTkKdE0M4TuHvCnOxDcbjqROJF9U48LrBADzaQvlj1SWwuKm6qQRtF+1xuONfbc0CNmt/VzqR2v3U7ML0IM1Y/VFMwjcJrjD4of/1SUXINA9jfgsotK8LWSFj/8GN1RiJ0s04yzzZZgggipw2SHcIHkgH8SNTfgRYxRU7t72hgP5m873pruH8KcO/J9HXp+rBoRskLknnJ4KzUblBmDVvJHxHmVZwRE71GnP+x2JKSHQ2lAXCqNjeqSIRNzpAV7pPHIKQeojDEEv0WHXgFhUiz+fmv2N3Hj/qOXYDhtkn1gcjqF9Eahh2KDQoKnoPqoO+7NU5m5s1j5YVLPg9ctX1v2rD/uYK6YfOnhyV4FOKCdJaqY6cMgocs6l1BKwKFT+FIxjoVqUnxfftS2A8USL7v/9DcydJ8UwVrME1cKGFpK0FKknh8dm6LFDD3tY7IMGZpMt5p4HrVwarw9/0aDOrnoofwWadJLdBHEsIxJ1YXzkpyGfbLkMkmx7X0lBvnI9Gd1e9NIE2DJUjQBwproCTRV2e16hJfu8113FmGhNegPUUsy8Ikc+Ii93ic0v8iuHVaWsR7rNSvmcaMzeQ5pepLOuMtci3MnJrNUaLXA="
+          on:
+            branch: master
