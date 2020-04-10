@@ -9,7 +9,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="distest",
-    version="0.4.5",
+    version="0.4.6",
     description="Automate the testing of discord bots... With discord bots!",
     long_description=long_description,
     long_description_content_type="text/markdown",
