@@ -29,14 +29,13 @@ class DiscordBot(discord.Client):
     and is just used as a superclass of the two interfaces,
     :py:class:`DiscordInteractiveInterface` and :py:class:`DiscordCliInterface`
 
-    :param str target_name: The name of the target bot, used to ensure that the target user is actually
+    :param str target_id: The name of the target bot, used to ensure that the target user is actually
                             present in the server. Good for checking for typos or other simple mistakes.
-
     """
 
-    def __init__(self, target_name):
+    def __init__(self, target_id):
         super().__init__()
-        self._target_name = target_name.lower()
+        self._target_name = target_id
 
     def _find_target(self, server: discord.Guild) -> discord.Member:
         """ Confirms that the target user is actually present in the specified guild
@@ -46,9 +45,11 @@ class DiscordBot(discord.Client):
             :rtype:  discord.Member
         """
         for member in server.members:
-            if self._target_name in member.name.lower():
+            if self._target_name == member.id:
+                if member.status == discord.Status.offline:
+                    print("Looks like the target bot is on the server but offline, you might want to check on that!")
                 return member
-        raise KeyError("Could not find member with name {}".format(self._target_name))
+        raise KeyError("Could not find member with id {}".format(self._target_name))
 
     async def run_test(
         self, test: Test, channel: discord.TextChannel, stop_error=False
@@ -82,13 +83,13 @@ class DiscordInteractiveInterface(DiscordBot):
 
     Does NOT support CLI arguments
 
-    :param str target_name: The name of the bot to target (Username, no discriminator)
+    :param str target_id: The name of the bot to target (Username, no discriminator)
     :param TestCollector collector: The instance of Test Collector that contains the tests to run
     :param int timeout: The amount of time to wait for responses before failing tests.
     """
 
-    def __init__(self, target_name, collector: TestCollector, timeout=5):
-        super().__init__(target_name)
+    def __init__(self, target_id, collector: TestCollector, timeout=5):
+        super().__init__(target_id)
         self._tests = collector
         self.timeout = timeout
         self.failure = False
@@ -198,7 +199,7 @@ class DiscordInteractiveInterface(DiscordBot):
 class DiscordCliInterface(DiscordInteractiveInterface):
     """ A variant of the discord bot which is designed to be run off command line arguments.
 
-    :param str target_name: The name of the bot to target (Username, no discriminator)
+    :param str target_id: The name of the bot to target (Username, no discriminator)
     :param TestCollector collector: The instance of Test Collector that contains the
                                     tests to run
     :param str test: The name of the test option (all, specific test, etc)
@@ -206,8 +207,8 @@ class DiscordCliInterface(DiscordInteractiveInterface):
     :param bool stats: If true, run in hstats mode.
     """
 
-    def __init__(self, target_name, collector, test, channel_id, stats, timeout):
-        super().__init__(target_name, collector, timeout)
+    def __init__(self, target_id, collector, test, channel_id, stats, timeout):
+        super().__init__(target_id, collector, timeout)
         self._test_to_run = test
         self._channel_id = channel_id
         self._stats = stats
