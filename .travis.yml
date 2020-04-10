@@ -1,19 +1,19 @@
 dist: xenial
 language: python
-python: "3.8"
+python: "3.7"
 install:
 - pip install -r requirements-dev.txt
 - pip install .
 matrix:
   include:
     - name: "library_test"
-      python: "3.8"
+      python: "3.7"
       env:
         - TARGET_NAME=DistestUnitTestTarget
         - CHANNEL="586041924129914910"
         - SCRIPT_NAME="run_tests.sh"
     - name: "documentation_test"
-      python: "3.8"
+      python: "3.7"
       env: SCRIPT_NAME="test_sphinx.sh"
 script:
 - ./$SCRIPT_NAME
