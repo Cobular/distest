@@ -9,7 +9,7 @@ matrix:
     - name: "library_test"
       python: "3.7"
       env:
-        - TARGET_NAME=DistestUnitTestTarget
+        - TARGET_NAME="582625299611648042"
         - CHANNEL="586041924129914910"
         - SCRIPT_NAME="run_tests.sh"
     - name: "documentation_test"
