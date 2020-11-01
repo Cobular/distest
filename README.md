@@ -12,6 +12,8 @@ Test framework originally written by [DXsmiley](https://github.com/DXsmiley), up
 
 Want to see the bots in action? Join us here on [discord](https://discord.gg/Dah7RHH) for help and to see the example bots whenever they are being tested. See you there!
 
+One quick aside about changes and stuff for this project - I am now a full time student, which means that my open time has shot to nearly 0. I still want to keep this working going forwards, because I think it's a very powerful tool, but I want to let everyone know beforehand that my availability for helping out with things will be rather low. Knowing that, if you still want to use this, please do! I will try to fix major issues as soon as they are reported and I have time, but if you make a PR it will be a lot easier on me. Either way, thank you so much for considering using this tool on your project!
+
 Command line stuff works now! We are at 0.2.0, but we will be at 1.0.0 in the not-so-far future once I check more items off the todo list below. Feel free to contribute, more hands is more better! Until we get there though, expect the command line arguments and everything else to be volatile. In addition to the example here, my [main bot](https://github.com/JacobCover/ReplyBot) will be implementing this soon(tm). (this has gone private for reasons, will be back in July-August)
 
 ## Installation
@@ -37,12 +39,12 @@ CLI mode is designed to be used to run the tests in a normal way, such as on git
 
     usage: example_tester.py [-h] [-c channel]
                          [--run {all,test_reply_matches} | --stats]
-                         target_bot_user tester_bot_token
+                         target_bot_id tester_bot_token
                          
 
 **Always Required**
 
-- `target_bot_user`: The username (no discriminator) of the target bot. Same as described above in the general section.
+- `target_bot_id`: The ID of the target bot. Same as described above in the general section.
 
 - `tester_bot_token`: The token that will be used to run the tester bot. Also the same as described above in general.
 
@@ -92,7 +94,7 @@ python example_target.py TARGET_TOKEN
 
 Then, you have to run the tester bot (This will run it in interactive mode - CLI mode demo shown later):
 ```
-python example_tester.py TARGET_USERNAME TESTER_TOKEN
+python example_tester.py TARGET_IDD TESTER_TOKEN
 ```
 
 Make sure to use the username of the bot **without** the discriminator (#1111) or the bot won't understand what the user is
@@ -103,10 +105,14 @@ Once both bots are running, go to any discord channel that both bots have access
 ## Contributing
 Please open an issue for your contribution and tag it with contribution to discuss it. I recommend waiting for a response before pouring hours and hours into the contribution, but it will likely be approved either way. The other thing is to make sure you check the github project to see if there is someone else already working on it who you can help. Other notes:
 
+* You may need to install the additional requirements from `requirements-dev.txt`. This is as simple as running `pip install -r requirements-dev.txt`. This larger list mostly includes things like black for formatting and sphinx for doc testing. 
+
 * If you are adding new test types, please make sure you test them well to make sure they work as intended, and please add a demo of them in use to the `example_tests()` for others to see. When you are done, please open a PR and I'll add it in!
 
 * I use Black for my code formatting, it would be appreciated if you could use it when contributing as well. I will remind you when you make a PR if you don't, it is essential to make sure that diffs aren't cluttered up with silly formatting changes. Additionally, CodeFactor *should* be tracking code quality and doing something with PRs. We will see soon exactly how that will work out.
 
-* Make sure that your issue goes onto the project, that's how we keep track of to-do and in progress things.
+* To build the docs for testing purposes, cd into the docs folder and run `make testhtml`. This will build to a set of HTML files you can view locally. 
+
+* Make sure your issue goes onto the project, that's how we keep track of to-do and in progress things.
 
 * Also, if you just want to propose an idea, create an issue and tag it with enhancement. The library is missing tons of features, so let me know what you want to see. Thank you for your help!
