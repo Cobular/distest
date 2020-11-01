@@ -8,9 +8,9 @@ The easiest way to get started is to adapt this suite of tests so it's specific 
 
   .. code-block:: console
 
-     $ python example_tester.py ${TARGET_NAME} ${TESTER_TOKEN}
+     $ python example_tester.py ${TARGET_ID} ${TESTER_TOKEN}
 
-where ``TARGET_NAME`` is the display name of your discord bot, and ``TESTER_TOKEN`` is the auth token for your testing bot.
+where ``TARGET_ID`` is the Discord ID of your  bot, and ``TESTER_TOKEN`` is the auth token for your testing bot.
 
 .. literalinclude:: ../../../example_tester.py
    :linenos:

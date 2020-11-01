@@ -42,7 +42,7 @@ Interactive Mode
 1. Run the bot by running your test suite module directly (called example_tester.py here):
      .. code-block:: console
 
-        $ python example_tester.py TARGET_NAME TESTER_TOKEN
+        $ python example_tester.py TARGET_ID TESTER_TOKEN
 
 2. Go to the channel you want to run your tests in and call the bot using the ``::run`` command. You can either designate specific tests to run by name or use ``::run all``
 
@@ -60,7 +60,7 @@ tests to run (with the ``-r`` flag). Your command should look something like thi
 
   .. code-block:: console
 
-     $ python example_tester.py TARGET_NAME TESTER_TOKEN -c CHANNEL_ID -r all
+     $ python example_tester.py TARGET_ID TESTER_TOKEN -c CHANNEL_ID -r all
 
 The program will print test names to the console as it runs them, and then exit.
 

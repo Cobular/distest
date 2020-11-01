@@ -22,6 +22,9 @@ HELP_TEXT = """\
 **::list** - List all the tests and their status
 """
 
+intents = discord.Intents.default()
+intents.members = True
+
 
 class DiscordBot(discord.Client):
     """ Discord bot used to run tests.
@@ -34,7 +37,7 @@ class DiscordBot(discord.Client):
     """
 
     def __init__(self, target_id):
-        super().__init__()
+        super().__init__(intents=intents)
         self._target_name = target_id
 
     def _find_target(self, server: discord.Guild) -> discord.Member:

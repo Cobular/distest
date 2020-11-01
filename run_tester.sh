@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 source ./venv/bin/activate
-python ./example_tester.py Cobular "$BOT_TOKEN" -c "$CHANNEL" -r all
+# Includes my user ID here for testing
+python ./example_tester.py "249705405372956672" "$BOT_TOKEN" -c "$CHANNEL" -r all

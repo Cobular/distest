@@ -10,7 +10,7 @@ jobs:
       name: "Distest Test"
       python: "3.7"
       env:
-        - TARGET_NAME="582625299611648042"
+        - TARGET_ID="582625299611648042"
         - CHANNEL="586041924129914910"
       script: ./run_tests.sh
     - name: "Docs Test"
