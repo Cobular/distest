@@ -18,7 +18,7 @@ setup(
     author_email="python@jakecover.me",
     license="MIT",
     packages=["distest", "distest.TestInterface"],
-    install_requires=["discord.py>=1.3.0"],
+    install_requires=["discord.py>=1.5.0"],
     zip_safe=False,
     classifiers=["Topic :: Software Development :: Testing :: Unit"],
     keywords=[
