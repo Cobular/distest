@@ -9,8 +9,11 @@ import sys
 from distest import TestCollector
 from distest import run_interactive_bot, run_dtest_bot
 from discord import Embed
+import distest
 
 # The tests themselves
+
+distest.TestInterface.
 
 test_collector = TestCollector()
 created_channel = None
