@@ -94,15 +94,15 @@ python example_target.py TARGET_TOKEN
 
 Then, you have to run the tester bot (This will run it in interactive mode - CLI mode demo shown later):
 ```
-python example_tester.py TARGET_IDD TESTER_TOKEN
+python example_tester.py TARGET_ID TESTER_TOKEN
 ```
-
-Make sure to use the username of the bot **without** the discriminator (#1111) or the bot won't understand what the user is
 
 Once both bots are running, go to any discord channel that both bots have access to and type `::run all` to run all the tests. Use `::help` to get more information on the commands that the tester can use in interactive mode.
 
 
 ## Contributing
+(see https://distest.readthedocs.io/en/latest/distest/getting-started-documentation.html for more up to date information)
+
 Please open an issue for your contribution and tag it with contribution to discuss it. I recommend waiting for a response before pouring hours and hours into the contribution, but it will likely be approved either way. The other thing is to make sure you check the github project to see if there is someone else already working on it who you can help. Other notes:
 
 * You may need to install the additional requirements from `requirements-dev.txt`. This is as simple as running `pip install -r requirements-dev.txt`. This larger list mostly includes things like black for formatting and sphinx for doc testing. 
