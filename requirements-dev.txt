@@ -17,7 +17,7 @@ idna-ssl==1.1.0
 imagesize==1.2.0
 Jinja2==2.11.2
 MarkupSafe==1.1.1
-multidict==4.7.6
+multidict==5.0.2
 packaging==20.4
 pathspec==0.8.0
 pipdeptree==1.0.0
