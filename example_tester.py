@@ -7,13 +7,14 @@ A functional demo of all possible test cases. This is the format you will want t
 import asyncio
 import sys
 from distest import TestCollector
-from distest import run_interactive_bot, run_dtest_bot
+from distest import run_dtest_bot
 from discord import Embed
 
 # The tests themselves
 
 test_collector = TestCollector()
 created_channel = None
+
 
 @test_collector()
 async def test_ping(interface):
