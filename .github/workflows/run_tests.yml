@@ -3,7 +3,7 @@ name: Run Tests (single version)
 
 on:
   push:
-    branches-ignore: [ develop, master, release/** ]
+    branches-ignore: [ develop, master, release/**, dependabot/** ]
   pull_request:
     branches-ignore: [ develop ]
 
@@ -29,6 +29,6 @@ jobs:
           ./run_tests.sh
         env:
           TARGET_ID: "582625299611648042"
-          TARGET_CHANNEL: "586041924129914910"
+          CHANNEL: "586041924129914910"
           TESTER_TOKEN: ${{ secrets.TESTER_TOKEN }}
           TARGET_TOKEN: ${{ secrets.TARGET_TOKEN }}

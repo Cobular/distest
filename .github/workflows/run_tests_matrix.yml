@@ -3,7 +3,7 @@ name: Run Tests Matrix
 
 on:
   push:
-    branches: [ develop, master, release/** ]
+    branches: [ develop, master, release/**, dependabot/** ]
   pull_request:
     branches: [ develop ]
 
@@ -32,6 +32,6 @@ jobs:
         ./run_tests.sh
       env:
         TARGET_ID: "582625299611648042"
-        TARGET_CHANNEL: "586041924129914910"
+        CHANNEL: "586041924129914910"
         TESTER_TOKEN: ${{ secrets.TESTER_TOKEN }}
         TARGET_TOKEN: ${{ secrets.TARGET_TOKEN }}
