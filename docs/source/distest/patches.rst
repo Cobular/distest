@@ -13,14 +13,17 @@ system, as otherwise it's commands will ignore messages from the tester bot.
 
 Usage
 *****
+Simply put the below code into your **main bot** and then when testing, the bot will no longer ignore other bots!
 
   .. code-block:: python
     :linenos:
 
-    bot = commands.Bot("r!")
-    if os.env.get("TESTING"):
+    bot = commands.Bot(command_prefix='$')
+
+    # Do anything you want for this if, be it env vars, command line args, or the likes.
+    if sys.argv[2] == "TESTING":
+        from distest.patches import patch_target
         bot = patch_target(bot)
-    # Do stuff
 
 
 Docs

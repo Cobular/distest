@@ -24,5 +24,5 @@ def patch_target(bot):
     :return: The patched bot.
     """
     if type(bot) == Bot:
-        bot.process_commands = process_commands
+        bot.process_commands = process_commands.__get__(bot, Bot)
     return bot
