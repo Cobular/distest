@@ -36,3 +36,11 @@ jobs:
         CHANNEL: "586041924129914910"
         TESTER_TOKEN: ${{ secrets.TESTER_TOKEN }}
         TARGET_TOKEN: ${{ secrets.TARGET_TOKEN }}
+
+  test_docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ammaraskar/sphinx-action@master
+        with:
+          docs-folder: "docs/"
