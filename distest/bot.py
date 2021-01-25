@@ -52,8 +52,11 @@ class DiscordBot(discord.Client):
         for member in server.members:
             if self._target_name == member.id:
                 if member.status == discord.Status.offline:
-                    print("Looks like the target bot is on the server but offline, you might want to check on that!")
+                    print("Looks like the target bot is on the server but offline, "
+                          "you might want to check on that!")
                 return member
+        print("Looks like I can't see any server members! You may need to enable the privileged gateway intent, see "
+              "here for how to do so: https://discordpy.readthedocs.io/en/latest/intents.html")
         raise KeyError("Could not find member with id {}".format(self._target_name))
 
     async def run_test(
