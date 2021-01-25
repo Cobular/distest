@@ -77,11 +77,15 @@ class TestInterface:
         assert_reply_equals,
         assert_reply_contains,
         assert_reply_embed_equals,
+        assert_reply_embed_regex,
         assert_reply_matches,
         assert_reply_has_image,
         get_delayed_reply,
     )
-    from ._embeds import assert_embed_equals
+    from ._embeds import (
+        assert_embed_equals,
+        assert_embed_regex,
+    )
     from ._wait_for import (
         wait_for_message,
         wait_for_reaction,
@@ -102,3 +106,4 @@ class TestInterface:
     assert_message_has_image = staticmethod(assert_message_has_image)
     assert_message_matches = staticmethod(assert_message_matches)
     assert_embed_equals = staticmethod(assert_embed_equals)
+    assert_embed_regex = staticmethod(assert_embed_regex)
