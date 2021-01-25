@@ -24,6 +24,7 @@ HELP_TEXT = """\
 
 intents = discord.Intents.default()
 intents.members = True
+intents.presences = True
 
 
 class DiscordBot(discord.Client):

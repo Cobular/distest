@@ -40,6 +40,11 @@ async def assert_reply_embed_equals(
     )
 
 
+async def assert_reply_embed_regex(self, message: str, patterns: dict[str, str]):
+    response = await self.wait_for_reply(message)
+    return await self.assert_embed_regex(response, patterns)
+
+
 async def assert_reply_matches(self, contents: str, regex):
     """ Send a message and wait for a response. If the response does not match a regex, fail the test.
 
