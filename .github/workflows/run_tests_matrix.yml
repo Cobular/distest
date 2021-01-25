@@ -1,0 +1,59 @@
+# Runs tests on many versions of python, slower so only run on develop
+name: Run Tests Matrix
+
+on:
+  push:
+    branches: [ develop, master, release/**, dependabot/** ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+      max-parallel: 1
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install .
+
+    - name: Test with distest
+      run: |
+        ./run_tests.sh
+      env:
+        TARGET_ID: "582625299611648042"
+        CHANNEL: "586041924129914910"
+        TESTER_TOKEN: ${{ secrets.TESTER_TOKEN }}
+        TARGET_TOKEN: ${{ secrets.TARGET_TOKEN }}
+
+  test_docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          clean: false
+          fetch-depth: 20
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          pip install .
+      - name: Test Docs
+        run: ./test_sphinx.sh
+        shell: bash
