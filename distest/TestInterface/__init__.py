@@ -1,4 +1,6 @@
 import enum
+import discord
+from typing import Optional
 
 
 class TestResult(enum.Enum):
@@ -48,17 +50,17 @@ class TestInterface:
         ``Message`` to be passed to them. This allows for more flexibility when you need it and an easier
         option when you don't.
 
-    :param discord.Client client: The discord client of the tester.
+    :param DiscordCliInterface client: The discord client of the tester.
     :param discord.TextChannel channel: The discord channel in which to run the tests.
     :param discord.Member target: The bot we're testing.
     """
 
     def __init__(self, client, channel, target):
         self.client = client
-        self.channel = channel
-        self.target = target
-        self.voice_client = None
-        self.voice_channel = None
+        self.channel: discord.TextChannel = channel
+        self.target: discord.Member = target
+        self.voice_client: Optional[discord.VoiceClient] = None
+        self.voice_channel: Optional[discord.VoiceChannel] = None
 
     # Imported Methods
     from ._helpers import send_message, _check_message, edit_message

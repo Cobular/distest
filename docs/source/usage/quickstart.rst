@@ -14,7 +14,7 @@ Installation
 2. Distest works by using a second bot (the 'tester') to assert that your bot (the 'target') reacts
    to events appropriately. This means you will need to create a second bot account through the
    `Discord Developer's Portal <https://www.discordapp.com/developers/applications>`_ and obtain the
-   authorization token. You also have to invite the tester to your discord guild.
+   authorization token. You also have to invite the tester to your discord guild. Additionally, be sure to enable the ``SERVER MEMBERS INTENT`` option, see :ref:`Member Intent <member_intent>` docs for more info.
 3. Refer to the :ref:`example` for the syntax/function calls necessary to build your suite.
 
 Usage
@@ -65,4 +65,4 @@ tests to run (with the ``-r`` flag). Your command should look something like thi
 The program will print test names to the console as it runs them, and then exit.
 
 .. seealso::
-    ``readme.md`` on GitHub, which contains a more in-depth look at the command properties
+    `readme.md <https://github.com/JakeCover/distest/blob/develop/README.md>`_ on GitHub, which contains a more in-depth look at the command properties

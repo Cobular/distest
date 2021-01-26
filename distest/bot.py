@@ -8,6 +8,7 @@ commands sent from discord to run tests, display stats, and more
 :py:class:`DiscordCliInterface` is a subclass of :py:class:`DiscordInteractiveInterface` and simply contains logic to
 start the bot when it wakes up
 """
+
 import discord
 
 from .TestInterface import TestResult, Test, TestInterface
@@ -51,18 +52,21 @@ class DiscordBot(discord.Client):
         for member in server.members:
             if self._target_name == member.id:
                 if member.status == discord.Status.offline:
-                    print("Looks like the target bot is on the server but offline, you might want to check on that!")
+                    print("Looks like the target bot is on the server but offline, "
+                          "you might want to check on that!")
                 return member
+        print("Looks like I can't see any server members! You may need to enable the privileged gateway intent, see "
+              "here for how to do so: https://discordpy.readthedocs.io/en/latest/intents.html")
         raise KeyError("Could not find member with id {}".format(self._target_name))
 
     async def run_test(
-        self, test: Test, channel: discord.TextChannel, stop_error=False
+            self, test: Test, channel: discord.TextChannel, stop_error=False
     ) -> TestResult:
         """ Run a single test in a given channel.
 
             Updates the test with the result and returns it
 
-            :param Test test: The :py:class:`Test` that is to be run
+            :param Test test: The :py:class:`Test <distest.TestInterface.Test>` that is to be run
             :param discord.TextChannel channel: The
             :param stop_error: Weather or not to stop the program on error. Not currently in use.
             :return: Result of the test
@@ -129,9 +133,9 @@ class DiscordInteractiveInterface(DiscordBot):
             if test.result is TestResult.UNRUN:
                 response += "⚫ Not run\n"
             elif test.result is TestResult.SUCCESS:
-                response += "✔️ Passed\n"
+                response += "✓ Passed\n"
             elif test.result is TestResult.FAILED:
-                response += "❌ Failed\n"
+                response += "✘ Failed\n"
                 self.failure = True
         response += "```\n"
         return response
@@ -218,7 +222,6 @@ class DiscordCliInterface(DiscordInteractiveInterface):
         self._stats = stats
         self._channel = None
 
-    #
     def run(self, token) -> int:
         """ Override of the default run() that returns failure state after completion.
         Allows the failure to cascade back up until it is processed into an exit code by

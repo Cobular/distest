@@ -49,7 +49,7 @@ class TestCollector:
     .. literalinclude:: ../../../example_tester.py
        :linenos:
        :language: python3
-       :lines: 38-50
+       :lines: 66-77
        :emphasize-lines: 1, 8
 
     """
@@ -76,6 +76,7 @@ class TestCollector:
         """ Return the test with the given name, return ``None`` if it does not exist.
 
         :param str name: The name of the test
+        :rtype: :py:class:`Test <distest.TestInterface.Test>`, none
         """
         for i in self._tests:
             if i.name == name:

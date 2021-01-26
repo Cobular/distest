@@ -4,7 +4,7 @@
 *.py[cod]
 
 # virtualenv
-/venv/
+/venv*
 
 # Setuptools distribution folder.
 /dist/
@@ -93,3 +93,4 @@ fkjdfkasdfkh\.txt
 docs/build/
 
 .idea/
+.run/
