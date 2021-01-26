@@ -98,7 +98,6 @@ async def assert_embed_regex(message: Message, patterns: dict[str, str]):
 
     for embed in message.embeds:
         for attribute, regex in patterns.items():
-            print(regex)
             if not re.search(regex, getattr(embed, attribute)):
                 print(
                     "Regex did not match:",
