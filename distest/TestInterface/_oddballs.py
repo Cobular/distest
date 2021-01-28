@@ -7,7 +7,7 @@ from distest.exceptions import (
 )
 try:
     from asyncio.exceptions import TimeoutError
-except ImportError:
+except (ImportError, ModuleNotFoundError):
     from concurrent.futures._base import TimeoutError
 
 async def ensure_silence(self):

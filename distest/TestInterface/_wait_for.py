@@ -2,7 +2,7 @@ from distest.exceptions import NoResponseError
 from typing import Callable, Optional
 try:
     from asyncio.exceptions import TimeoutError
-except ImportError:
+except (ImportError, ModuleNotFoundError):
     from concurrent.futures._base import TimeoutError
 
 
