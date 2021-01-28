@@ -1,14 +1,17 @@
-from asyncio.exceptions import CancelledError
 from discord import Reaction
 from distest.exceptions import (
     UnexpectedResponseError,
     HumanResponseTimeout,
     HumanResponseFailure,
 )
+
 try:
     from asyncio.exceptions import TimeoutError
+    from asyncio.exceptions import CancelledError
 except (ImportError, ModuleNotFoundError):
     from concurrent.futures._base import TimeoutError
+    from concurrent.futures._base import CancelledError
+
 
 async def ensure_silence(self):
     """ Assert that the bot does not post any messages for some number of seconds.
