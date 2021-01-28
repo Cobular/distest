@@ -6,10 +6,9 @@ from distest.exceptions import (
     HumanResponseFailure,
 )
 try:
-    from concurrent.futures._base import TimeoutError
-except ImportError:
     from asyncio.exceptions import TimeoutError
-
+except ImportError:
+    from concurrent.futures._base import TimeoutError
 
 async def ensure_silence(self):
     """ Assert that the bot does not post any messages for some number of seconds.

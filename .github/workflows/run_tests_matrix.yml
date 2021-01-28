@@ -2,6 +2,7 @@
 name: Run Tests Matrix
 
 on:
+  workflow_dispatch:
   push:
     branches: [ develop, master, release/**, dependabot/** ]
   pull_request:

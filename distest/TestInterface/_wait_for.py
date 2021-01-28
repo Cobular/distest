@@ -1,9 +1,9 @@
 from distest.exceptions import NoResponseError
 from typing import Callable, Optional
 try:
-    from concurrent.futures._base import TimeoutError
-except ImportError:
     from asyncio.exceptions import TimeoutError
+except ImportError:
+    from concurrent.futures._base import TimeoutError
 
 
 async def wait_for_reaction(self, message):
