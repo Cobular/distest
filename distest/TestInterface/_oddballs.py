@@ -1,12 +1,14 @@
-from concurrent.futures import _base
-from asyncio.exceptions import TimeoutError, CancelledError
+from asyncio.exceptions import CancelledError
 from discord import Reaction
 from distest.exceptions import (
     UnexpectedResponseError,
     HumanResponseTimeout,
     HumanResponseFailure,
 )
-
+try:
+    from asyncio.exceptions import TimeoutError
+except ImportError:
+    from concurrent.futures._base import TimeoutError
 
 async def ensure_silence(self):
     """ Assert that the bot does not post any messages for some number of seconds.
@@ -17,7 +19,7 @@ async def ensure_silence(self):
         await self.client.wait_for(
             "message", timeout=self.client.timeout, check=self._check_message
         )
-    except (_base.TimeoutError, TimeoutError, CancelledError):
+    except (TimeoutError, TimeoutError, CancelledError):
         pass
     else:
         raise UnexpectedResponseError
@@ -45,7 +47,7 @@ async def ask_human(self, query):
         reaction: Reaction = await self.client.wait_for(
             "reaction_add", timeout=self.client.timeout, check=check
         )
-    except (_base.TimeoutError, TimeoutError):
+    except TimeoutError:
         raise HumanResponseTimeout
     else:
         reaction, _ = reaction

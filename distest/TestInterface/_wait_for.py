@@ -1,7 +1,9 @@
 from distest.exceptions import NoResponseError
-from concurrent.futures import _base
-from asyncio.exceptions import TimeoutError
 from typing import Callable, Optional
+try:
+    from asyncio.exceptions import TimeoutError
+except ImportError:
+    from concurrent.futures._base import TimeoutError
 
 
 async def wait_for_reaction(self, message):
@@ -24,7 +26,7 @@ async def wait_for_reaction(self, message):
         result = await self.client.wait_for(
             "reaction_add", timeout=self.client.timeout, check=check_reaction
         )
-    except (_base.TimeoutError, TimeoutError):
+    except TimeoutError:
         raise NoResponseError
     else:
         return result
@@ -42,7 +44,7 @@ async def wait_for_message(self):
         result = await self.client.wait_for(
             "message", timeout=self.client.timeout, check=self._check_message
         )
-    except (_base.TimeoutError, TimeoutError):
+    except TimeoutError:
         raise NoResponseError
     else:
         return result
@@ -98,7 +100,7 @@ async def wait_for_event(
 
     try:
         result = await self.client.wait_for(event, timeout=timeout, check=check)
-    except (_base.TimeoutError, TimeoutError):
+    except TimeoutError:
         raise NoResponseError
     # TODO: What happens if the event is wrong / not valid?
     else:
