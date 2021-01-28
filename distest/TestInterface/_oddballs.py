@@ -45,7 +45,7 @@ async def ask_human(self, query):
         reaction: Reaction = await self.client.wait_for(
             "reaction_add", timeout=self.client.timeout, check=check
         )
-    except _base.TimeoutError:
+    except (_base.TimeoutError, TimeoutError):
         raise HumanResponseTimeout
     else:
         reaction, _ = reaction
