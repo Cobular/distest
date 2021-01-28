@@ -8,7 +8,7 @@ on:
     branches: [ develop ]
 
 jobs:
-  build:
+  build-matrix:
 
     runs-on: ubuntu-latest
     strategy:
@@ -19,9 +19,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v2 
       with:
-        python-version: 3.9
+        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -37,7 +37,7 @@ jobs:
         TESTER_TOKEN: ${{ secrets.TESTER_TOKEN }}
         TARGET_TOKEN: ${{ secrets.TARGET_TOKEN }}
 
-  test_docs:
+  test_docs_matrix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
