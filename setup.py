@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 from setuptools import setup
-from distest.__about__ import __version__
+from __about__ import __version__
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
