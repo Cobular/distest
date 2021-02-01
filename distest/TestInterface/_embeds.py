@@ -1,4 +1,5 @@
 from discord import Message, Embed
+from typing import Dict
 
 from distest.exceptions import ResponseDidNotMatchError
 
@@ -79,7 +80,7 @@ async def assert_embed_equals(
     return message
 
 
-async def assert_embed_regex(message: Message, patterns: dict[str, str]):
+async def assert_embed_regex(message: Message, patterns: Dict[str, str]):
     """If ``patterns`` cannot be found in the embed of ``message``, fail the test.
 
     Checks only the attributes from the dictionary keys of ``patterns``.

@@ -5,8 +5,6 @@ on:
   workflow_dispatch:
   push:
     branches: [ develop, master, release/**, dependabot/** ]
-  pull_request:
-    branches: [ develop ]
 
 jobs:
   build-matrix:

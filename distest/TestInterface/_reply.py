@@ -2,6 +2,8 @@ from inspect import signature, _ParameterKind
 from discord import Embed, Message
 from asyncio import sleep
 
+from typing import Dict
+
 
 async def assert_reply_equals(self, contents, matches):
     """ Send a message and wait for a response. If the response does not match the string
@@ -40,7 +42,7 @@ async def assert_reply_embed_equals(
     )
 
 
-async def assert_reply_embed_regex(self, message: str, patterns: dict[str, str]):
+async def assert_reply_embed_regex(self, message: str, patterns: Dict[str, str]):
     response = await self.wait_for_reply(message)
     return await self.assert_embed_regex(response, patterns)
 

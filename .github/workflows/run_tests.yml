@@ -4,8 +4,6 @@ name: Run Tests (single version)
 on:
   push:
     branches-ignore: [ develop, master, release/**, dependabot/** ]
-  pull_request:
-    branches-ignore: [ develop ]
 
 jobs:
   build:
