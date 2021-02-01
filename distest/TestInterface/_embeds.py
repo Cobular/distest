@@ -14,7 +14,7 @@ async def assert_embed_equals(
     Checks only the attributes from ``attributes_to_prove``.
 
     :param message: original message
-    :param matches: embed object to compare to
+    :param matches: :py:class:`embed <discord.Embed>` object to compare to
     :param attributes_to_prove: a string list with the attributes of the embed, which are to compare
         This are all the Attributes you can prove: "title", "description", "url", "color",
         "author", "video", "image" and "thumbnail".
@@ -81,7 +81,7 @@ async def assert_embed_equals(
 
 
 async def assert_embed_regex(message: Message, patterns: Dict[str, str]):
-    """If ``patterns`` cannot be found in the embed of ``message``, fail the test.
+    """If regex patterns ``patterns`` cannot be found in the embed of ``message``, fail the test.
 
     Checks only the attributes from the dictionary keys of ``patterns``.
 
