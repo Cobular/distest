@@ -2,14 +2,14 @@
 # encoding: utf-8
 
 from setuptools import setup
-
+import distest
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name="distest",
-    version="0.5.1",
+    version=distest.__version__,
     description="Automate the testing of discord bots... With discord bots!",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -20,7 +20,21 @@ setup(
     packages=["distest", "distest.TestInterface"],
     install_requires=["discord.py>=1.5.0"],
     zip_safe=False,
-    classifiers=["Topic :: Software Development :: Testing :: Unit"],
+    classifiers=[
+        'License :: OSI Approved :: MIT License',
+        'Intended Audience :: Developers',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Topic :: Internet',
+        "Topic :: Software Development :: Testing :: Unit",
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Utilities',
+    ],
     keywords=[
         "Discord",
         "Discord.py",
@@ -28,5 +42,7 @@ setup(
         "Test",
         "Distest",
         "Discord Testing",
+        "Testing"
     ],
+
 )

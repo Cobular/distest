@@ -92,17 +92,26 @@ async def test_embed_matches(interface):
             url="http://www.example.com",
             color=0x00FFCC,
         )
-            .set_author(name="Author")
-            .set_thumbnail(
+        .set_author(name="Author")
+        .set_thumbnail(
             url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
         )
-            .set_image(
+        .set_image(
             url="https://upload.wikimedia.org/wikipedia/commons/4/40/Test_Example_%28cropped%29.jpg"
         )
     )
 
     # This image is in WikiMedia Public Domain
     await interface.assert_reply_embed_equals("Test the Embed!", embed)
+
+
+@test_collector()
+async def test_embed_regex(interface):
+    patterns = {
+        "title": "Test",
+        "description": r"Random Number: [0-9]+",
+    }
+    await interface.assert_reply_embed_regex("Test the Embed regex!", patterns)
 
 
 @test_collector()
@@ -129,7 +138,9 @@ async def test_reply_on_edit(interface):
 @test_collector()
 async def test_send_message_in_channel(interface):
     message = await interface.send_message("Say stuff in another channel")
-    await interface.wait_for_message_in_channel("here is a message in another channel", 694397509958893640)
+    await interface.wait_for_message_in_channel(
+        "here is a message in another channel", 694397509958893640
+    )
 
 
 # Actually run the bot

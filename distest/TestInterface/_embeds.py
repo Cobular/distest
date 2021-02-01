@@ -1,6 +1,9 @@
 from discord import Message, Embed
+from typing import Dict
 
 from distest.exceptions import ResponseDidNotMatchError
+
+import re
 
 
 async def assert_embed_equals(
@@ -11,7 +14,7 @@ async def assert_embed_equals(
     Checks only the attributes from ``attributes_to_prove``.
 
     :param message: original message
-    :param matches: embed object to compare to
+    :param matches: :py:class:`embed <discord.Embed>` object to compare to
     :param attributes_to_prove: a string list with the attributes of the embed, which are to compare
         This are all the Attributes you can prove: "title", "description", "url", "color",
         "author", "video", "image" and "thumbnail".
@@ -72,6 +75,36 @@ async def assert_embed_equals(
                     attribute,
                     getattr(embed, attribute),
                     getattr(matches, attribute),
+                )
+                raise ResponseDidNotMatchError
+    return message
+
+
+async def assert_embed_regex(message: Message, patterns: Dict[str, str]):
+    """If regex patterns ``patterns`` cannot be found in the embed of ``message``, fail the test.
+
+    Checks only the attributes from the dictionary keys of ``patterns``.
+
+    :param message: original message
+    :param patterns: a dict with keys of the attributes and regex values.
+    :return: message
+    :rtype: discord.Message
+    """
+
+    possible_attributes = [
+        "title",
+        "description",
+        "color",
+    ]
+
+    for embed in message.embeds:
+        for attribute, regex in patterns.items():
+            if not re.search(regex, getattr(embed, attribute)):
+                print(
+                    "Regex did not match:",
+                    attribute,
+                    getattr(embed, attribute),
+                    regex,
                 )
                 raise ResponseDidNotMatchError
     return message
