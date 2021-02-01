@@ -1,8 +1,8 @@
-from inspect import signature, _ParameterKind
-from discord import Embed, Message
 from asyncio import sleep
-
+from inspect import signature, _ParameterKind
 from typing import Dict
+
+from discord import Embed, Message
 
 
 async def assert_reply_equals(self, contents, matches):
@@ -34,8 +34,21 @@ async def assert_reply_contains(self, contents, substring):
 
 
 async def assert_reply_embed_equals(
-    self, message: str, equals: Embed, attributes_to_check: list = None
+        self, message: str, equals: Embed, attributes_to_check: list = None
 ):
+    """ Send a message and wait for an embed response. If the response does not match the given embed in the listed
+    attributes, fail the test
+
+    See examples in example_target.py for examples of use.
+
+    :param message:
+    :param equals: :py:class:`embed <discord.Embed>` object to compare to
+    :param attributes_to_check: a string list with the attributes of the embed, which are to compare
+        This are all the Attributes you can prove: "title", "description", "url", "color",
+        "author", "video", "image" and "thumbnail".
+    :return: message
+    :rtype: discord.Message
+    """
     response = await self.wait_for_reply(message)
     return await self.assert_embed_equals(
         response, equals, attributes_to_prove=attributes_to_check
@@ -43,6 +56,17 @@ async def assert_reply_embed_equals(
 
 
 async def assert_reply_embed_regex(self, message: str, patterns: Dict[str, str]):
+    """ Send a message and wait for a response. If the response is not an embed or does not match the regex,
+        fail the test.
+
+    See examples in example_target.py for examples of use.
+
+    :param message:
+    :param patterns: A dict of the attributes to check. See
+        :py:meth:`assert_message_contains <distest.TestInterface.assert_embed_regex>` for more info on this.
+    :return: message
+    :rtype: discord.Message
+    """
     response = await self.wait_for_reply(message)
     return await self.assert_embed_regex(response, patterns)
 

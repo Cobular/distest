@@ -17,8 +17,7 @@ This is the most important class in the library for you, as it contains all the 
 .. todo::
     Re-organize this file more sensibly
 
-.. autoclass:: distest.TestInterface
-    :no-private-members:
+.. autoclass:: distest.TestInterface.TestInterface
     :members:
 
 ----------------------------------
