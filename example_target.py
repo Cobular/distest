@@ -7,6 +7,7 @@ It does not run the tests, just exists to have tests run on it.
         python example_target.py TARGET_TOKEN
 """
 import asyncio
+import random
 import sys
 
 import discord
@@ -67,6 +68,13 @@ async def on_message(message):
     if message.content.startswith("Test the Part Embed!"):
         await asyncio.sleep(1)
         embed = discord.Embed(title="Testing Title.", description="Right Description!")
+        sent = await message.channel.send(embed=embed)
+    if message.content.startswith("Test the Embed regex!"):
+        await asyncio.sleep(1)
+        embed = discord.Embed(
+            title="Test the Embed regex!",
+            description="Random Number: " + random.randint(10, 99),
+        )
         sent = await message.channel.send(embed=embed)
     if message.content.startswith("Say some stuff, but at 4 seconds, say 'yeet'"):
         await asyncio.sleep(1)
