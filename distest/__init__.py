@@ -3,8 +3,8 @@ import sys
 
 from .bot import DiscordInteractiveInterface, DiscordCliInterface
 from .collector import TestCollector
-from .TestInterface import TestInterface
 
+__version__ = "0.6.0"
 
 def run_dtest_bot(sysargs, test_collector, timeout=5):
     """ This is the function you will call in your test suite's ``if __name__ == "__main__":`` statement to
