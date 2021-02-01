@@ -138,7 +138,9 @@ async def test_reply_on_edit(interface):
 @test_collector()
 async def test_send_message_in_channel(interface):
     message = await interface.send_message("Say stuff in another channel")
-    await interface.wait_for_message_in_channel("here is a message in another channel", 694397509958893640)
+    await interface.wait_for_message_in_channel(
+        "here is a message in another channel", 694397509958893640
+    )
 
 
 # Actually run the bot

@@ -73,7 +73,7 @@ async def on_message(message):
         await asyncio.sleep(1)
         embed = discord.Embed(
             title="Test the Embed regex!",
-            description="Random Number: " + random.randint(10, 99),
+            description="Random Number: " + str(random.randint(10, 99)),
         )
         sent = await message.channel.send(embed=embed)
     if message.content.startswith("Say some stuff, but at 4 seconds, say 'yeet'"):
@@ -96,7 +96,9 @@ async def on_message(message):
         print("Message sent: {}".format(sent.clean_content))
     if message.content.startswith("Say stuff in another channel"):
         await asyncio.sleep(1)
-        await client.get_channel(694397509958893640).send("here is a message in another channel")
+        await client.get_channel(694397509958893640).send(
+            "here is a message in another channel"
+        )
 
 
 @client.event
