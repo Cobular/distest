@@ -16,7 +16,7 @@ def token_arg(token_value: str) -> str:
     """
 
     # Regex check
-    if not re.match(r"[MN][A-Za-z\d]{23}\.[\w-]{6}\.[\w-]{27}", token_value):
+    if not re.match(r"[MNO][A-Za-z\d]{23}\.[\w-]{6}\.[\w-]{27}", token_value):
         raise argparse.ArgumentTypeError(
             "must be a correct Discord bot token.".format(token_value)
         )
