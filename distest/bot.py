@@ -102,14 +102,15 @@ class DiscordInteractiveInterface(DiscordBot):
         self.timeout = timeout
         self.failure = False
 
-    async def _run_by_predicate(self, channel, predicate=lambda test: True):
-        """ Iterate through ``_tests`` and run any test for which ``predicate`` returns True
+    async def _run_by_predicate(self, channel, filter=lambda test: True):
+        """ Iterate through ``_tests`` and run any test for which ``filter`` returns True
 
-        :param discord.TextChannel channel: The channel to run the test in.
-        :param function predicate: The check a test must pass to be run.
+        :param discord.TextChannel channel: The channel to run the test in. :param function filter: The check a test
+        must pass to be run. Used to filter tests by some criteria, defaults to just returning true for all. See
+        :py:func:`run_tests <distest.DiscordInteractiveInterface.run_tests>` for examples
         """
         for test in self._tests:
-            if predicate(test):
+            if filter(test):
                 await self.run_test(test, channel, stop_error=True)
 
     async def _build_stats(self, tests) -> str:

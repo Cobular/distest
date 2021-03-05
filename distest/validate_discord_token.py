@@ -9,6 +9,7 @@ def token_arg(token_value: str) -> str:
     Matches to the regex: [\w\d]{24}\.[\w\d]{6}\.[\w\d-_]{27}.
     Thanks to https://github.com/AnIdiotsGuide/Tutorial-Bot/blob/Episode-4/app.js for the regex I used.
     Thanks to https://gist.github.com/mikecharles/9ed3082b10d77d658743 for an example of how this works with argparse
+    Thanks to https://github.com/sean-keisuke for adding compatibility with new tokens!
 
     :param token_value: The string that may be a bot token
     :return token_value: Returns the token_value if the token matches the regex
