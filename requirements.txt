@@ -1,4 +1,4 @@
 discord.py~=1.6.0
 Sphinx~=3.4.0
 black==20.8b1
-furo==2020.12.30b24
+furo==2021.2.28b28
