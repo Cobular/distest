@@ -2,14 +2,14 @@
 # encoding: utf-8
 
 from setuptools import setup
-import distest
+from __version__ import __version__
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name="distest",
-    version=distest.__version__,
+    version=__version__,
     description="Automate the testing of discord bots... With discord bots!",
     long_description=long_description,
     long_description_content_type="text/markdown",
