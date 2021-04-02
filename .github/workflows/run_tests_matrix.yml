@@ -5,6 +5,9 @@ on:
   workflow_dispatch:
   push:
     branches: [ develop, master, release/** ]
+  # Runs a schedule to keep the cache fresh, caches last 7 days.
+  schedule:
+    - cron: "0 4 * * 6"
 
 jobs:
   build-matrix:
@@ -22,6 +25,13 @@ jobs:
         uses: actions/setup-python@v2.2.1
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Cache pip dependancies for python version
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pyv${{ matrix.python-version }}-dv${{ matrix.discordpy-version }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pyv${{ matrix.python-version }}-dv${{ matrix.discordpy-version }}pip-
       - name: Install dependencies, discord.py version ${{ matrix.discordpy-version }}
         run: |
           python -m pip install --upgrade pip
