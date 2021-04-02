@@ -1,9 +1,10 @@
 # Distest
 
-[![CodeFactor](https://www.codefactor.io/repository/github/jakecover/distest/badge/?style=flat-square)](https://www.codefactor.io/repository/github/jakecover/distest/overview/?style=flat-square)
-[![Build Status](https://img.shields.io/travis/JakeCover/distest/develop.svg?style=flat-square)](https://travis-ci.org/JakeCover/distest)
-[![PyPi Version](https://img.shields.io/pypi/v/distest.svg?style=flat-square)](https://pypi.org/project/distest)
+[![CodeFactor](https://www.codefactor.io/repository/github/jakecover/distest/badge/)](https://www.codefactor.io/repository/github/jakecover/distest/overview/?style=flat-square)
+[![PyPi Version](https://img.shields.io/pypi/v/distest.svg)](https://pypi.org/project/distest)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/distest)
 [![Discord Server](https://img.shields.io/discord/523301176309972993.svg?label=Discord)](https://discord.gg/Dah7RHH)
+[![Run Tests Matrix](https://github.com/JakeCover/distest/actions/workflows/run_tests_matrix.yml/badge.svg?branch=master)](https://github.com/JakeCover/distest/actions/workflows/run_tests_matrix.yml)
 
 
 A small library used to write automated test for Discord bots.
