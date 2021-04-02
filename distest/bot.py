@@ -49,6 +49,9 @@ class DiscordBot(discord.Client):
             to look for the target user in
             :rtype:  discord.Member
         """
+        if self.user.id == self._target_name:
+            print("The tester cannot run tests on itself. Make sure your target id is set correctly.")
+            raise Exception("Cannot run tests on self.")
         for member in server.members:
             if self._target_name == member.id:
                 if member.status == discord.Status.offline:
