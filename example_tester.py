@@ -9,7 +9,7 @@ import sys
 from distest import TestCollector
 from distest import run_dtest_bot
 from discord import Embed, Member, Status
-from distest import TestInterface
+from distest.TestInterface import TestInterface
 
 # The tests themselves
 
@@ -18,8 +18,8 @@ created_channel = None
 
 
 @test_collector()
-async def test_ping(interface):
-    await interface.assert_reply_contains("ping?", "pong!")
+async def test_ping(interface: TestInterface):
+    await interface.assert_reply_contains("ping?", "p0ong!")
 
 
 @test_collector()
@@ -46,7 +46,7 @@ async def test_channel_create(interface):
     created_channel = await interface.assert_guild_channel_created("yeet")
 
 
-# @test_collector
+# @test_collector()
 # async def test_pin_in_channel(interface):
 #     await interface.send_message("Pin 'this is cool' in yeet")
 #     await interface.assert_guild_channel_pin_content_equals(created_channel )

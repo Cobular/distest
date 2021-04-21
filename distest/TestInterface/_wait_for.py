@@ -1,5 +1,6 @@
 from distest.exceptions import NoResponseError
 from typing import Callable, Optional
+
 try:
     from asyncio.exceptions import TimeoutError
 except (ImportError, ModuleNotFoundError):
@@ -83,7 +84,11 @@ async def wait_for_reply(self, content):
 
 
 async def wait_for_event(
-    self, event: str, check: Optional[Callable[..., bool]] = None, timeout: float = None
+    self,
+    event: str,
+    check: Optional[Callable[..., bool]] = None,
+    timeout: float = None,
+    error_string: Optional[str] = None,
 ):
     """ A wrapper for the discord.py function :py:func:`wait_for <discord.Client.wait_for>`, tuned to be useful for distest.
 
@@ -92,6 +97,7 @@ async def wait_for_event(
     :param event: The discord.py event, as a string and with the ``on_`` removed from the beginning.
     :param Callable[...,bool] check: A check function that all events of the type are ran against. Should return true when the desired event occurs, takes the event's params as it's params
     :param float timeout: How many seconds to wait for the event to occur.
+    :param Optional[str] error_string: The string to send with the error, should the test fail
     :return: The parameters of the event requested
     :raises: NoResponseError
     """
@@ -101,7 +107,7 @@ async def wait_for_event(
     try:
         result = await self.client.wait_for(event, timeout=timeout, check=check)
     except TimeoutError:
-        raise NoResponseError
+        raise NoResponseError(error_string)
     # TODO: What happens if the event is wrong / not valid?
     else:
         return result

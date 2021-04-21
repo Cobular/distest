@@ -17,7 +17,10 @@ async def assert_guild_channel_created(self, channel_name, timeout=None):
         return channel.name == channel_name
 
     return await self.wait_for_event(
-        "guild_channel_create", check=check_for_channel_name, timeout=timeout
+        "guild_channel_create",
+        check=check_for_channel_name,
+        timeout=timeout,
+        error_string=f"Guild channel `{channel_name}` was not created.",
     )
 
 
@@ -37,7 +40,10 @@ async def assert_guild_channel_deleted(self, channel_name, timeout=None):
         return channel.name == channel_name
 
     return await self.wait_for_event(
-        "guild_channel_delete", check=check_for_channel_name, timeout=timeout
+        "guild_channel_delete",
+        check=check_for_channel_name,
+        timeout=timeout,
+        error_string=f"Guild channel `{channel_name}` was not deleted.",
     )
 
 

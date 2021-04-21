@@ -26,7 +26,7 @@ async def assert_message_contains(message, substring):
     :raises: ResponseDidNotMatchError
     """
     if substring not in message.content:
-        raise ResponseDidNotMatchError
+        raise ResponseDidNotMatchError(f"Expected message to contain `{substring}`, instead was `{message.content}`")
     return message
 
 

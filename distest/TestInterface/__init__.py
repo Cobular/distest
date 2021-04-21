@@ -1,6 +1,9 @@
 import enum
+from typing import Optional, Callable
+
 import discord
-from typing import Optional
+
+from exceptions import TestRequirementFailure
 
 
 class TestResult(enum.Enum):
@@ -18,19 +21,20 @@ class Test:
     """ Holds data about a specific test.
 
     :param str name: The name of the test, checks this against the valid test names
-    :param function func: The function in the tester bot that makes up this test
+    :param TestFunction func: The function in the tester bot that makes up this test
     :param bool needs_human: Weather or not this test will require human interaction to complete
     :raises: ValueError
     """
 
-    def __init__(self, name, func, needs_human=False):
+    def __init__(self, name: str, func: Callable, needs_human=False):
         if name in SPECIAL_TEST_NAMES:
             raise ValueError("{} is not a valid test name".format(name))
-        self.name = name
-        self.func = func
-        self.last_run = 0
-        self.result = TestResult.UNRUN
-        self.needs_human = needs_human
+        self.name: str = name
+        self.func: Callable = func
+        self.last_run: int = 0
+        self.result: TestResult = TestResult.UNRUN
+        self.failure_reason: Optional[TestRequirementFailure] = None
+        self.needs_human: bool = needs_human
 
 
 class TestInterface:

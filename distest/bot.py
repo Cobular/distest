@@ -79,8 +79,10 @@ class DiscordBot(discord.Client):
         try:
             print("Running test: {}".format(test.name))
             await test.func(test_interface)
-        except TestRequirementFailure:
+        except TestRequirementFailure as e:
             test.result = TestResult.FAILED
+            print(repr(e))
+            test.failure_reason = repr(e)
             if not stop_error:
                 raise
         else:
@@ -140,9 +142,17 @@ class DiscordInteractiveInterface(DiscordBot):
                 response += "✓ Passed\n"
             elif test.result is TestResult.FAILED:
                 response += "✘ Failed\n"
+                self._print_test_failure_reason(test)
                 self.failure = True
         response += "```\n"
         return response
+
+    @staticmethod
+    def _print_test_failure_reason(test: Test):
+        if test.failure_reason is not None:
+            print(repr(test.failure_reason))
+        else:
+            print("Test failed for unknown reason")
 
     async def _display_stats(self, channel: discord.TextChannel):
         """ Display the status of the various tests. Just a send wrapper for

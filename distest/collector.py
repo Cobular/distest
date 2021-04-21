@@ -4,8 +4,12 @@ The TestCollector Class and some supporting code.
 Each test function in the tester bot should be decorated with an instance of TestCollector(),
 and must have a unique name. The TestCollector() is then passed onto the bot, which runs the tests.
 """
+from functools import partial
+from typing import Callable, Coroutine
 
-from .TestInterface import Test
+from .TestInterface import Test, TestInterface
+
+TestFunction = Callable[[TestInterface], Coroutine[any, any, None]]
 
 
 class ExpectCalls:
@@ -13,7 +17,7 @@ class ExpectCalls:
     of calls is not equal to the expected number when this object is garbage collected, something has
     gone wrong, and in that case an error is thrown.
 
-    :param function function: The test :py:class:`function` to track
+    :param TestFunction function: The test :py:class:`function` to track
     :param int expected_calls: The number of calls expected for that function. Defaults to 1,
                                and is not currently able to be set to another value
     """
@@ -57,10 +61,10 @@ class TestCollector:
     def __init__(self):
         self._tests = []
 
-    def add(self, function, name=None, needs_human=False):
+    def add(self, function: TestFunction, name=None, needs_human=False):
         """ Adds a test function to the group, if one with that name is not already present
 
-        :param func function: The function to add
+        :param TestFunction function: The function to add
         :param str name: The name of the function to add, defaults to the function name but can be overridden
                          with the provided name just like with :py:class:`discord.ext.commands.Command`.
                          See sample code above.
@@ -94,3 +98,12 @@ class TestCollector:
     def __iter__(self):
         """ Makes the `TestCollector` able to be iterated over, which is really helpful in a number of cases."""
         return (i for i in self._tests)
+
+    def __get__(self, instance, instancetype):
+        """Implement the descriptor protocol to make decorating instance
+        method possible.
+        """
+
+        # Return a partial function with the first argument is the instance
+        #   of the class decorated.
+        return partial(self.__call__, instance)

@@ -1,9 +1,9 @@
-from discord import Message, Embed
+import re
 from typing import Dict
 
-from distest.exceptions import ResponseDidNotMatchError
+from discord import Message, Embed
 
-import re
+from distest.exceptions import ResponseDidNotMatchError
 
 
 async def assert_embed_equals(
@@ -55,20 +55,20 @@ async def assert_embed_equals(
                     getattr(matches, attribute), "url"
                 ):
                     raise ResponseDidNotMatchError(
-                        "The {} attribute did't match".format(attribute)
+                        f"The {attribute} attribute didn't match."
                     )
             elif attribute == "video":
                 # Comparison of Embedded Video
                 if getattr(getattr(embed, "video"), "url") != getattr(
                     getattr(matches, "video"), "url"
                 ):
-                    raise ResponseDidNotMatchError("The video attribute did't match")
+                    raise ResponseDidNotMatchError("The video attribute didn't match.")
             elif attribute == "author":
                 # Comparison of Author
                 if getattr(getattr(embed, "author"), "name") != getattr(
                     getattr(matches, "author"), "name"
                 ):
-                    raise ResponseDidNotMatchError("The author attribute did't match")
+                    raise ResponseDidNotMatchError("The author attribute didn't match")
             elif not getattr(embed, attribute) == getattr(matches, attribute):
                 print(
                     "Did not match:",
@@ -100,11 +100,7 @@ async def assert_embed_regex(message: Message, patterns: Dict[str, str]):
     for embed in message.embeds:
         for attribute, regex in patterns.items():
             if not re.search(regex, getattr(embed, attribute)):
-                print(
-                    "Regex did not match:",
-                    attribute,
-                    getattr(embed, attribute),
-                    regex,
+                raise ResponseDidNotMatchError(
+                    f"Regex did not match: {attribute} {getattr(embed, attribute)} {regex}"
                 )
-                raise ResponseDidNotMatchError
     return message
