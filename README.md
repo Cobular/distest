@@ -9,6 +9,11 @@
 
 A small library used to write automated test for Discord bots.
 
+# NOTICE: This Library is deprecated in favor of https://github.com/CraftSpider/dpytest
+This was a really fun project and I learned so much about Python and good tesing in the process, however I don't have the time to re-write this to the level that it needs to be to really be great, and dpytest literally does tests the way I was planning to with my re-write anyway. I recommend that anyone here goes and checks that out instead!! Thank you all for your contributions and good luck with whatever you're doing!
+
+# \<old readme continues below>
+
 Test framework originally written by [DXsmiley](https://github.com/DXsmiley), update to the rewrite and re-worked UI done by [me](https://github.com/JakeCover), with tons of help from [ALobsterDog](https://github.com/ALobsterDog)
 
 Want to see the bots in action? Join us here on [discord](https://discord.gg/Dah7RHH) for help and to see the example bots whenever they are being tested. See you there!
