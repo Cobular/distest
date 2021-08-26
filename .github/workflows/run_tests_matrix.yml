@@ -20,7 +20,7 @@ jobs:
       max-parallel: 1
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2.2.2
         with:
@@ -50,7 +50,7 @@ jobs:
   test_docs_matrix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
         with:
           clean: false
           fetch-depth: 20
@@ -72,7 +72,7 @@ jobs:
     name: Build the package on 3.9
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
       - name: Set up Python 3.9
         uses: actions/setup-python@v2.2.2
         with:
