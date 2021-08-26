@@ -5,6 +5,14 @@ from distest.exceptions import ResponseDidNotMatchError
 
 import re
 
+async def assert_has_embed(message: Message):
+    """Assert that ``message`` is a message that has an embed. If the embed is not present, fail the test.
+
+    :param message: original message
+    """
+    if len(message.embeds) == 0:
+        raise ResponseDidNotMatchError("The message is missing an embed.")
+
 
 async def assert_embed_equals(
     message: Message, matches: Embed, attributes_to_prove: list = None,
@@ -21,6 +29,7 @@ async def assert_embed_equals(
     :return: message
     :rtype: discord.Message
     """
+    assert_has_embed(message)
 
     # All possible attributes a user can set during initialisation
     possible_attributes = [
@@ -90,6 +99,7 @@ async def assert_embed_regex(message: Message, patterns: Dict[str, str]):
     :return: message
     :rtype: discord.Message
     """
+    assert_has_embed(message)
 
     possible_attributes = [
         "title",
